@@ -1,0 +1,9 @@
+{
+  "name": "arch-ooo",
+  "private": true,
+  "description": "arch.ooo — plugin sales platform + breakeven tool + gated docs",
+  "dependencies": {
+    "stripe": "^14.0.0",
+    "@netlify/blobs": "^8.1.0"
+  }
+}

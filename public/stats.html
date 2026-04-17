@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>arch — stats</title>
+<link href="https://fonts.googleapis.com/css2?family=Geist+Mono:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{--bg:#1a1917;--surface:#222220;--border:rgba(255,255,255,0.07);--border-h:rgba(255,255,255,0.14);--text:#d4d2cd;--muted:#6a6864;--dim:#3c3a38}
+html{background:var(--bg);color:var(--text);font-family:'Geist Mono',monospace;font-size:13px}
+body{min-height:100vh}
+nav{display:flex;align-items:center;justify-content:space-between;padding:0 2.5rem;height:50px;border-bottom:1px solid var(--border)}
+.nav-logo{font-size:13px;font-weight:300;color:var(--text);text-decoration:none;letter-spacing:0.06em}
+.nav-links{display:flex;gap:2.5rem}
+.nav-links a{font-size:11px;color:var(--muted);text-decoration:none;letter-spacing:0.06em;transition:color 0.2s}
+.nav-links a:hover{color:var(--text)}
+.page{max-width:720px;margin:0 auto;padding:0 2.5rem}
+.page-header{padding:4rem 0 3rem;border-bottom:1px solid var(--border)}
+.page-header h1{font-size:11px;font-weight:300;letter-spacing:0.1em;color:var(--muted)}
+.stats-table{width:100%;margin-top:2rem;border-collapse:collapse}
+.stats-table th,.stats-table td{text-align:left;padding:12px 0;border-bottom:1px solid var(--border);font-weight:300}
+.stats-table th{font-size:10px;letter-spacing:0.1em;color:var(--muted);text-transform:lowercase}
+.stats-table td.name{font-size:14px;letter-spacing:0.04em}
+.stats-table td.count{font-size:14px;color:var(--text);text-align:right;letter-spacing:0.04em}
+.stats-table tr.total td{border-top:1px solid var(--border-h);font-weight:500;padding-top:16px}
+.loading{font-size:11px;color:var(--dim);letter-spacing:0.08em;padding:3rem 0}
+#gate-stats{padding:3rem 0}
+#gate-stats input{max-width:200px;padding:10px 12px;background:transparent;border:1px solid var(--border);border-right:none;color:var(--text);font-family:'Geist Mono',monospace;font-size:11px;letter-spacing:0.1em;outline:none}
+#gate-stats input::placeholder{color:var(--dim)}
+#gate-stats button{padding:10px 16px;background:transparent;border:1px solid var(--border);color:var(--muted);font-family:'Geist Mono',monospace;font-size:10px;cursor:pointer}
+#gate-stats button:hover{border-color:var(--text);color:var(--text)}
+</style>
+</head>
+<body>
+<nav><a href="/" class="nav-logo">arch</a><div class="nav-links"><a href="/plugins">plugins</a></div></nav>
+<div class="page">
+  <div class="page-header"><h1>arch audio — download stats</h1></div>
+  <div id="gate-stats"><form onsubmit="return checkStatsPass()" style="display:flex;gap:0"><input type="password" id="stats-pw" placeholder="password"><button type="submit">ok</button></form></div>
+  <div id="stats-content" style="display:none">
+    <div id="loading" class="loading">chargement</div>
+    <table id="table" class="stats-table" style="display:none"><thead><tr><th>plugin</th><th style="text-align:right">downloads</th></tr></thead><tbody id="tbody"></tbody></table>
+  </div>
+</div>
+<script>
+function checkStatsPass(){var pw=document.getElementById('stats-pw').value.toLowerCase().trim();if(pw==='jaimelesstats'){document.getElementById('gate-stats').style.display='none';document.getElementById('stats-content').style.display='block';loadStats()}return false}
+async function loadStats(){try{var res=await fetch("/api/track-download");var data=await res.json();var tbody=document.getElementById("tbody");var total=0;var sorted=Object.entries(data).sort(function(a,b){return b[1]-a[1]});sorted.forEach(function(item){var tr=document.createElement("tr");tr.innerHTML='<td class="name">'+item[0]+'</td><td class="count">'+item[1]+'</td>';tbody.appendChild(tr);total+=item[1]});var tr=document.createElement("tr");tr.className="total";tr.innerHTML='<td class="name">total</td><td class="count">'+total+'</td>';tbody.appendChild(tr);document.getElementById("loading").style.display="none";document.getElementById("table").style.display="table"}catch(e){document.getElementById("loading").textContent="erreur de chargement"}}
+</script>
+</body>
+</html>

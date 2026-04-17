@@ -1,0 +1,7 @@
+User-agent: *
+Disallow: /55asky/
+Disallow: /55asky
+Disallow: /data
+Disallow: /data.html
+Disallow: /stats
+Disallow: /stats.html

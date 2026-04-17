@@ -1,0 +1,718 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>arch — plugins</title>
+<link href="https://fonts.googleapis.com/css2?family=Geist+Mono:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#1a1917;
+  --surface:#222220;
+  --border:rgba(255,255,255,0.07);
+  --border-h:rgba(255,255,255,0.14);
+  --text:#d4d2cd;
+  --muted:#6a6864;
+  --dim:#3c3a38;
+  --accent:#d4d2cd;
+}
+html{background:var(--bg);color:var(--text);font-family:'Geist Mono',monospace;font-size:13px}
+body{min-height:100vh;padding-bottom:80px}
+nav{display:flex;align-items:center;justify-content:space-between;padding:0 2.5rem;height:50px;border-bottom:1px solid var(--border)}
+.nav-logo{font-size:13px;font-weight:300;color:var(--text);text-decoration:none;letter-spacing:0.06em}
+.nav-links{display:flex;gap:2.5rem}
+.nav-links a{font-size:11px;color:var(--muted);text-decoration:none;letter-spacing:0.06em;transition:color 0.2s}
+.nav-links a:hover,.nav-links a.active{color:var(--text)}
+
+.page{max-width:720px;margin:0 auto;padding:0 2.5rem}
+.page-header{padding:4rem 0 3rem;border-bottom:1px solid var(--border)}
+.page-header h1{font-size:11px;font-weight:300;letter-spacing:0.1em;color:var(--muted)}
+
+.section-label{
+  padding:2.5rem 0 1.5rem;
+  font-size:12px;letter-spacing:0.15em;color:var(--text);
+  border-top:1px solid var(--border-h);
+  margin-top:0;
+}
+
+.plugin{border-bottom:1px solid var(--border);padding:2rem 0;transition:border-color 0.2s}
+.plugin.in-cart{border-left:2px solid var(--accent);padding-left:1.5rem}
+.plugin-top{display:flex;align-items:baseline;justify-content:space-between;margin-bottom:1rem}
+.plugin-name{font-size:1.8rem;font-weight:300;letter-spacing:0.06em;color:var(--text);line-height:1}
+.plugin-type{font-size:10px;letter-spacing:0.08em;color:var(--muted)}
+.plugin-specs{list-style:none;display:flex;flex-direction:column;gap:3px;margin-bottom:1.4rem}
+.plugin-specs li{font-size:11px;color:var(--muted);letter-spacing:0.02em;line-height:1.5}
+.plugin-bottom{display:flex;align-items:center;gap:1.2rem;flex-wrap:wrap}
+.tag{font-size:9px;letter-spacing:0.05em;color:var(--dim);border:1px solid var(--border);padding:2px 6px;border-radius:1px}
+.price-tag{font-size:11px;letter-spacing:0.06em;color:var(--text);font-weight:400}
+
+.cart-btn{background:none;color:var(--text);border:1px solid var(--border-h);padding:8px 18px;font-family:'Geist Mono',monospace;font-size:10px;letter-spacing:0.06em;font-weight:300;border-radius:1px;cursor:pointer;transition:background 0.2s,border-color 0.2s,color 0.2s;text-transform:lowercase;text-decoration:none;margin-left:auto}
+.cart-btn:hover{background:var(--surface);border-color:var(--text)}
+.cart-btn.added{border-color:var(--text);color:var(--bg);background:var(--text)}
+
+.bundle-box{border:1px solid var(--border-h);padding:2rem 2.5rem;margin:2.5rem 0 0;transition:border-color 0.2s}
+.bundle-box.in-cart{border-color:var(--text)}
+
+/* video toggle */
+.video-toggle{display:inline-flex;align-items:center;gap:6px;font-size:10px;color:var(--dim);cursor:pointer;margin-top:0.8rem;transition:color 0.2s;letter-spacing:0.04em;user-select:none}
+.video-toggle:hover{color:var(--muted)}
+.video-toggle .chevron{display:inline-block;transition:transform 0.2s;font-size:8px}
+.video-toggle .chevron.open{transform:rotate(90deg)}
+.video-wrap{max-height:0;overflow:hidden;transition:max-height 0.4s ease}
+.video-wrap.open{max-height:500px}
+.video-inner{display:flex;gap:1.5rem;margin-top:0.8rem;align-items:flex-start}
+.video-inner iframe{width:240px;min-width:240px;height:300px;border:none;opacity:0.85;border-radius:6px}
+.video-desc{font-size:11px;color:var(--muted);letter-spacing:0.03em;line-height:1.7}
+.video-desc strong{color:var(--text);font-weight:400}
+.video-desc ul{list-style:none;padding:0;margin:0.5rem 0 0}
+.video-desc ul li{padding:3px 0}
+.video-desc ul li::before{content:"— ";color:var(--dim)}
+@media(max-width:600px){.video-inner{flex-direction:column}.video-inner iframe{width:100%;height:auto;aspect-ratio:4/5}}
+
+/* email modal */
+.modal-overlay{position:fixed;inset:0;z-index:9999;background:rgba(0,0,0,0.7);display:none;justify-content:center;align-items:center}
+.modal-overlay.visible{display:flex}
+.modal-box{background:var(--bg);border:1px solid var(--border-h);padding:2.5rem;max-width:380px;width:90%}
+.modal-title{font-size:14px;font-weight:300;letter-spacing:0.06em;margin-bottom:0.6rem}
+.modal-desc{font-size:10px;color:var(--muted);letter-spacing:0.04em;line-height:1.6;margin-bottom:1.5rem}
+.modal-input{width:100%;padding:10px 12px;background:transparent;border:1px solid var(--border);color:var(--text);font-family:'Geist Mono',monospace;font-size:11px;letter-spacing:0.06em;outline:none;margin-bottom:1rem}
+.modal-input::placeholder{color:var(--dim)}
+.modal-input:focus{border-color:var(--border-h)}
+.modal-btns{display:flex;gap:8px}
+.modal-submit{flex:1;padding:10px;background:var(--text);color:var(--bg);border:none;font-family:'Geist Mono',monospace;font-size:11px;letter-spacing:0.06em;cursor:pointer;transition:opacity 0.2s}
+.modal-submit:hover{opacity:0.85}
+.modal-skip{flex:0;padding:10px 16px;background:transparent;border:1px solid var(--border);color:var(--muted);font-family:'Geist Mono',monospace;font-size:11px;letter-spacing:0.06em;cursor:pointer;transition:color 0.2s,border-color 0.2s}
+.modal-skip:hover{color:var(--text);border-color:var(--text)}
+
+/* cart bar */
+.cart-bar{position:fixed;bottom:0;left:0;right:0;background:#111110;border-top:1px solid var(--border-h);padding:14px 2.5rem;display:flex;align-items:center;justify-content:center;gap:2rem;z-index:1000;transform:translateY(100%);transition:transform 0.25s ease}
+.cart-bar.visible{transform:translateY(0)}
+.cart-summary{font-size:12px;color:var(--text);letter-spacing:0.04em;white-space:nowrap}
+.cart-promo{display:flex;gap:0;align-items:center}
+.cart-promo input{padding:8px 10px;background:transparent;border:1px solid var(--border);border-right:none;color:var(--text);font-family:'Geist Mono',monospace;font-size:10px;letter-spacing:0.06em;outline:none;width:130px;text-transform:lowercase}
+.cart-promo input::placeholder{color:var(--dim)}
+.cart-promo-btn{padding:8px 12px;background:transparent;border:1px solid var(--border);color:var(--muted);font-family:'Geist Mono',monospace;font-size:10px;letter-spacing:0.06em;cursor:pointer;transition:border-color 0.2s,color 0.2s;text-transform:lowercase}
+.cart-promo-btn:hover{border-color:var(--text);color:var(--text)}
+.promo-error{font-size:9px;color:#a05a4a;letter-spacing:0.04em;position:absolute;bottom:100%;margin-bottom:4px;white-space:nowrap}
+.cart-checkout{padding:8px 24px;background:var(--text);color:var(--bg);border:none;font-family:'Geist Mono',monospace;font-size:11px;letter-spacing:0.06em;font-weight:400;border-radius:1px;cursor:pointer;transition:opacity 0.2s;text-transform:lowercase}
+.cart-checkout:hover{opacity:0.85}
+.cart-checkout:disabled{opacity:0.4;cursor:wait}
+
+/* message box */
+.msg-section{max-width:720px;margin:0 auto;padding:3rem 2.5rem 0}
+.msg-label{font-size:11px;color:var(--muted);letter-spacing:0.06em;margin-bottom:1rem}
+.msg-box{display:flex;gap:0}
+.msg-input{flex:1;padding:12px 14px;background:transparent;border:1px solid var(--border);border-right:none;color:var(--text);font-family:'Geist Mono',monospace;font-size:11px;letter-spacing:0.04em;outline:none;resize:none;min-height:44px;max-height:120px}
+.msg-input::placeholder{color:var(--dim)}
+.msg-input:focus{border-color:var(--border-h)}
+.msg-send{padding:12px 18px;background:transparent;border:1px solid var(--border);color:var(--muted);font-family:'Geist Mono',monospace;font-size:10px;letter-spacing:0.06em;cursor:pointer;transition:border-color 0.2s,color 0.2s;text-transform:lowercase;white-space:nowrap}
+.msg-send:hover{border-color:var(--text);color:var(--text)}
+.msg-confirm{font-size:10px;color:var(--muted);letter-spacing:0.04em;margin-top:8px;min-height:16px;opacity:0;transition:opacity 0.3s}
+.msg-confirm.visible{opacity:1}
+
+footer{max-width:720px;margin:0 auto;padding:2.5rem 2.5rem;display:flex;align-items:center;justify-content:space-between}
+.footer-l{font-size:10px;color:var(--muted);letter-spacing:0.06em}
+.footer-r a{font-size:10px;color:var(--muted);text-decoration:none}
+.footer-r a:hover{color:var(--text)}
+
+
+@media(max-width:600px){
+  .cart-bar{flex-wrap:wrap;gap:10px;padding:12px 1.2rem}
+  .cart-promo input{width:100px}
+  .plugin-top{flex-direction:column;gap:4px}
+  .plugin-name{font-size:1.4rem}
+  .modal-box{padding:1.5rem}
+}
+</style>
+</head>
+<body>
+
+
+<!-- email modal -->
+<div class="modal-overlay" id="email-modal">
+  <div class="modal-box">
+    <div class="modal-title">stay in the loop</div>
+    <div class="modal-desc">bug fixes and updates are free — enter your email to be notified when they're available. this is the only way to receive them.</div>
+    <input class="modal-input" type="email" id="email-input" placeholder="your@email.com" autocomplete="email">
+    <div class="modal-btns">
+      <button class="modal-submit" id="email-submit" onclick="submitEmail()">continue</button>
+      <button class="modal-skip" onclick="skipEmail()">skip</button>
+    </div>
+  </div>
+</div>
+
+<div id="site" class="unlocked">
+
+<nav>
+  <a href="/" class="nav-logo">arch</a>
+  <div class="nav-links">
+    <a href="/plugins" class="active">plugins</a>
+  </div>
+</nav>
+
+<div class="page">
+  <div class="page-header"><h1>arch audio — plugins</h1></div>
+
+  <div class="bundle-box" id="card-bundle">
+    <div class="plugin-top">
+      <h2 class="plugin-name">bundle</h2>
+      <span class="plugin-type">all 13 plugins</span>
+    </div>
+    <ul class="plugin-specs">
+      <li>shard, grain, keys, fmnt, dly, cmpr, eqls, dist, sprd, dck, clpr, void, vrb</li>
+    </ul>
+    <div class="plugin-bottom">
+      <span class="price-tag">[90€]</span>
+      <span class="tag">vst3</span><span class="tag">macos</span><span class="tag">windows</span>
+      <button class="cart-btn" onclick="togglePlugin('bundle')" id="btn-bundle">add</button>
+    </div>
+    <div class="video-toggle" onclick="toggleVideo('bundle')"><span class="chevron" id="chev-bundle">▸</span> preview</div>
+    <div class="video-wrap" id="vid-bundle"></div>
+  </div>
+
+  <p class="section-label">instruments</p>
+
+  <div class="plugin" id="card-shard">
+    <div class="plugin-top">
+      <h2 class="plugin-name">shard</h2>
+      <span class="plugin-type">synthesizer</span>
+    </div>
+    <ul class="plugin-specs">
+      <li>hybrid wavetable / granular — 8 voices</li>
+      <li>dual lp/hp filter, reverb, drive</li>
+      <li>23 presets</li>
+    </ul>
+    <div class="plugin-bottom">
+      <span class="price-tag">[20€]</span>
+      <span class="tag">vst3</span><span class="tag">macos</span><span class="tag">windows</span>
+      <button class="cart-btn" onclick="togglePlugin('shard')" id="btn-shard">add</button>
+    </div>
+    <div class="video-toggle" onclick="toggleVideo('shard')"><span class="chevron" id="chev-shard">▸</span> preview</div>
+    <div class="video-wrap" id="vid-shard"></div>
+  </div>
+
+  <div class="plugin" id="card-keys">
+    <div class="plugin-top">
+      <h2 class="plugin-name">keys</h2>
+      <span class="plugin-type">piano / destroy</span>
+    </div>
+    <ul class="plugin-specs">
+      <li>sampled upright piano — 3 velocity layers, 16 voices</li>
+      <li>destroy knob — clean at 0%, full aliased bitcrush at 100%</li>
+    </ul>
+    <div class="plugin-bottom">
+      <span class="price-tag">[20€]</span>
+      <span class="tag">vst3</span><span class="tag">macos</span><span class="tag">windows</span>
+      <button class="cart-btn" onclick="togglePlugin('keys')" id="btn-keys">add</button>
+    </div>
+    <div class="video-toggle" onclick="toggleVideo('keys')"><span class="chevron" id="chev-keys">▸</span> preview</div>
+    <div class="video-wrap" id="vid-keys"></div>
+  </div>
+
+  <div class="plugin" id="card-grain">
+    <div class="plugin-top">
+      <h2 class="plugin-name">grain</h2>
+      <span class="plugin-type">granular sampler</span>
+    </div>
+    <ul class="plugin-specs">
+      <li>drag-and-drop — 3 modes: pitch, slice, granular</li>
+      <li>transient detection, ADSR, LFO, bitcrush</li>
+      <li>polyphonic — 16 voices pitch/slice, 8 voices granular</li>
+    </ul>
+    <div class="plugin-bottom">
+      <span class="price-tag">[20€]</span>
+      <span class="tag">vst3</span><span class="tag">macos</span><span class="tag">windows</span>
+      <button class="cart-btn" onclick="togglePlugin('grain')" id="btn-grain">add</button>
+    </div>
+    <div class="video-toggle" onclick="toggleVideo('grain')"><span class="chevron" id="chev-grain">▸</span> preview</div>
+    <div class="video-wrap" id="vid-grain"></div>
+  </div>
+
+  <p class="section-label">effects</p>
+
+  <div class="plugin" id="card-dist">
+    <div class="plugin-top">
+      <h2 class="plugin-name">dist</h2>
+      <span class="plugin-type">distortion</span>
+    </div>
+    <ul class="plugin-specs">
+      <li>two-stage serial distortion with 8x oversampling</li>
+      <li>7 algorithms per stage — tube, transistor, fuzz, hard, sym, fold, diode</li>
+    </ul>
+    <div class="plugin-bottom">
+      <span class="price-tag">[10€]</span>
+      <span class="tag">vst3</span><span class="tag">macos</span><span class="tag">windows</span>
+      <button class="cart-btn" onclick="togglePlugin('dist')" id="btn-dist">add</button>
+    </div>
+    <div class="video-toggle" onclick="toggleVideo('dist')"><span class="chevron" id="chev-dist">▸</span> preview</div>
+    <div class="video-wrap" id="vid-dist"></div>
+  </div>
+
+  <div class="plugin" id="card-clpr">
+    <div class="plugin-top">
+      <h2 class="plugin-name">clpr</h2>
+      <span class="plugin-type">clipper</span>
+    </div>
+    <ul class="plugin-specs">
+      <li>zero-latency clipper — hard, soft, overshoot modes</li>
+      <li>real-time oscilloscope pre/post</li>
+    </ul>
+    <div class="plugin-bottom">
+      <span class="price-tag">[10€]</span>
+      <span class="tag">vst3</span><span class="tag">macos</span><span class="tag">windows</span>
+      <button class="cart-btn" onclick="togglePlugin('clpr')" id="btn-clpr">add</button>
+    </div>
+    <div class="video-toggle" onclick="toggleVideo('clpr')"><span class="chevron" id="chev-clpr">▸</span> preview</div>
+    <div class="video-wrap" id="vid-clpr"></div>
+  </div>
+
+  <div class="plugin" id="card-void">
+    <div class="plugin-top">
+      <h2 class="plugin-name">void</h2>
+      <span class="plugin-type">destruction</span>
+    </div>
+    <ul class="plugin-specs">
+      <li>one knob — 6 progressive destruction stages</li>
+      <li>from subtle warmth to complete signal destruction</li>
+      <li>chaos mode for unpredictable behavior</li>
+    </ul>
+    <div class="plugin-bottom">
+      <span class="price-tag">[10€]</span>
+      <span class="tag">vst3</span><span class="tag">macos</span><span class="tag">windows</span>
+      <button class="cart-btn" onclick="togglePlugin('void')" id="btn-void">add</button>
+    </div>
+    <div class="video-toggle" onclick="toggleVideo('void')"><span class="chevron" id="chev-void">▸</span> preview</div>
+    <div class="video-wrap" id="vid-void"></div>
+  </div>
+
+  <div class="plugin" id="card-sprd">
+    <div class="plugin-top">
+      <h2 class="plugin-name">sprd</h2>
+      <span class="plugin-type">stereo imager</span>
+    </div>
+    <ul class="plugin-specs">
+      <li>one-knob stereo width with vectorscope display</li>
+      <li>mono-fold safety, rotation control</li>
+    </ul>
+    <div class="plugin-bottom">
+      <span class="price-tag">[10€]</span>
+      <span class="tag">vst3</span><span class="tag">macos</span><span class="tag">windows</span>
+      <button class="cart-btn" onclick="togglePlugin('sprd')" id="btn-sprd">add</button>
+    </div>
+    <div class="video-toggle" onclick="toggleVideo('sprd')"><span class="chevron" id="chev-sprd">▸</span> preview</div>
+    <div class="video-wrap" id="vid-sprd"></div>
+  </div>
+
+  <div class="plugin" id="card-dck">
+    <div class="plugin-top">
+      <h2 class="plugin-name">dck</h2>
+      <span class="plugin-type">sidechain ducker</span>
+    </div>
+    <ul class="plugin-specs">
+      <li>click-synced ducker — volume ducking, filter sweep, drive pulse</li>
+      <li>internal clock synced to DAW — no external sidechain needed</li>
+    </ul>
+    <div class="plugin-bottom">
+      <span class="price-tag">[10€]</span>
+      <span class="tag">vst3</span><span class="tag">macos</span><span class="tag">windows</span>
+      <button class="cart-btn" onclick="togglePlugin('dck')" id="btn-dck">add</button>
+    </div>
+    <div class="video-toggle" onclick="toggleVideo('dck')"><span class="chevron" id="chev-dck">▸</span> preview</div>
+    <div class="video-wrap" id="vid-dck"></div>
+  </div>
+
+  <div class="plugin" id="card-cmpr">
+    <div class="plugin-top">
+      <h2 class="plugin-name">cmpr</h2>
+      <span class="plugin-type">compressor</span>
+    </div>
+    <ul class="plugin-specs">
+      <li>stereo compressor with RMS/peak detection</li>
+      <li>mid-side processing, lookahead, built-in clipper</li>
+    </ul>
+    <div class="plugin-bottom">
+      <span class="price-tag">[10€]</span>
+      <span class="tag">vst3</span><span class="tag">macos</span><span class="tag">windows</span>
+      <button class="cart-btn" onclick="togglePlugin('cmpr')" id="btn-cmpr">add</button>
+    </div>
+    <div class="video-toggle" onclick="toggleVideo('cmpr')"><span class="chevron" id="chev-cmpr">▸</span> preview</div>
+    <div class="video-wrap" id="vid-cmpr"></div>
+  </div>
+
+  <div class="plugin" id="card-eqls">
+    <div class="plugin-top">
+      <h2 class="plugin-name">eqls</h2>
+      <span class="plugin-type">parametric eq</span>
+    </div>
+    <ul class="plugin-specs">
+      <li>six-band parametric EQ with interactive curve</li>
+      <li>mid-side mode, analyzer display</li>
+    </ul>
+    <div class="plugin-bottom">
+      <span class="price-tag">[10€]</span>
+      <span class="tag">vst3</span><span class="tag">macos</span><span class="tag">windows</span>
+      <button class="cart-btn" onclick="togglePlugin('eqls')" id="btn-eqls">add</button>
+    </div>
+    <div class="video-toggle" onclick="toggleVideo('eqls')"><span class="chevron" id="chev-eqls">▸</span> preview</div>
+    <div class="video-wrap" id="vid-eqls"></div>
+  </div>
+
+  <div class="plugin" id="card-fmnt">
+    <div class="plugin-top">
+      <h2 class="plugin-name">fmnt</h2>
+      <span class="plugin-type">formant shifter</span>
+    </div>
+    <ul class="plugin-specs">
+      <li>formant shift -12 to +12 semitones without modifying pitch</li>
+      <li>dry/wet control</li>
+    </ul>
+    <div class="plugin-bottom">
+      <span class="price-tag">[10€]</span>
+      <span class="tag">vst3</span><span class="tag">macos</span><span class="tag">windows</span>
+      <button class="cart-btn" onclick="togglePlugin('fmnt')" id="btn-fmnt">add</button>
+    </div>
+    <div class="video-toggle" onclick="toggleVideo('fmnt')"><span class="chevron" id="chev-fmnt">▸</span> preview</div>
+    <div class="video-wrap" id="vid-fmnt"></div>
+  </div>
+
+  <div class="plugin" id="card-dly">
+    <div class="plugin-top">
+      <h2 class="plugin-name">dly</h2>
+      <span class="plugin-type">modulating delay</span>
+    </div>
+    <ul class="plugin-specs">
+      <li>4 stereo modes — mono, stereo, ping-pong, m/s</li>
+      <li>3 feedback modes — classic, freeze, self-oscillation</li>
+      <li>feedback path effects, BPM sync, auto-ducking</li>
+    </ul>
+    <div class="plugin-bottom">
+      <span class="price-tag">[10€]</span>
+      <span class="tag">vst3</span><span class="tag">macos</span><span class="tag">windows</span>
+      <button class="cart-btn" onclick="togglePlugin('dly')" id="btn-dly">add</button>
+    </div>
+    <div class="video-toggle" onclick="toggleVideo('dly')"><span class="chevron" id="chev-dly">▸</span> preview</div>
+    <div class="video-wrap" id="vid-dly"></div>
+  </div>
+
+  <div class="plugin" id="card-vrb">
+    <div class="plugin-top">
+      <h2 class="plugin-name">vrb</h2>
+      <span class="plugin-type">reverb</span>
+    </div>
+    <ul class="plugin-specs">
+      <li>four-algorithm reverb engine — plate, room, hall, void</li>
+      <li>size, damping, pre-delay, dry/wet, width</li>
+    </ul>
+    <div class="plugin-bottom">
+      <span class="price-tag">[10€]</span>
+      <span class="tag">vst3</span><span class="tag">macos</span><span class="tag">windows</span>
+      <button class="cart-btn" onclick="togglePlugin('vrb')" id="btn-vrb">add</button>
+    </div>
+    <div class="video-toggle" onclick="toggleVideo('vrb')"><span class="chevron" id="chev-vrb">▸</span> preview</div>
+    <div class="video-wrap" id="vid-vrb"></div>
+  </div>
+
+</div>
+
+<div class="msg-section">
+  <div class="msg-label">feel free to say anything</div>
+  <div class="msg-box">
+    <textarea class="msg-input" id="msg-input" placeholder="..." rows="1"></textarea>
+    <button class="msg-send" id="msg-send" onclick="sendMessage()">send</button>
+  </div>
+  <div class="msg-confirm" id="msg-confirm"></div>
+</div>
+
+<footer>
+  <span class="footer-l">&copy; 2026 arch</span>
+  <div class="footer-r"><a href="mailto:contact@arch-inc.fr">contact</a></div>
+</footer>
+
+</div><!-- /site -->
+
+<!-- cart bar -->
+<div class="cart-bar" id="cart-bar">
+  <span class="cart-summary" id="cart-summary">0 plugins — 0€</span>
+  <div class="cart-promo" style="position:relative">
+    <span class="promo-error" id="promo-error"></span>
+    <input type="text" id="promo-input" placeholder="promo code" autocomplete="off">
+    <button class="cart-promo-btn" onclick="applyPromo()">ok</button>
+  </div>
+  <button class="cart-checkout" id="cart-checkout-btn" onclick="startCheckout()">checkout</button>
+</div>
+
+<script>
+// --- enter key handlers ---
+document.getElementById('email-input').addEventListener('keydown', function(e){ if(e.key==='Enter'){e.preventDefault();submitEmail()} });
+document.getElementById('promo-input').addEventListener('keydown', function(e){ if(e.key==='Enter'){e.preventDefault();applyPromo()} });
+document.getElementById('msg-input').addEventListener('keydown', function(e){ if(e.key==='Enter' && !e.shiftKey){e.preventDefault();sendMessage()} });
+
+// --- track visit ---
+(function(){
+  if(sessionStorage.getItem('arch-visited')) return;
+  sessionStorage.setItem('arch-visited','1');
+  fetch('/api/v2/track-visit',{method:'POST'}).catch(function(){});
+})();
+
+// --- youtube videos ---
+var VIDEOS = {
+  shard: "TnFj89FL_NI",
+  grain: "MjLixV6L4Bw",
+  keys:  "UPutBs1PWkc",
+  fmnt:  "KOO3MEIrbiY",
+  dly:   "KWczlddesm0",
+  cmpr:  "HUdc9yBS6dI",
+  eqls:  "bUCo82iyD6o",
+  dist:  "H3DrzI9ieaY",
+  sprd:  "M7bNOjephrc",
+  dck:   "PMjWcBHDrBI",
+  clpr:  "iMsCHVcBGW0",
+  void:  "UqVhQ4zlG5c",
+  vrb:   "dPC6NB6xFPs",
+  bundle: "QgJUPoKZEeQ"
+};
+
+var DESCRIPTIONS = {
+  shard: '<strong>shard</strong> — hybrid wavetable/granular synthesizer<ul><li>8-voice polyphonic engine blending wavetable and granular synthesis</li><li>dual filters (lp/hp) with independent cutoff and resonance</li><li>built-in reverb and analog-modeled drive</li><li>granular engine with grain size, density, position and scatter controls</li><li>23 production-ready presets from pads to aggressive leads</li></ul>',
+  grain: '<strong>grain</strong> — granular sampler<ul><li>drag-and-drop any audio file — instant granular processing</li><li>3 playback modes: pitch (repitch), slice (transient chop), granular (cloud)</li><li>automatic transient detection for intelligent slicing</li><li>full modulation: ADSR envelope, syncable LFO, bitcrush</li><li>polyphonic — 16 voices in pitch/slice, 8 voices in granular mode</li></ul>',
+  keys: '<strong>keys</strong> — piano / destroy<ul><li>multi-sampled upright piano with 3 velocity layers</li><li>16-voice polyphony with sustain pedal support</li><li>destroy knob: clean acoustic piano at 0%, full aliased bitcrush at 100%</li><li>velocity-sensitive crossfade between layers for natural dynamics</li><li>zero-latency processing — perfect for live playing</li></ul>',
+  fmnt: '<strong>fmnt</strong> — formant shifter<ul><li>shift formants -12 to +12 semitones without changing pitch</li><li>preserves natural vocal character while transforming timbre</li><li>simple two-knob interface: shift amount and dry/wet</li><li>works on vocals, synths, and any harmonic material</li><li>zero-latency — use it live or in the mix</li></ul>',
+  dly: '<strong>dly</strong> — modulating delay<ul><li>4 stereo modes: mono, stereo, ping-pong, mid/side</li><li>3 feedback modes: classic, freeze (infinite hold), self-oscillation</li><li>feedback path: filter, pitch mod, reverse, bitcrush, saturation</li><li>BPM-synced with auto-ducking for clean delays</li><li>16 presets from subtle echoes to ambient textures</li></ul>',
+  cmpr: '<strong>cmpr</strong> — stereo compressor<ul><li>full-featured compressor: threshold, ratio, attack, release, knee, makeup, mix</li><li>RMS and peak detection modes</li><li>stereo and mid/side processing</li><li>built-in lookahead and output clipper</li><li>12 presets for mixing and mastering</li></ul>',
+  eqls: '<strong>eqls</strong> — parametric eq<ul><li>6 bands: high-pass, 4 peak/shelf, low-pass</li><li>interactive frequency curve with drag handles</li><li>mid/side processing mode</li><li>real-time spectrum analyzer</li><li>10 presets for common eq tasks</li></ul>',
+  dist: '<strong>dist</strong> — two-stage distortion<ul><li>dual serial distortion stages for complex tones</li><li>7 algorithms per stage: tube, transistor, fuzz, hard, sym, fold, diode</li><li>8x oversampling for clean aliasing-free saturation</li><li>built-in spectral analyzer and mid/side processing</li><li>from subtle warmth to extreme destruction</li></ul>',
+  sprd: '<strong>sprd</strong> — stereo imager<ul><li>one-knob stereo width control (0-200%)</li><li>real-time vectorscope display</li><li>mono-fold safety to prevent phase issues</li><li>rotation control ±45°</li><li>13 presets for mixing and mastering</li></ul>',
+  dck: '<strong>dck</strong> — click-synced ducker<ul><li>envelope follower for volume ducking, filter sweep, and drive pulse</li><li>internal clock synced to DAW — no sidechain input needed</li><li>adjustable depth, speed, and shape</li><li>great for pumping effects on pads, basses, and full mixes</li><li>8 presets from subtle movement to hard pump</li></ul>',
+  clpr: '<strong>clpr</strong> — zero-latency clipper<ul><li>3 clipping modes: hard, soft (tanh), overshoot (transient-aware)</li><li>real-time oscilloscope showing pre and post signal</li><li>threshold and output gain controls</li><li>zero-latency processing for bus and master use</li><li>9 presets for loudness and transient shaping</li></ul>',
+  void: '<strong>void</strong> — destruction<ul><li>one knob — turn it up and the sound progressively falls apart</li><li>goes from subtle warmth to complete signal destruction</li><li>chaos mode makes each stage behave unpredictably</li><li>great for transitions, sound design and creative fx</li></ul>',
+  vrb: '<strong>vrb</strong> — reverb<ul><li>2 reverb engines: room (freeverb algorithm) and plate (schroeder network)</li><li>controls: size, damping, pre-delay, dry/wet</li><li>stereo processing with width control</li><li>from tight rooms to infinite ambient spaces</li><li>lightweight cpu usage — works on any system</li></ul>',
+  bundle: '<strong>bundle</strong> — all 13 plugins<br><br>synthesizer, granular sampler, sampled piano, distortion, clipper, destruction, stereo imager, ducker, compressor, parametric eq, formant shifter, delay, reverb<br><br>vst3 — macos and windows<br><br>xoxo'
+};
+
+function toggleVideo(id) {
+  var wrap = document.getElementById('vid-' + id);
+  var chev = document.getElementById('chev-' + id);
+  var isOpen = wrap.classList.contains('open');
+  if (isOpen) {
+    wrap.classList.remove('open');
+    chev.classList.remove('open');
+    wrap.innerHTML = '';
+  } else {
+    var vid = VIDEOS[id];
+    var desc = DESCRIPTIONS[id] || '';
+    if (vid) {
+      wrap.innerHTML = '<div class="video-inner"><iframe src="https://www.youtube.com/embed/' + vid + '?rel=0&loop=1&playlist=' + vid + '" allowfullscreen></iframe><div class="video-desc">' + desc + '</div></div>';
+    } else {
+      wrap.innerHTML = '<div class="video-inner"><div style="width:240px;min-width:240px;height:300px;border:1px solid var(--border);border-radius:6px;display:flex;align-items:center;justify-content:center;font-size:10px;color:var(--dim)">video coming soon</div><div class="video-desc">' + desc + '</div></div>';
+    }
+    wrap.classList.add('open');
+    chev.classList.add('open');
+  }
+}
+
+// --- pricing ---
+var PRICING = {
+  shard:2000, keys:2000, grain:2000,
+  fmnt:1000, cmpr:1000, eqls:1000, dist:1000,
+  sprd:1000, clpr:1000, dly:1000, dck:1000,
+  void:1000, vrb:1000
+};
+var BUNDLE_PRICE = 9000;
+var ALL_IDS = Object.keys(PRICING);
+
+var cart = [];
+var promoSessionId = null;
+var discountCode = null;
+
+var DISCOUNT_CODES = {
+  jesuisvif: { bundle_only: true, new_price: 4900 },
+  archbundle26: { bundle_only: true, new_price: 4900 }
+};
+
+function togglePlugin(id) {
+  var idx = cart.indexOf(id);
+  if (idx >= 0) { cart.splice(idx, 1); } else { cart.push(id); }
+  updateCart();
+}
+
+function updateCart() {
+  // update buttons
+  ALL_IDS.concat(['bundle']).forEach(function(id){
+    var btn = document.getElementById('btn-' + id);
+    var card = document.getElementById('card-' + id);
+    if (!btn || !card) return;
+    if (cart.includes(id)) {
+      btn.classList.add('added'); btn.textContent = 'added';
+      card.classList.add('in-cart');
+    } else {
+      btn.classList.remove('added'); btn.textContent = 'add';
+      card.classList.remove('in-cart');
+    }
+  });
+
+  // cart bar
+  var bar = document.getElementById('cart-bar');
+  if (cart.length === 0) { bar.classList.remove('visible'); return; }
+  bar.classList.add('visible');
+
+  var isBundle = cart.includes('bundle');
+  var total = isBundle ? BUNDLE_PRICE : cart.reduce(function(s,id){ return s + (PRICING[id]||0); }, 0);
+  var label = isBundle ? 'bundle' : cart.length + ' plugin' + (cart.length>1?'s':'');
+  document.getElementById('cart-summary').textContent = label + ' — ' + (total/100) + '€';
+  document.getElementById('cart-checkout-btn').textContent = 'checkout';
+
+  // reset promo
+  promoSessionId = null;
+  discountCode = null;
+  document.getElementById('promo-input').disabled = false;
+  document.getElementById('promo-input').value = '';
+}
+
+// --- email modal ---
+var emailDone = false;
+function showEmailModal() {
+  if (emailDone || sessionStorage.getItem('arch-email-done')) return false;
+  document.getElementById('email-modal').classList.add('visible');
+  document.getElementById('email-input').focus();
+  return true;
+}
+function submitEmail() {
+  var email = document.getElementById('email-input').value.trim();
+  if (!email || !email.includes('@')) {
+    document.getElementById('email-input').style.borderColor = '#a05a4a';
+    setTimeout(function(){ document.getElementById('email-input').style.borderColor = ''; }, 2000);
+    return;
+  }
+  fetch('/api/v2/store-email', {
+    method: 'POST',
+    headers: {'Content-Type':'application/json'},
+    body: JSON.stringify({ email: email })
+  }).catch(function(){});
+  emailDone = true;
+  sessionStorage.setItem('arch-email-done','1');
+  document.getElementById('email-modal').classList.remove('visible');
+}
+function skipEmail() {
+  emailDone = true;
+  sessionStorage.setItem('arch-email-done','1');
+  document.getElementById('email-modal').classList.remove('visible');
+}
+
+// --- checkout ---
+async function startCheckout() {
+  if (cart.length === 0) return;
+
+  // show email modal first if needed
+  if (showEmailModal()) return;
+
+  var btn = document.getElementById('cart-checkout-btn');
+  btn.disabled = true;
+  btn.textContent = '...';
+
+  var ids = cart.includes('bundle') ? ['bundle'] : cart.slice();
+
+  // free promo?
+  if (promoSessionId) {
+    window.location.href = '/plugins/success?session_id=' + promoSessionId;
+    return;
+  }
+
+  try {
+    var body = { items: ids.map(function(id){ return {id:id}; }) };
+    if (discountCode) body.discount_code = discountCode;
+    var res = await fetch('/api/v2/create-checkout-v2', {
+      method: 'POST',
+      headers: {'Content-Type':'application/json'},
+      body: JSON.stringify(body)
+    });
+    var data = await res.json();
+    if (data.url) { window.location.href = data.url; }
+    else { btn.textContent = data.error || 'error'; btn.disabled = false; }
+  } catch(e) {
+    btn.textContent = 'network error';
+    setTimeout(function(){ btn.textContent = 'checkout'; btn.disabled = false; }, 3000);
+  }
+}
+
+// --- promo codes ---
+async function applyPromo() {
+  var code = document.getElementById('promo-input').value.trim().toLowerCase();
+  if (!code) return;
+
+  var ids = cart.includes('bundle') ? ['bundle'] : cart.slice();
+  if (ids.length === 0) {
+    document.getElementById('promo-error').textContent = 'add something first';
+    setTimeout(function(){ document.getElementById('promo-error').textContent = ''; }, 3000);
+    return;
+  }
+
+  // check if it's a discount code (not free)
+  var dc = DISCOUNT_CODES[code];
+  if (dc) {
+    var isBundle = ids.includes('bundle');
+    if (dc.bundle_only && !isBundle) {
+      document.getElementById('promo-error').textContent = 'bundle only';
+      setTimeout(function(){ document.getElementById('promo-error').textContent = ''; }, 3000);
+      return;
+    }
+    discountCode = code;
+    document.getElementById('cart-summary').textContent = 'bundle — ' + (dc.new_price/100) + '€';
+    document.getElementById('promo-input').disabled = true;
+    document.getElementById('promo-input').value = code;
+    document.getElementById('cart-checkout-btn').textContent = 'checkout';
+    return;
+  }
+
+  // free promo codes
+  try {
+    var res = await fetch('/api/v2/verify-promo-code', {
+      method: 'POST',
+      headers: {'Content-Type':'application/json'},
+      body: JSON.stringify({ code: code, product_ids: ids })
+    });
+    var data = await res.json();
+    if (data.valid) {
+      promoSessionId = data.session_id;
+      document.getElementById('cart-summary').textContent = (cart.includes('bundle') ? 'bundle' : cart.length + ' plugin' + (cart.length>1?'s':'')) + ' — 0€';
+      document.getElementById('promo-input').disabled = true;
+      document.getElementById('promo-input').value = code;
+      document.getElementById('cart-checkout-btn').textContent = 'download';
+    } else {
+      document.getElementById('promo-error').textContent = data.reason || 'invalid code';
+      setTimeout(function(){ document.getElementById('promo-error').textContent = ''; }, 3000);
+    }
+  } catch(e) {
+    document.getElementById('promo-error').textContent = 'network error';
+  }
+}
+
+// --- message box ---
+async function sendMessage() {
+  var input = document.getElementById('msg-input');
+  var msg = input.value.trim();
+  if (!msg) return;
+  var btn = document.getElementById('msg-send');
+  btn.disabled = true;
+  btn.textContent = '...';
+  try {
+    var res = await fetch('/api/v2/store-message', {
+      method: 'POST',
+      headers: {'Content-Type':'application/json'},
+      body: JSON.stringify({ message: msg })
+    });
+    var data = await res.json();
+    if (data.ok) {
+      input.value = '';
+      var confirm = document.getElementById('msg-confirm');
+      confirm.textContent = 'sent — thank you';
+      confirm.classList.add('visible');
+      setTimeout(function(){ confirm.classList.remove('visible'); }, 3000);
+    }
+  } catch(e) {}
+  btn.disabled = false;
+  btn.textContent = 'send';
+}
+</script>
+</body>
+</html>

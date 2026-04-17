@@ -1,0 +1,461 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>arch — data</title>
+<link href="https://fonts.googleapis.com/css2?family=Geist+Mono:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#1a1917;
+  --surface:#222220;
+  --border:rgba(255,255,255,0.07);
+  --border-h:rgba(255,255,255,0.14);
+  --text:#d4d2cd;
+  --muted:#6a6864;
+  --dim:#3c3a38;
+  --accent:#c9a87c;
+}
+html{background:var(--bg);color:var(--text);font-family:'Geist Mono',monospace;font-size:13px}
+body{min-height:100vh}
+nav{display:flex;align-items:center;justify-content:space-between;padding:0 2.5rem;height:50px;border-bottom:1px solid var(--border)}
+.nav-logo{font-size:13px;font-weight:300;color:var(--text);text-decoration:none;letter-spacing:0.06em}
+.nav-right{display:flex;align-items:center;gap:1.5rem}
+.refresh-btn{background:none;border:1px solid var(--border);color:var(--muted);font-family:'Geist Mono',monospace;font-size:10px;letter-spacing:0.06em;padding:5px 12px;cursor:pointer;border-radius:1px;transition:all 0.2s}
+.refresh-btn:hover{border-color:var(--text);color:var(--text)}
+
+.page{max-width:800px;margin:0 auto;padding:0 2.5rem}
+
+/* hero KPIs */
+.hero{padding:3rem 0 0}
+.hero-grid{display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:0;margin-bottom:2.5rem}
+.hero-card{text-align:center;padding:1.5rem 0}
+.hero-num{font-size:2.4rem;font-weight:300;letter-spacing:0.02em;color:var(--text);line-height:1}
+.hero-num.accent{color:var(--accent)}
+.hero-label{font-size:9px;letter-spacing:0.12em;color:var(--dim);text-transform:uppercase;margin-top:0.6rem}
+
+/* breakdown table */
+.breakdown{margin-bottom:0}
+.breakdown table{width:100%;border-collapse:collapse}
+.breakdown th{font-size:9px;font-weight:400;color:var(--dim);letter-spacing:0.1em;text-transform:uppercase;text-align:right;padding:10px 0;border-bottom:1px solid var(--border)}
+.breakdown th:first-child{text-align:left}
+.breakdown td{font-size:14px;font-weight:300;color:var(--text);padding:10px 0;border-bottom:1px solid var(--border);text-align:right;letter-spacing:0.02em}
+.breakdown td:first-child{text-align:left;color:var(--muted);font-size:11px;letter-spacing:0.06em}
+.breakdown td.hl{color:var(--accent)}
+
+/* sections */
+.section{padding:2.5rem 0;border-top:1px solid var(--border)}
+.section-head{display:flex;align-items:baseline;justify-content:space-between;margin-bottom:1.2rem}
+.section-title{font-size:11px;letter-spacing:0.12em;color:var(--muted);font-weight:400;text-transform:uppercase}
+.section-count{font-size:11px;color:var(--dim);letter-spacing:0.04em}
+.section-toggle{background:none;border:none;color:var(--dim);font-family:'Geist Mono',monospace;font-size:10px;cursor:pointer;letter-spacing:0.04em;padding:0}
+.section-toggle:hover{color:var(--text)}
+
+table{width:100%;border-collapse:collapse}
+th{font-size:10px;font-weight:400;color:var(--dim);letter-spacing:0.08em;text-align:left;padding:8px 0;border-bottom:1px solid var(--border-h)}
+th.r{text-align:right}
+td{font-size:12px;color:var(--text);padding:7px 0;border-bottom:1px solid var(--border);letter-spacing:0.02em}
+td.dim{font-size:10px;color:var(--muted)}
+td.r{text-align:right}
+td.accent{color:var(--accent)}
+tr.total-row td{border-top:1px solid var(--border-h);font-weight:500;padding-top:12px}
+tr.zero td{color:var(--dim)}
+
+/* messages special */
+.msg-card{background:var(--surface);padding:1rem 1.2rem;margin-bottom:6px;border-left:2px solid var(--border-h)}
+.msg-text{font-size:12px;color:var(--text);letter-spacing:0.02em;line-height:1.5}
+.msg-date{font-size:9px;color:var(--dim);margin-top:0.4rem;letter-spacing:0.04em}
+
+.loading{font-size:11px;color:var(--dim);letter-spacing:0.08em;padding:3rem 0;text-align:center}
+.loading::after{content:'';animation:dots 1.5s steps(4,end) infinite}
+@keyframes dots{0%{content:''}25%{content:'.'}50%{content:'..'}75%{content:'...'}}
+
+/* gate */
+#gate{position:fixed;inset:0;z-index:10000;background:var(--bg);display:flex;flex-direction:column;justify-content:center;align-items:center;gap:2rem}
+#gate.hidden{display:none}
+.gate-form{display:flex;gap:0;max-width:280px;width:90%}
+.gate-input{flex:1;padding:10px 12px;background:transparent;border:1px solid var(--border);border-right:none;color:var(--text);font-family:'Geist Mono',monospace;font-size:11px;letter-spacing:0.1em;outline:none}
+.gate-input::placeholder{color:var(--dim)}
+.gate-btn{padding:10px 16px;background:transparent;border:1px solid var(--border);color:var(--muted);font-family:'Geist Mono',monospace;font-size:10px;cursor:pointer}
+.gate-btn:hover{border-color:var(--text);color:var(--text)}
+.gate-error{font-size:10px;color:#a05a4a;opacity:0;transition:opacity 0.3s;height:1rem}
+.gate-error.show{opacity:1}
+#content{display:none}
+
+footer{max-width:800px;margin:0 auto;padding:2.5rem 2.5rem;display:flex;align-items:center;justify-content:space-between}
+.footer-l{font-size:10px;color:var(--dim);letter-spacing:0.06em}
+
+@media(max-width:600px){
+  .hero-grid{grid-template-columns:1fr 1fr}
+  .hero-card{padding:1rem 0}
+  .hero-num{font-size:1.8rem}
+}
+</style>
+</head>
+<body>
+
+<div id="gate">
+  <div style="font-size:2rem;font-weight:300;letter-spacing:0.06em;color:var(--text)">arch data</div>
+  <form class="gate-form" onsubmit="return checkPass()">
+    <input class="gate-input" type="password" id="gate-pw" placeholder="password" autocomplete="off">
+    <button class="gate-btn" type="submit">ok</button>
+  </form>
+  <div class="gate-error" id="gate-error">access denied</div>
+</div>
+
+<div id="content">
+<nav>
+  <a href="/" class="nav-logo">arch</a>
+  <div class="nav-right">
+    <button class="refresh-btn" onclick="refreshData()">refresh</button>
+  </div>
+</nav>
+
+<div class="page">
+
+  <div class="loading" id="loading">loading</div>
+
+  <!-- hero KPIs -->
+  <div class="hero" id="hero" style="display:none">
+    <div class="hero-grid">
+      <div class="hero-card">
+        <div class="hero-num accent" id="kpi-revenue">—</div>
+        <div class="hero-label">revenue</div>
+      </div>
+      <div class="hero-card">
+        <div class="hero-num" id="kpi-purchases">—</div>
+        <div class="hero-label">purchases</div>
+      </div>
+      <div class="hero-card">
+        <div class="hero-num" id="kpi-visits">—</div>
+        <div class="hero-label">visits</div>
+      </div>
+      <div class="hero-card">
+        <div class="hero-num" id="kpi-emails">—</div>
+        <div class="hero-label">emails</div>
+      </div>
+    </div>
+
+    <!-- breakdown -->
+    <div class="breakdown">
+      <table>
+        <thead><tr><th></th><th>today</th><th>week</th><th>month</th><th>total</th></tr></thead>
+        <tbody>
+          <tr><td>visits</td><td id="vis-day">—</td><td id="vis-week">—</td><td id="vis-month">—</td><td id="vis-total">—</td></tr>
+          <tr><td>recette</td><td class="hl" id="rev-day">—</td><td class="hl" id="rev-week">—</td><td class="hl" id="rev-month">—</td><td class="hl" id="rev-total">—</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- messages (high visibility — user feedback) -->
+  <div class="section" id="sec-messages" style="display:none">
+    <div class="section-head">
+      <div class="section-title">messages</div>
+      <div class="section-count" id="messages-count"></div>
+    </div>
+    <div id="messages-container"></div>
+  </div>
+
+  <!-- purchases -->
+  <div class="section" id="sec-purchases" style="display:none">
+    <div class="section-head">
+      <div class="section-title">purchases</div>
+      <div class="section-count" id="purchases-stat"></div>
+    </div>
+    <table>
+      <thead><tr><th>date</th><th>email</th><th>products</th><th class="r">amount</th></tr></thead>
+      <tbody id="purchases-tbody"></tbody>
+    </table>
+  </div>
+
+  <!-- promo codes -->
+  <div class="section" id="sec-promos" style="display:none">
+    <div class="section-head">
+      <div class="section-title">promo codes</div>
+      <div class="section-count" id="promos-stat"></div>
+    </div>
+    <table>
+      <thead><tr><th>code</th><th>type</th><th class="r">uses</th></tr></thead>
+      <tbody id="promos-tbody"></tbody>
+    </table>
+  </div>
+
+  <!-- recent redemptions -->
+  <div class="section" id="sec-redemptions" style="display:none">
+    <div class="section-head">
+      <div class="section-title">recent redemptions</div>
+      <button class="section-toggle" id="redemptions-toggle" onclick="toggleRedemptions()">show all</button>
+    </div>
+    <table>
+      <thead><tr><th>date</th><th>code</th><th>products</th><th class="r">amount</th></tr></thead>
+      <tbody id="redemptions-tbody"></tbody>
+    </table>
+  </div>
+
+  <!-- visits daily -->
+  <div class="section" id="sec-visits" style="display:none">
+    <div class="section-head">
+      <div class="section-title">visits per day</div>
+    </div>
+    <table>
+      <thead><tr><th>date</th><th class="r">views</th></tr></thead>
+      <tbody id="visits-tbody"></tbody>
+    </table>
+  </div>
+
+  <!-- emails -->
+  <div class="section" id="sec-emails" style="display:none">
+    <div class="section-head">
+      <div class="section-title">emails</div>
+      <div class="section-count" id="emails-stat"></div>
+    </div>
+    <table>
+      <thead><tr><th>email</th><th class="r">date</th></tr></thead>
+      <tbody id="emails-tbody"></tbody>
+    </table>
+  </div>
+
+</div>
+
+<footer>
+  <span class="footer-l">&copy; 2026 arch</span>
+</footer>
+</div>
+
+<script>
+var ALL_PROMOS = [
+  {code:'jtmtmtmtm', type:'free — all'},
+  {code:'jesuisvif', type:'discount — bundle'},
+  {code:'archbundle26', type:'discount — bundle'},
+  {code:'freeshard394', type:'free — shard'},
+  {code:'freekeys916', type:'free — keys'},
+  {code:'freegrain987', type:'free — grain'},
+  {code:'freefmnt168', type:'free — fmnt'},
+  {code:'freedist906', type:'free — dist'},
+  {code:'freeclpr561', type:'free — clpr'},
+  {code:'freevoid404', type:'free — void'},
+  {code:'freesprd151', type:'free — sprd'},
+  {code:'freedck155', type:'free — dck'},
+  {code:'freecmpr892', type:'free — cmpr'},
+  {code:'freeeqls484', type:'free — eqls'},
+  {code:'freedly988', type:'free — dly'},
+  {code:'freevrb202', type:'free — vrb'}
+];
+
+var allRedemptions = [];
+var redemptionsExpanded = false;
+
+function checkPass(){
+  var pw = document.getElementById('gate-pw').value.trim();
+  if (pw === "j'aimelesdatas") {
+    document.getElementById('gate').classList.add('hidden');
+    document.getElementById('content').style.display = 'block';
+    loadAll();
+  } else {
+    document.getElementById('gate-error').classList.add('show');
+    setTimeout(function(){ document.getElementById('gate-error').classList.remove('show'); }, 2000);
+  }
+  return false;
+}
+
+function fmtDate(iso) {
+  var d = new Date(iso);
+  return d.toLocaleDateString('fr-FR', { day:'2-digit', month:'2-digit' }) + ' ' + d.toLocaleTimeString('fr-FR', { hour:'2-digit', minute:'2-digit' });
+}
+
+function fmtDateShort(iso) {
+  var d = new Date(iso);
+  return d.toLocaleDateString('fr-FR', { day:'2-digit', month:'2-digit', year:'numeric' });
+}
+
+function getToday() {
+  var d = new Date();
+  return d.getFullYear() + '-' + String(d.getMonth()+1).padStart(2,'0') + '-' + String(d.getDate()).padStart(2,'0');
+}
+function isThisWeek(dateStr) {
+  var now = new Date(); var day = now.getDay() || 7;
+  var monday = new Date(now); monday.setDate(now.getDate() - day + 1); monday.setHours(0,0,0,0);
+  return new Date(dateStr) >= monday;
+}
+function isThisMonth(dateStr) {
+  var now = new Date(); return new Date(dateStr) >= new Date(now.getFullYear(), now.getMonth(), 1);
+}
+
+function refreshData() {
+  ['purchases-tbody','promos-tbody','redemptions-tbody','visits-tbody','emails-tbody'].forEach(function(id){ document.getElementById(id).innerHTML = ''; });
+  document.getElementById('messages-container').innerHTML = '';
+  ['sec-purchases','sec-promos','sec-redemptions','sec-visits','sec-emails','sec-messages','hero'].forEach(function(id){ document.getElementById(id).style.display = 'none'; });
+  document.getElementById('loading').style.display = 'block';
+  allRedemptions = [];
+  redemptionsExpanded = false;
+  loadAll();
+}
+
+async function loadAll() {
+  await Promise.all([loadPurchases(), loadPromos(), loadVisits(), loadEmails(), loadMessages()]);
+  document.getElementById('loading').style.display = 'none';
+}
+
+async function loadPurchases() {
+  try {
+    var res = await fetch('/api/v2/get-purchases');
+    var d = await res.json();
+
+    // KPIs
+    document.getElementById('kpi-revenue').textContent = (d.total_revenue / 100).toFixed(0) + '€';
+    document.getElementById('kpi-purchases').textContent = d.total_purchases;
+
+    // revenue by period
+    var revDay = 0, revWeek = 0, revMonth = 0;
+    var today = getToday();
+    if (d.recent) {
+      d.recent.forEach(function(p) {
+        var pDate = p.date.slice(0, 10);
+        if (pDate === today) revDay += p.amount;
+        if (isThisWeek(pDate)) revWeek += p.amount;
+        if (isThisMonth(pDate)) revMonth += p.amount;
+      });
+    }
+    document.getElementById('rev-day').textContent = (revDay / 100).toFixed(0) + '€';
+    document.getElementById('rev-week').textContent = (revWeek / 100).toFixed(0) + '€';
+    document.getElementById('rev-month').textContent = (revMonth / 100).toFixed(0) + '€';
+    document.getElementById('rev-total').textContent = (d.total_revenue / 100).toFixed(0) + '€';
+
+    document.getElementById('purchases-stat').textContent = d.total_purchases + ' purchases — ' + (d.total_revenue / 100).toFixed(0) + '€';
+
+    var tbody = document.getElementById('purchases-tbody');
+    if (d.recent) {
+      d.recent.forEach(function(p) {
+        var tr = document.createElement('tr');
+        tr.innerHTML = '<td class="dim">' + fmtDate(p.date) + '</td><td>' + (p.email || '—') + '</td><td class="dim">' + (p.products || []).join(', ') + '</td><td class="r accent">' + (p.amount / 100).toFixed(0) + '€</td>';
+        tbody.appendChild(tr);
+      });
+    }
+    document.getElementById('sec-purchases').style.display = 'block';
+  } catch(e) { console.error('purchases error', e); }
+}
+
+async function loadPromos() {
+  try {
+    var res = await fetch('/api/v2/get-promos');
+    var d = await res.json();
+
+    document.getElementById('promos-stat').textContent = d.total + ' redemptions';
+
+    var tbody = document.getElementById('promos-tbody');
+    tbody.innerHTML = '';
+    ALL_PROMOS.forEach(function(p) {
+      var count = (d.code_counts && d.code_counts[p.code]) || 0;
+      var tr = document.createElement('tr');
+      if (count === 0) tr.className = 'zero';
+      tr.innerHTML = '<td>' + p.code + '</td><td class="dim">' + p.type + '</td><td class="r">' + count + '</td>';
+      tbody.appendChild(tr);
+    });
+    document.getElementById('sec-promos').style.display = 'block';
+
+    // recent redemptions
+    if (d.recent && d.recent.length > 0) {
+      allRedemptions = d.recent;
+      renderRedemptions();
+      document.getElementById('sec-redemptions').style.display = 'block';
+    }
+  } catch(e) { console.error('promos error', e); }
+}
+
+function renderRedemptions() {
+  var rtbody = document.getElementById('redemptions-tbody');
+  rtbody.innerHTML = '';
+  var list = redemptionsExpanded ? allRedemptions : allRedemptions.slice(0, 10);
+  list.forEach(function(r) {
+    var tr = document.createElement('tr');
+    var prods = (r.products || []).join(', ');
+    if (prods.length > 30) prods = prods.split(', ').length + ' plugins';
+    var amt = r.amount > 0 ? (r.amount / 100).toFixed(0) + '€' : 'free';
+    tr.innerHTML = '<td class="dim">' + fmtDate(r.date) + '</td><td>' + r.code + '</td><td class="dim">' + prods + '</td><td class="r">' + amt + '</td>';
+    rtbody.appendChild(tr);
+  });
+  var toggle = document.getElementById('redemptions-toggle');
+  if (allRedemptions.length <= 10) { toggle.style.display = 'none'; }
+  else { toggle.style.display = 'inline'; toggle.textContent = redemptionsExpanded ? 'show less' : 'show all (' + allRedemptions.length + ')'; }
+}
+
+function toggleRedemptions() {
+  redemptionsExpanded = !redemptionsExpanded;
+  renderRedemptions();
+}
+
+async function loadVisits() {
+  try {
+    var res = await fetch('/api/v2/track-visit');
+    var data = await res.json();
+
+    var total = Object.values(data.days).reduce(function(s, v) { return s + v; }, 0);
+    var today = getToday();
+    var visDay = data.days[today] || 0;
+    var visWeek = 0, visMonth = 0;
+    Object.entries(data.days).forEach(function(e) {
+      if (isThisWeek(e[0])) visWeek += e[1];
+      if (isThisMonth(e[0])) visMonth += e[1];
+    });
+
+    document.getElementById('kpi-visits').textContent = total;
+    document.getElementById('vis-day').textContent = visDay;
+    document.getElementById('vis-week').textContent = visWeek;
+    document.getElementById('vis-month').textContent = visMonth;
+    document.getElementById('vis-total').textContent = total;
+    document.getElementById('hero').style.display = 'block';
+
+    var tbody = document.getElementById('visits-tbody');
+    var sorted = Object.entries(data.days).sort(function(a, b) { return b[0].localeCompare(a[0]); });
+    sorted.forEach(function(item) {
+      var tr = document.createElement('tr');
+      tr.innerHTML = '<td class="dim">' + item[0] + '</td><td class="r">' + item[1] + '</td>';
+      tbody.appendChild(tr);
+    });
+    document.getElementById('sec-visits').style.display = 'block';
+  } catch(e) { console.error('visits error', e); }
+}
+
+async function loadEmails() {
+  try {
+    var res = await fetch('/api/v2/store-email');
+    var data = await res.json();
+
+    document.getElementById('kpi-emails').textContent = data.total;
+    document.getElementById('emails-stat').textContent = data.total + ' collected';
+
+    var tbody = document.getElementById('emails-tbody');
+    data.emails.forEach(function(e) {
+      var tr = document.createElement('tr');
+      tr.innerHTML = '<td>' + e.email + '</td><td class="r dim">' + fmtDate(e.date) + '</td>';
+      tbody.appendChild(tr);
+    });
+    document.getElementById('sec-emails').style.display = 'block';
+  } catch(e) { console.error('emails error', e); }
+}
+
+async function loadMessages() {
+  try {
+    var res = await fetch('/api/v2/store-message');
+    var data = await res.json();
+
+    document.getElementById('messages-count').textContent = data.total;
+
+    var container = document.getElementById('messages-container');
+    container.innerHTML = '';
+    if (data.messages && data.messages.length > 0) {
+      data.messages.forEach(function(m) {
+        var div = document.createElement('div');
+        div.className = 'msg-card';
+        div.innerHTML = '<div class="msg-text">' + m.message + '</div><div class="msg-date">' + fmtDate(m.date) + '</div>';
+        container.appendChild(div);
+      });
+      document.getElementById('sec-messages').style.display = 'block';
+    }
+  } catch(e) { console.error('messages error', e); }
+}
+</script>
+</body>
+</html>

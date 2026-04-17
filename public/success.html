@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>arch — download</title>
+<link href="https://fonts.googleapis.com/css2?family=Geist+Mono:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{--bg:#1a1917;--surface:#222220;--border:rgba(255,255,255,0.07);--border-h:rgba(255,255,255,0.14);--text:#d4d2cd;--muted:#6a6864;--dim:#3c3a38}
+html{background:var(--bg);color:var(--text);font-family:'Geist Mono',monospace;font-size:13px}
+body{min-height:100vh}
+nav{display:flex;align-items:center;justify-content:space-between;padding:0 2.5rem;height:50px;border-bottom:1px solid var(--border)}
+.nav-logo{font-size:13px;font-weight:300;color:var(--text);text-decoration:none;letter-spacing:0.06em}
+.nav-links{display:flex;gap:2.5rem}
+.nav-links a{font-size:11px;color:var(--muted);text-decoration:none;letter-spacing:0.06em;transition:color 0.2s}
+.nav-links a:hover{color:var(--text)}
+.page{max-width:720px;margin:0 auto;padding:0 2.5rem}
+.page-header{padding:4rem 0 3rem;border-bottom:1px solid var(--border)}
+.page-header h1{font-size:11px;font-weight:300;letter-spacing:0.1em;color:var(--muted)}
+.download-card{padding:3rem 0}
+.download-status{font-size:11px;color:var(--muted);letter-spacing:0.06em;margin-bottom:2rem;line-height:1.6;text-align:center}
+.product-block{padding:2rem 0;border-bottom:1px solid var(--border)}
+.product-block:last-child{border-bottom:none}
+.download-product{font-size:1.4rem;font-weight:300;letter-spacing:0.06em;color:var(--text);margin-bottom:1rem;text-align:center}
+.download-btns{display:flex;gap:12px;justify-content:center;flex-wrap:wrap}
+.download-btn{display:inline-block;background:none;color:var(--text);border:1px solid var(--border-h);padding:12px 28px;font-family:'Geist Mono',monospace;font-size:12px;letter-spacing:0.06em;font-weight:300;text-decoration:none;border-radius:1px;transition:background 0.2s,border-color 0.2s;text-transform:lowercase;cursor:pointer}
+.download-btn:hover{background:var(--surface);border-color:var(--text)}
+.download-btn.downloading{color:var(--dim);border-color:var(--border);pointer-events:none}
+.download-error{font-size:11px;color:#a05a4a;letter-spacing:0.06em;line-height:1.6;text-align:center}
+.download-note{font-size:10px;color:var(--dim);letter-spacing:0.04em;margin-top:2rem;line-height:1.6;text-align:center}
+.download-note a{color:var(--muted);text-decoration:none}
+.download-expire{font-size:10px;color:var(--dim);letter-spacing:0.04em;margin-top:0.5rem;line-height:1.6;text-align:center}
+.loading{font-size:11px;color:var(--dim);letter-spacing:0.08em;text-align:center}
+.loading::after{content:'';animation:dots 1.5s steps(4,end) infinite}
+@keyframes dots{0%{content:''}25%{content:'.'}50%{content:'..'}75%{content:'...'}}
+footer{max-width:720px;margin:0 auto;padding:2.5rem 2.5rem;display:flex;align-items:center;justify-content:space-between}
+.footer-l{font-size:10px;color:var(--muted);letter-spacing:0.06em}
+.footer-r a{font-size:10px;color:var(--muted);text-decoration:none}
+</style>
+</head>
+<body>
+<nav><a href="/" class="nav-logo">arch</a><div class="nav-links"><a href="/plugins">plugins</a></div></nav>
+<div class="page">
+  <div class="page-header"><h1>arch audio — download</h1></div>
+  <div class="download-card">
+    <div class="loading" id="loading">loading</div>
+    <div id="success" style="display:none">
+      <p class="download-status">telecharge ton plugin</p>
+      <div id="products"></div>
+      <p class="download-note">probleme ? contacte <a href="mailto:contact@arch-inc.fr">contact@arch-inc.fr</a></p>
+      <p class="download-expire">les liens expirent apres 60 minutes</p>
+    </div>
+    <div id="error" style="display:none"><p class="download-error" id="error-msg"></p></div>
+  </div>
+</div>
+<footer><span class="footer-l">&copy; 2026 arch</span><div class="footer-r"><a href="mailto:contact@arch-inc.fr">contact</a></div></footer>
+<script>
+var SESSION_ID = null;
+var BUNDLE_PRODUCTS = ["shard","grain","keys","fmnt","dly","cmpr","eqls","dist","sprd","dck","clpr","void","vrb"];
+
+(function(){
+  var params = new URLSearchParams(window.location.search);
+  SESSION_ID = params.get("session_id");
+
+  if (!SESSION_ID) {
+    showError("lien invalide");
+    return;
+  }
+
+  fetch("/api/v2/verify-session", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ session_id: SESSION_ID })
+  })
+  .then(function(r) { return r.json(); })
+  .then(function(data) {
+    if (!data.valid || !data.product_ids || !data.product_ids.length) {
+      showError("session invalide ou expiree");
+      return;
+    }
+    var ids = data.product_ids;
+    if (ids.indexOf("archbundle") !== -1 || ids.indexOf("bundle") !== -1) {
+      ids = BUNDLE_PRODUCTS.slice();
+    }
+    showProducts(ids);
+    fetch("/api/v2/track-download", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ product_id: ids.join(","), session_id: SESSION_ID })
+    }).catch(function(){});
+  })
+  .catch(function() {
+    showError("erreur de verification");
+  });
+})();
+
+function showProducts(ids) {
+  var container = document.getElementById("products");
+  ids.forEach(function(id) {
+    var block = document.createElement("div");
+    block.className = "product-block";
+    block.innerHTML = '<div class="download-product">' + id + '</div>' +
+      '<div class="download-btns">' +
+      '<button class="download-btn" onclick="startDownload(\'' + id + '\',\'mac\',this)">↓ macos</button>' +
+      '<button class="download-btn" onclick="startDownload(\'' + id + '\',\'win\',this)">↓ windows</button>' +
+      '</div>';
+    container.appendChild(block);
+  });
+  document.getElementById("loading").style.display = "none";
+  document.getElementById("success").style.display = "block";
+}
+
+function startDownload(productId, platform, btn) {
+  var originalText = btn.textContent;
+  btn.textContent = "...";
+  btn.classList.add("downloading");
+
+  fetch("/api/v2/generate-download", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      session_id: SESSION_ID,
+      product_id: productId,
+      platform: platform
+    })
+  })
+  .then(function(r) { return r.json(); })
+  .then(function(data) {
+    if (data.url) {
+      window.location.href = data.url;
+      btn.textContent = originalText;
+      btn.classList.remove("downloading");
+    } else {
+      btn.textContent = data.error || "erreur";
+      setTimeout(function() {
+        btn.textContent = originalText;
+        btn.classList.remove("downloading");
+      }, 3000);
+    }
+  })
+  .catch(function() {
+    btn.textContent = "erreur";
+    setTimeout(function() {
+      btn.textContent = originalText;
+      btn.classList.remove("downloading");
+    }, 3000);
+  });
+}
+
+function showError(msg) {
+  document.getElementById("loading").style.display = "none";
+  document.getElementById("error-msg").textContent = msg;
+  document.getElementById("error").style.display = "block";
+}
+</script>
+</body>
+</html>

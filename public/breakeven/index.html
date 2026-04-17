@@ -1,0 +1,946 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="breakeven">
+<meta name="theme-color" content="#0A0A09">
+<link rel="manifest" href="manifest.json">
+<link rel="apple-touch-icon" href="icon-192.png">
+<title>breakeven</title>
+<link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Instrument+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+:root{--bg:#0A0A09;--bg2:#131312;--bg3:#1C1C1A;--bg4:#282826;--text:#F0F0EB;--text2:#A0A09A;--text3:#666660;--border:rgba(255,255,255,.06);--border2:rgba(255,255,255,.12);--r:14px;--rs:8px;--mono:'Space Mono',monospace;--sans:'Instrument Sans',-apple-system,sans-serif;--danger:#FF5E5B;--warn:#E0B040;--ok:#40D88E}
+html.light{--bg:#F8F8F6;--bg2:#fff;--bg3:#F0F0EC;--bg4:#E4E4E0;--text:#1A1A18;--text2:#6B6A65;--text3:#9C9B95;--border:rgba(0,0,0,.08);--border2:rgba(0,0,0,.15)}
+html{background:var(--bg)}body{font-family:var(--sans);background:var(--bg);color:var(--text);line-height:1.5;-webkit-font-smoothing:antialiased;min-height:100dvh;transition:background .3s,color .3s;text-transform:lowercase}
+#lock{position:fixed;inset:0;background:var(--bg);z-index:9999;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:0}#lock.hidden{display:none}
+#lock .lock-inner{display:flex;flex-direction:column;align-items:center;gap:20px;padding:48px 40px;background:var(--bg2);border:1px solid var(--border);border-radius:20px;width:380px;max-width:calc(100vw - 2rem)}
+#lock h1{font-family:var(--mono);font-size:32px;font-weight:700;color:var(--text);letter-spacing:-.02em}
+#lock .lock-badge{font-family:var(--mono);font-size:9px;font-weight:700;padding:3px 8px;border-radius:5px;background:var(--bg4);color:var(--text3);letter-spacing:.06em;margin-top:-12px}
+#lock p{font-size:12px;color:var(--text3);text-align:center;line-height:1.6;max-width:280px}
+#lock .lock-form{display:flex;flex-direction:column;gap:10px;width:100%;margin-top:4px}
+#lock input{font-family:var(--mono);font-size:14px;padding:14px 18px;background:var(--bg3);border:1px solid var(--border);border-radius:12px;color:var(--text);outline:none;width:100%;text-align:center;text-transform:none;transition:border-color .2s}#lock input:focus{border-color:var(--text);background:var(--bg4)}#lock input::placeholder{color:var(--text3);font-weight:400}
+#lock .err{color:var(--danger);font-size:11px;min-height:16px;text-align:center;font-family:var(--mono)}
+#lock button{font-family:var(--mono);font-size:13px;font-weight:700;padding:14px;background:var(--text);color:var(--bg);border:none;border-radius:12px;cursor:pointer;width:100%;letter-spacing:.04em;transition:opacity .15s}#lock button:hover{opacity:.9}#lock button:active{transform:scale(.99)}
+#lock .lock-footer{font-size:10px;color:var(--text3);margin-top:4px;letter-spacing:.03em;font-family:var(--mono)}
+.app{max-width:900px;margin:0 auto;padding:0 1.5rem 3rem;display:none}.app.visible{display:block}@media(max-width:640px){.app{padding:0 1rem 3rem}}
+header{padding:1.5rem 0 1rem;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px}
+.logo-wrap{display:flex;align-items:center;gap:8px}.logo{font-family:var(--mono);font-size:22px;font-weight:700;color:var(--text)}.beta{font-family:var(--mono);font-size:9px;font-weight:700;padding:2px 6px;border-radius:4px;background:var(--bg4);color:var(--text3);letter-spacing:.05em}
+.hdr-r{display:flex;gap:6px;align-items:center}
+.hb{padding:7px 12px;border-radius:20px;border:1px solid var(--border2);background:0;font-family:var(--sans);font-size:12px;font-weight:500;color:var(--text2);cursor:pointer;display:flex;align-items:center;gap:5px;-webkit-tap-highlight-color:transparent}.hb:active{transform:scale(.97)}.hb svg{width:14px;height:14px}
+.thm{width:34px;height:34px;border-radius:50%;border:1px solid var(--border2);background:0;cursor:pointer;display:flex;align-items:center;justify-content:center}.thm svg{width:15px;height:15px;color:var(--text2)}
+.sub{font-size:13px;color:var(--text3);padding-bottom:1rem;border-bottom:1px solid var(--border);margin-bottom:1.25rem;line-height:1.7}
+.ctrl{background:var(--bg2);border:1px solid var(--border);border-radius:var(--r);padding:14px 16px;margin-bottom:12px}.ctrl-t{font-family:var(--mono);font-size:10px;font-weight:700;letter-spacing:.08em;color:var(--text3);margin-bottom:8px}
+.ctrl-row{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:8px}.ctrl-row:last-child{margin-bottom:0}
+.pill{padding:5px 12px;border-radius:20px;border:1px solid var(--border2);background:0;font-family:var(--mono);font-size:11px;font-weight:700;color:var(--text3);cursor:pointer}.pill:active{transform:scale(.96)}.pill.act{background:var(--text);color:var(--bg);border-color:var(--text)}
+.ctrl-sl{flex:1;min-width:100px}.ctrl-val{font-family:var(--mono);font-size:13px;font-weight:700;color:var(--text);min-width:55px;text-align:right}
+.gb{display:grid;grid-template-columns:repeat(5,1fr);gap:8px;margin-bottom:1.25rem}@media(max-width:640px){.gb{grid-template-columns:1fr 1fr}.gb>.gc:last-child{grid-column:span 2}}
+.gc{background:var(--bg2);border-radius:var(--rs);padding:12px;border:1px solid var(--border);position:relative}.gc.alert{border-color:var(--danger)}
+.gc-head{display:flex;align-items:center;justify-content:space-between}
+.gl{font-family:var(--mono);font-size:9px;font-weight:700;letter-spacing:.08em;color:var(--text3)}.gv{font-family:var(--mono);font-size:17px;font-weight:700;color:var(--text);margin-top:3px}.gv.neg{color:var(--danger)}.gv.pos{color:var(--ok)}.gd{font-size:10px;color:var(--text3);margin-top:2px}
+.gi{width:16px;height:16px;border-radius:50%;background:var(--bg4);color:var(--text3);font-family:var(--mono);font-size:9px;font-weight:700;display:flex;align-items:center;justify-content:center;cursor:help;position:relative;flex-shrink:0}
+.gi:hover .gi-tt,.gi:active .gi-tt{opacity:1;pointer-events:auto}
+.gi-tt{position:absolute;top:calc(100% + 8px);right:-8px;background:var(--bg4);color:var(--text2);font-family:var(--sans);font-size:11px;font-weight:400;padding:10px 14px;border-radius:10px;width:240px;line-height:1.5;opacity:0;pointer-events:none;transition:opacity .15s;z-index:20;border:1px solid var(--border2);white-space:normal;text-transform:none}
+@media(max-width:640px){.gi-tt{right:-60px;width:220px}}
+.ac0{--ac:#FF5E5B}.ac1{--ac:#5AA0E0}.ac2{--ac:#40D88E}.ac3{--ac:#A090E0}.ac4{--ac:#E0B040}.ac5{--ac:#E070A0}.ac6{--ac:#60D0D0}.ac7{--ac:#D09060}
+.als{display:flex;flex-direction:column;gap:10px}
+.ac{background:var(--bg2);border:1px solid var(--border);border-radius:var(--r);overflow:hidden;animation:fi .2s ease}.ac.open{border-color:var(--border2)}@keyframes fi{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}
+.ah{display:flex;align-items:center;justify-content:space-between;padding:12px 16px;cursor:pointer;-webkit-tap-highlight-color:transparent;user-select:none;gap:6px}.ah:active{background:var(--bg3)}
+.ahl{display:flex;align-items:center;gap:8px;min-width:0;overflow:hidden}.adot{width:12px;height:12px;border-radius:50%;background:var(--ac);flex-shrink:0}
+.anm{font-family:var(--sans);font-size:15px;font-weight:700;color:var(--text);background:0;border:none;outline:none;width:120px;border-bottom:1px dashed var(--text3);padding-bottom:1px;text-transform:lowercase;flex-shrink:0}
+.ahr{display:flex;align-items:center;gap:5px;flex-shrink:0;overflow-x:auto;-webkit-overflow-scrolling:touch;scrollbar-width:none;-ms-overflow-style:none}.ahr::-webkit-scrollbar{display:none}
+.tag{font-family:var(--mono);font-size:10px;padding:3px 8px;border-radius:6px;white-space:nowrap;flex-shrink:0}
+.tag.bud{background:rgba(255,255,255,.06);color:var(--text2)}html.light .tag.bud{background:rgba(0,0,0,.04)}
+.tag.be{background:rgba(64,216,142,.12);color:var(--ok)}.tag.be.bad{background:rgba(255,94,91,.12);color:var(--danger)}
+.tag.roi{background:rgba(90,160,224,.12);color:#5AA0E0}.tag.roi.neg{background:rgba(255,94,91,.12);color:var(--danger)}
+.aacts{display:flex;gap:3px;flex-shrink:0}.aa{width:26px;height:26px;border-radius:6px;border:1px solid var(--border);background:0;cursor:pointer;display:flex;align-items:center;justify-content:center;color:var(--text3)}.aa svg{width:11px;height:11px}.aa.del{color:var(--danger)}
+.chv{width:16px;height:16px;color:var(--text3);transition:transform .2s;flex-shrink:0}.ac.open .chv{transform:rotate(180deg)}
+.ab{display:none;padding:0 16px 16px}.ac.open .ab{display:block}
+.anotes textarea{width:100%;min-height:36px;background:var(--bg3);border:1px solid var(--border);border-radius:8px;padding:8px 10px;font-family:var(--sans);font-size:12px;color:var(--text);outline:none;resize:vertical;margin-bottom:6px;text-transform:none}
+.sec{margin-top:2px}.sec-h{display:flex;align-items:center;justify-content:space-between;cursor:pointer;padding:8px 0;-webkit-tap-highlight-color:transparent}.sec-h .pt{margin:0}.sec-chv{width:14px;height:14px;color:var(--text3);transition:transform .2s}.sec.closed .sec-chv{transform:rotate(-90deg)}.sec-b{overflow:hidden;max-height:2000px;transition:max-height .3s ease,opacity .2s ease;opacity:1}.sec.closed .sec-b{max-height:0;opacity:0}
+.pt{font-family:var(--mono);font-size:10px;font-weight:700;letter-spacing:.08em;color:var(--text3);margin:14px 0 8px}
+.sg{margin-bottom:12px}.sh{display:flex;justify-content:space-between;align-items:center;margin-bottom:4px}
+.sll{font-size:13px;color:var(--text2);display:flex;align-items:center;gap:4px}
+.tip{display:inline-flex;align-items:center;justify-content:center;width:14px;height:14px;border-radius:50%;background:var(--bg4);color:var(--text3);font-size:8px;font-weight:700;cursor:help;position:relative}.tip:hover .tt,.tip:active .tt{opacity:1;pointer-events:auto}
+.tt{position:absolute;bottom:calc(100% + 6px);left:50%;transform:translateX(-50%);background:var(--bg4);color:var(--text2);font-size:11px;padding:8px 12px;border-radius:8px;width:200px;line-height:1.4;opacity:0;pointer-events:none;transition:opacity .15s;z-index:10;border:1px solid var(--border2);white-space:normal;text-transform:none}
+.sv{font-family:var(--mono);font-size:13px;font-weight:700;color:var(--text);cursor:pointer;padding:2px 6px;border-radius:5px;border:1px solid transparent;min-width:50px;text-align:right;display:inline-block}.sv:hover{border-color:var(--border2);background:var(--bg3)}
+.sve{font-family:var(--mono);font-size:13px;font-weight:700;color:var(--text);background:var(--bg4);border:1px solid var(--text);border-radius:5px;padding:2px 6px;outline:none;width:100px;text-align:right;text-transform:none}
+input[type="range"]{-webkit-appearance:none;width:100%;height:4px;border-radius:2px;background:var(--bg4);outline:none;cursor:pointer;touch-action:manipulation}
+input[type="range"]::-webkit-slider-thumb{-webkit-appearance:none;width:20px;height:20px;border-radius:50%;background:var(--text);border:3px solid var(--bg2);box-shadow:0 1px 4px rgba(0,0,0,.3);cursor:pointer;transition:transform .15s,box-shadow .15s}
+input[type="range"]::-webkit-slider-thumb:hover{transform:scale(1.1)}
+input[type="range"]::-webkit-slider-thumb:active{transform:scale(1.15);box-shadow:0 2px 8px rgba(0,0,0,.4)}
+input[type="range"]::-moz-range-thumb{width:20px;height:20px;border-radius:50%;background:var(--text);border:3px solid var(--bg2);box-shadow:0 1px 4px rgba(0,0,0,.3)}
+input[type="range"]::-moz-range-track{height:4px;border-radius:2px;background:var(--bg4)}
+input[type="range"]::-moz-range-progress{height:4px;border-radius:2px;background:var(--ac,var(--text))}
+.recf{font-size:11px;color:var(--text3);font-family:var(--mono)}
+.ci{display:flex;align-items:center;gap:6px;padding:8px 0;border-bottom:1px solid var(--border);flex-wrap:wrap}
+.tgl{position:relative;width:36px;height:20px;flex-shrink:0}.tgl input{opacity:0;width:0;height:0;position:absolute}.tgl-t{position:absolute;inset:0;background:var(--bg4);border-radius:10px;cursor:pointer;transition:background .2s}.tgl input:checked+.tgl-t{background:var(--ac,var(--text))}.tgl-d{position:absolute;top:2px;left:2px;width:16px;height:16px;background:var(--text3);border-radius:50%;transition:all .2s}.tgl input:checked+.tgl-t .tgl-d{transform:translateX(16px);background:var(--bg)}
+.cin{flex:1;min-width:80px}.cin-n{font-size:12px;font-weight:500;color:var(--text)}.cin-s{font-family:var(--mono);font-size:10px;color:var(--text3)}
+.cic{display:flex;gap:4px;align-items:center}.cit{padding:3px 7px;border-radius:8px;border:1px solid var(--border);background:0;font-size:10px;color:var(--text3);cursor:pointer}.cit.act{background:var(--ac,var(--text));color:var(--bg);border-color:var(--ac,var(--text));font-weight:600}
+.ciamt{font-family:var(--mono);font-size:11px;font-weight:700;color:var(--text);background:var(--bg4);border:1px solid var(--border);border-radius:5px;padding:4px 6px;width:70px;text-align:right;outline:none}.ciamt:focus{border-color:var(--text)}
+.cidel{background:0;border:0;color:var(--text3);cursor:pointer;font-size:13px;padding:2px 4px}.addci{width:100%;padding:6px;border:1px dashed var(--border2);border-radius:8px;background:0;font-size:11px;color:var(--text3);cursor:pointer;margin-top:6px}
+.rg{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:14px}@media(min-width:641px){.rg{grid-template-columns:repeat(4,1fr)}}
+.rc{border-radius:10px;padding:10px 12px;background:rgba(255,255,255,.04)}html.light .rc{background:rgba(0,0,0,.03)}.rc .rl{font-family:var(--mono);font-size:9px;font-weight:700;margin-bottom:3px;color:var(--ac)}.rc .rv{font-family:var(--mono);font-size:15px;font-weight:700;color:var(--ac)}.rc .rd{font-size:10px;margin-top:2px;color:var(--ac);opacity:.5}.rc .rd2{font-size:9px;color:var(--text3);margin-top:1px;text-transform:none}.rc.alert{border:1px solid var(--danger)}.rc.alert .rl,.rc.alert .rv,.rc.alert .rd{color:var(--danger)}
+.ach{margin-top:14px;padding-top:10px;border-top:1px solid var(--border)}.acht{font-family:var(--mono);font-size:10px;font-weight:700;letter-spacing:.06em;color:var(--text3);margin-bottom:6px}
+.cw{position:relative;width:100%;height:200px}.cw.tall{height:360px}
+.cleg{display:flex;flex-wrap:wrap;gap:8px;margin-top:4px;font-size:10px;color:var(--text3)}.cleg span{display:flex;align-items:center;gap:3px}.cleg i{width:7px;height:7px;border-radius:2px;display:inline-block}
+.tabs{display:flex;gap:4px;margin-bottom:8px}.tab{padding:4px 10px;border-radius:8px;border:1px solid var(--border);background:0;font-family:var(--mono);font-size:10px;color:var(--text3);cursor:pointer}.tab.act{background:var(--ac,var(--text));color:var(--bg);border-color:var(--ac,var(--text))}
+.addbtn{width:100%;padding:14px;border:1.5px dashed var(--text3);border-radius:var(--r);background:0;font-size:14px;font-weight:700;color:var(--text2);cursor:pointer;margin-top:12px}.addbtn:active{background:var(--bg2)}
+.recap{margin-top:2rem;padding-top:1.5rem;border-top:2px solid var(--border2)}.recap h2{font-family:var(--mono);font-size:11px;font-weight:700;letter-spacing:.08em;color:var(--text3);margin-bottom:14px}
+.rmg{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:1.5rem}@media(max-width:640px){.rmg{grid-template-columns:1fr 1fr}}
+.rmc{background:var(--bg2);border:1px solid var(--border);border-radius:var(--rs);padding:12px}.rmc.alert{border-color:var(--danger)}.rml{font-family:var(--mono);font-size:9px;font-weight:700;color:var(--text3);margin-bottom:3px}.rmv{font-family:var(--mono);font-size:18px;font-weight:700;color:var(--text)}.rmv.neg{color:var(--danger)}.rmv.pos{color:var(--ok)}.rmd{font-size:10px;color:var(--text3);margin-top:2px}
+.rcharts{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:1.5rem}@media(max-width:640px){.rcharts{grid-template-columns:1fr}}
+.rchw{background:var(--bg2);border:1px solid var(--border);border-radius:var(--r);padding:14px}.rchw h3{font-family:var(--mono);font-size:10px;font-weight:700;letter-spacing:.06em;color:var(--text3);margin-bottom:10px}
+.rchc{position:relative;width:100%;height:240px}.rchl{display:flex;flex-wrap:wrap;gap:8px;margin-top:6px;font-size:10px;color:var(--text2)}.rchl span{display:flex;align-items:center;gap:3px}.rchl i{width:7px;height:7px;border-radius:2px;display:inline-block}
+.ytw{background:var(--bg2);border:1px solid var(--border);border-radius:var(--r);padding:14px;margin-bottom:1.5rem;overflow-x:auto;-webkit-overflow-scrolling:touch;position:relative}.ytw::after{content:'';position:absolute;top:0;right:0;bottom:0;width:24px;pointer-events:none;background:linear-gradient(to right,transparent,var(--bg2));opacity:0;transition:opacity .2s}.ytw.scrollable::after{opacity:1}.ytw h3{font-family:var(--mono);font-size:10px;font-weight:700;letter-spacing:.06em;color:var(--text3);margin-bottom:10px}
+.yt{width:100%;border-collapse:collapse;font-size:11px}.yt th{text-align:left;font-weight:700;color:var(--text3);padding:6px 8px;border-bottom:1px solid var(--border);font-family:var(--mono);font-size:9px}.yt td{padding:6px 8px;border-bottom:1px solid var(--border);font-family:var(--mono);font-size:11px;color:var(--text2)}.yt td:first-child{font-family:var(--sans);font-weight:500;color:var(--text)}.yt-t td{font-weight:700;color:var(--text);border-top:2px solid var(--border2)}
+.cdot{width:8px;height:8px;border-radius:50%;display:inline-block;margin-right:5px;vertical-align:middle}
+/* hero KPI block */
+.hero{background:var(--bg3);border:1px solid var(--border2);border-radius:var(--r);padding:20px 16px;margin-bottom:12px;text-align:center}
+.hero-n{font-family:var(--mono);font-size:38px;font-weight:700;line-height:1}.hero-n.green{color:var(--ok)}.hero-n.orange{color:var(--warn)}.hero-n.red{color:var(--danger)}
+.hero-label{font-family:var(--mono);font-size:10px;font-weight:700;letter-spacing:.08em;color:var(--text3);margin-bottom:4px}
+.hero-sub{font-size:12px;color:var(--text2);margin-top:6px}
+.hero-meta{display:flex;justify-content:center;gap:16px;margin-top:8px;font-size:11px;color:var(--text3);flex-wrap:wrap}
+.hero-pills{display:flex;justify-content:center;gap:4px;margin-top:10px}
+.hero-pills .pill{font-size:10px;padding:4px 10px}
+/* scenario table */
+.scen{margin-top:10px;overflow-x:auto}
+.scen table{width:100%;border-collapse:collapse;font-size:11px}
+.scen th{font-family:var(--mono);font-size:9px;font-weight:700;color:var(--text3);padding:6px 8px;text-align:left;border-bottom:1px solid var(--border)}
+.scen td{padding:6px 8px;font-family:var(--mono);font-size:11px;color:var(--text2);border-bottom:1px solid var(--border)}
+.scen td:first-child{font-family:var(--sans);font-weight:600;color:var(--text)}
+/* date input */
+.date-inp{font-family:var(--mono);font-size:12px;background:var(--bg4);border:1px solid var(--border);border-radius:6px;color:var(--text);padding:4px 8px;outline:none;text-transform:none}.date-inp:focus{border-color:var(--text)}
+/* slider for catalogue multiple */
+.mul-row{display:flex;align-items:center;gap:6px;margin-top:6px;flex-wrap:wrap}.mul-preset{padding:3px 8px;border-radius:6px;border:1px solid var(--border);background:0;font-family:var(--mono);font-size:9px;color:var(--text3);cursor:pointer}.mul-preset.act{background:var(--text);color:var(--bg);border-color:var(--text)}
+.disclaimer{margin-top:1.5rem;padding:12px 14px;border-radius:var(--rs);background:var(--bg3);font-size:11px;color:var(--text3);line-height:1.6;text-transform:none}
+footer{margin-top:2rem;padding:1.5rem 0;border-top:1px solid var(--border);text-align:center;font-size:11px;color:var(--text3)}footer a{color:var(--text2);text-decoration:none}
+.toast{position:fixed;bottom:20px;left:50%;transform:translateX(-50%) translateY(80px);background:var(--text);color:var(--bg);font-size:13px;font-weight:700;padding:10px 20px;border-radius:20px;pointer-events:none;opacity:0;transition:all .3s;z-index:999}.toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+@media print{.hdr-r,.addbtn,.addci,.aa,.tgl,.cit,.cidel,.ciamt,.tabs,.hb,.thm,.ctrl,.gi{display:none!important}body{background:#fff;color:#000}.app{max-width:100%}}
+.pres .sg,.pres .anotes,.pres .addci,.pres .ci,.pres .addbtn,.pres .ctrl,.pres .aacts,.pres .sec,.pres .hero-pills{display:none!important}
+.pres .ab{display:block!important}
+.pres .rg,.pres .ach,.pres .tabs{display:grid!important}
+.pres .ach{display:block!important}
+.pres .tabs{display:flex!important}
+.pres .ac{border-color:var(--border2)!important}
+.pres .ac .chv{display:none}
+.pres .ah{cursor:default}
+.pres .ah:active{background:transparent}
+.pres .hero{display:block!important}
+</style>
+</head>
+<body>
+<div id="lock"><div class="lock-inner"><h1>breakeven</h1><span class="lock-badge">contrat d'artiste</span><p>simulateur de recoupement et projection financière pour labels indépendants</p><div class="lock-form"><input type="password" id="pw" placeholder="mot de passe" autocomplete="off"><div class="err" id="pwErr"></div><button id="pwBtn">entrer</button></div><div class="lock-footer">arch © 2026</div></div></div>
+<div class="app" id="app">
+<header><div class="logo-wrap"><div class="logo">breakeven</div><span class="beta">v2</span></div><div class="hdr-r"><button class="hb" id="linkBtn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10 13a5 5 0 007.54.54l3-3a5 5 0 00-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 00-7.54-.54l-3 3a5 5 0 007.07 7.07l1.71-1.71"/></svg>lien</button><button class="hb" id="presBtn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>présentation</button><button class="hb" id="shareBtn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 12v8a2 2 0 002 2h12a2 2 0 002-2v-8"/><polyline points="16 6 12 2 8 6"/><line x1="12" y1="2" x2="12" y2="15"/></svg>partager</button><button class="thm" id="thm"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg></button></div></header>
+<div class="sub">contrat d'artiste — simule le recoupement et le bénéfice à long terme d'un investissement label. le label est propriétaire des masters.</div>
+<div class="ctrl"><div class="ctrl-t">période d'exploitation globale</div><div class="ctrl-row" id="epBtns"></div><div class="ctrl-row"><input type="range" min="1" max="70" step="1" value="5" id="epR" class="ctrl-sl"><span class="ctrl-val" id="epV">5 ans</span></div></div>
+<div class="gb" id="gBar"></div>
+<div class="als" id="aL"></div>
+<button class="addbtn" id="addBtn">+ ajouter un artiste</button>
+<div class="recap" id="recapS" style="display:none"></div>
+<div class="disclaimer">cet outil est un simulateur de projection financière. les résultats sont des estimations basées sur des hypothèses ajustables et ne constituent pas un conseil financier ou juridique. le revenu moyen par stream (0,003–0,005 €) est basé sur les taux moyens de redistribution des dsp pour les distributeurs indépendants (source : données agrégées distrokid, tunecore, ditto 2024-2025). la valorisation catalogue utilise un multiple ajustable des revenus annuels, standard industrie pour les catalogues indépendants (source : rapport citigroup "putting the band back together" actualisé).</div>
+<footer>breakeven v2 — contrat d'artiste, simulateur de recoupement · © 2026 <a href="https://arch.ooo">arch</a></footer>
+</div>
+<div class="toast" id="toast"></div>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
+<script>
+// ===== AUTH =====
+const PWD='i8majors',pwI=document.getElementById('pw');
+if(sessionStorage.getItem('be')==='1')unlock();
+document.getElementById('pwBtn').onclick=ck;pwI.onkeydown=e=>{if(e.key==='Enter')ck()};
+function ck(){if(pwI.value===PWD)unlock();else{document.getElementById('pwErr').textContent='mot de passe incorrect';pwI.value=''}}
+function unlock(){document.getElementById('lock').classList.add('hidden');document.getElementById('app').classList.add('visible');sessionStorage.setItem('be','1');loadFromURL()}
+let dk=true;document.getElementById('thm').onclick=()=>{dk=!dk;document.documentElement.classList.toggle('light',!dk);R()};
+
+// ===== UTILS =====
+const F=n=>Math.round(n).toLocaleString('fr-FR'),FE=n=>F(n)+' €',FK=n=>n>=1e6?(n/1e6).toFixed(1)+'M':n>=1e3?Math.round(n/1e3)+'k':F(n);
+const COL=['#FF5E5B','#5AA0E0','#40D88E','#A090E0','#E0B040','#E070A0','#60D0D0','#D09060'];
+function shade(c,p){let r=parseInt(c.slice(1,3),16),g=parseInt(c.slice(3,5),16),b=parseInt(c.slice(5,7),16);r=Math.round(r+(255-r)*p);g=Math.round(g+(255-g)*p);b=Math.round(b+(255-b)*p);return'#'+(r<<16|g<<8|b).toString(16).padStart(6,'0')}
+function toast(m){const t=document.getElementById('toast');t.textContent=m;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),2e3)}
+function addMonths(dateStr,m){const d=new Date(dateStr+'-01');d.setMonth(d.getMonth()+m);return d.toLocaleDateString('fr-FR',{month:'long',year:'numeric'})}
+
+// ===== TOOLTIPS =====
+const TIP={
+  duration:"durée du contrat pendant laquelle les sorties ont lieu.",
+  exploitDur:"durée d'exploitation des masters après la fin du contrat. ex: 5 ans contrat + 5 ans exploitation = 10 ans de revenus.",
+  singles:"nombre de singles à sortir pendant le contrat.",
+  eps:"nombre d'EP (~5 titres chacun).",
+  albums:"nombre d'albums (~12 titres chacun).",
+  royalty:"part des revenus nets reversée à l'artiste après recoupement.",
+  avance:"somme versée à la signature, récupérable sur les revenus.",
+  cps:"coût d'enregistrement studio par titre (hors mix et mastering).",
+  mixPT:"coût du mixage par titre.",
+  masterPT:"coût du mastering par titre.",
+  clips:"budget total clips vidéo.",
+  da:"direction artistique : pochettes, identité visuelle, photos.",
+  marketing:"ads digitales, campagnes social media.",
+  rpBudget:"campagnes relations presse, média, interviews.",
+  radio:"radio plugging et pitching professionnel.",
+  playlist:"playlisting DSP (pitching éditorial, playlists algorithmiques).",
+  cmBudget:"community management, animation réseaux sociaux.",
+  distribFee:"pourcentage prélevé par le distributeur (distrokid, believe, idol…). déduit des revenus streaming.",
+  managerCom:"commission manager sur les revenus artiste (optionnel).",
+  rps:"revenu brut par stream avant frais de distribution. ~0.003-0.005€ pour un indé.",
+  live:"cachets live annuels bruts.",
+  livecom:"commission label sur les revenus live.",
+  sync:"revenus annuels sync (pubs, films, jeux vidéo).",
+  merch:"revenus nets merch annuels.",
+  phys:"revenus physique annuels (vinyl, cd).",
+  youtube:"revenus annuels YouTube, UGC, Content ID.",
+  copiePrive:"revenus copie privée annuels.",
+  droitsVoisins:"rémunération équitable / droits voisins producteur annuels.",
+  cnm:"subvention centre national de la musique.",
+  sppf:"aide SPPF (société civile des producteurs de phonogrammes).",
+  scpp:"aide SCPP (société civile des producteurs phonographiques).",
+  aidesTerr:"aides régionales, départementales, municipales.",
+  creditImpot:"crédit d'impôt phonographique (montant).",
+  mgLicences:"minimum guarantees, licences territoriales, revenus export.",
+  decay:"pic rapide puis chute. modélise la courbe de vie d'un single.",
+  growth:"taux de croissance mensuel de l'audience. un artiste qui sort des singles régulièrement et investit en marketing voit ses streams augmenter.",
+  catMultiple:"multiple de valorisation du catalogue. 8× récent, 10× standard indé, 15× établi, 20× hit.",
+  startDate:"date de début pour le calcul de la date calendaire de breakeven."
+};
+const GTIP={
+  budget:"somme de tous les investissements : avances, recording, mix, mastering, marketing, clips, DA, promotion, RH et postes custom pour chaque artiste.",
+  breakeven:"mois moyen auquel les revenus cumulés dépassent l'investissement total. calculé avec la courbe de décroissance des streams et tous les flux de revenus.",
+  roi:"retour sur investissement = (profit net label / budget) × 100. le profit net inclut les frais de distribution et les royalties artiste.",
+  catalogue:"estimation de la valeur marchande des masters basée sur un multiple ajustable des revenus annuels projetés.",
+  seuil:"nombre moyen de streams par mois par titre nécessaires pour que le label recoup son investissement sur la période cible."
+};
+const ATIP={
+  budget:"total des dépenses : avance + recording + mix + mastering + clips + DA + promotion + RH + custom.",
+  breakeven:"mois auquel les revenus cumulés (label share) dépassent le budget. le seuil streams/mois/titre est le KPI clé.",
+  roi:"retour sur investissement sur la période. profit net label (après distrib et royalties) vs budget total.",
+  catalogue:"valeur estimée des masters = multiple × revenus annuels projetés.",
+  profitBrut:"revenus totaux après frais distrib - budget total (avant royalties artiste).",
+  profitNet:"revenus totaux label (après distrib et royalties) + financements - budget total. c'est LE chiffre clé."
+};
+
+// ===== DEFAULT RH =====
+const DEFRH=[
+  {name:"attaché·e de presse",cost:0,type:"unique"},
+  {name:"chef·fe de projet",cost:0,type:"mensuel"}
+];
+
+// ===== STATE =====
+let uid=0,A=[],CX={},RC=[],EP=5;
+
+// ===== GLOBAL CONTROLS =====
+const epR_el=document.getElementById('epR'),epV_el=document.getElementById('epV'),epBtns_el=document.getElementById('epBtns');
+[3,5,7,10,20,70].forEach(y=>{const b=document.createElement('button');b.className='pill'+(y===EP?' act':'');b.textContent=y+'a';b.onclick=()=>{EP=y;epR_el.value=y;updEP()};epBtns_el.appendChild(b)});
+epR_el.addEventListener('input',e=>{EP=+e.target.value;epV_el.textContent=EP+' ans';document.querySelectorAll('#epBtns .pill').forEach((b,i)=>b.classList.toggle('act',[3,5,7,10,20,70][i]===EP));updateSliderFill(e.target);rGlobal()});
+epR_el.addEventListener('change',()=>R());
+function updEP(){epV_el.textContent=EP+' ans';epR_el.value=EP;document.querySelectorAll('#epBtns .pill').forEach((b,i)=>b.classList.toggle('act',[3,5,7,10,20,70][i]===EP));R()}
+
+// ===== DATA MODEL =====
+function mk(){
+  uid++;
+  return{
+    id:uid, name:'artiste '+uid, open:uid<=2, notes:'',
+    // contrat
+    duration:12, exploitDur:5, singles:10, eps:0, albums:0, royalty:20,
+    // production
+    avance:1000, cps:300, mixPT:100, masterPT:80, clips:1000, da:0,
+    // promotion
+    marketing:1500, rpBudget:0, radio:0, playlist:0, cmBudget:0,
+    // distribution
+    distribFee:15, managerCom:0,
+    // revenus
+    rps:.0035, live:2000, livecom:15, sync:0, merch:0, phys:0,
+    youtube:0, copiePrive:0, droitsVoisins:0,
+    // financements
+    cnm:0, sppf:0, scpp:0, aidesTerr:0, creditImpot:0,
+    mgLicences:0,
+    // modèle
+    decay:.06, growth:.02,
+    // display
+    startDate:'2026-01', catMultiple:10, targetMonths:0, // 0 = auto
+    chartMode:'global',
+    rh:JSON.parse(JSON.stringify(DEFRH)), cb:[],
+    sections:{contrat:true,production:true,promotion:false,custom:false,rh:false,distribution:false,revenus:true,financements:false,streams:true}
+  }
+}
+function dup(a){uid++;const n=JSON.parse(JSON.stringify(a));n.id=uid;n.name=a.name+' (copie)';n.open=true;return n}
+function sumI(items,dur){let t=0;items.forEach(c=>{if(!c.cost)return;t+=c.type==='mensuel'?c.cost*dur:c.cost});return t}
+
+// ===== CALCULATIONS =====
+function totalTracks(a){return a.singles+(a.eps||0)*5+(a.albums||0)*12}
+function autoTarget(budget){return budget<5000?24:budget<15000?24:budget<30000?60:budget<60000?60:120}
+
+function calc(a, streamMult, otherMult){
+  streamMult=streamMult||1; otherMult=otherMult||1;
+  const months=EP*12;
+  const tt=totalTracks(a);
+  // costs
+  const recCost=a.cps*tt;
+  const mixCost=(a.mixPT||0)*tt;
+  const masterCost=(a.masterPT||0)*tt;
+  const prodBudget=recCost+mixCost+masterCost+a.clips+(a.da||0);
+  const promoBudget=a.marketing+(a.rpBudget||0)+(a.radio||0)+(a.playlist||0)+(a.cmBudget||0);
+  const rht=sumI(a.rh,a.duration), cbt=sumI(a.cb||[],a.duration);
+  const budgetBrut=a.avance+prodBudget+promoBudget+rht+cbt;
+  // financements
+  const subventions=(a.cnm||0)+(a.sppf||0)+(a.scpp||0)+(a.aidesTerr||0);
+  const ci=a.creditImpot||0;
+  const budgetNet=Math.max(0,budgetBrut-subventions-ci);
+  // revenue rates
+  const distribMult=1-(a.distribFee||0)/100;
+  const rpsNet=a.rps*distribMult;
+  const rpsLabel=rpsNet*(1-a.royalty/100);
+  // annual other revenue (label side)
+  const liveLabel=Math.round(a.live*(a.livecom/100));
+  const syncR=(a.sync||0)*otherMult, merchR=(a.merch||0)*otherMult, physR=(a.phys||0)*otherMult;
+  const ytR=(a.youtube||0)*otherMult, cpR=(a.copiePrive||0)*otherMult, dvR=(a.droitsVoisins||0)*otherMult;
+  const mgR=(a.mgLicences||0)*otherMult;
+  const otherY=liveLabel*otherMult+syncR+merchR+physR+ytR+cpR+dvR+mgR;
+  const otherTotal=otherY*EP;
+  // streams needed for label to recoup
+  const bal=Math.max(0,budgetBrut-otherTotal-subventions-ci);
+  const sn=rpsLabel>0?Math.ceil(bal/rpsLabel*streamMult):Infinity;
+  const snBase=rpsLabel>0?Math.ceil(bal/rpsLabel):Infinity; // for stream calcs without mult
+  // breakeven month
+  let beMonth=null;
+  const snCalc=rpsLabel>0?Math.ceil(Math.max(0,budgetBrut-otherTotal-subventions-ci)/(rpsLabel)):Infinity;
+  const snForCurve=snCalc===Infinity?0:Math.round(snCalc/streamMult);
+  if(snForCurve>0||otherY>0){
+    const dc=dC(snForCurve,months,a.decay,a.growth);
+    const oM=otherY/12;
+    for(let m=1;m<=months;m++){
+      const streamRev=dc[m]*rpsLabel*streamMult;
+      const otherRev=m*oM;
+      if(streamRev+otherRev+subventions+ci>=budgetBrut){beMonth=m;break}
+    }
+  }
+  // total revenues
+  const snActual=snForCurve;
+  const dc=dC(snActual,months,a.decay,a.growth);
+  const totalStreams=dc[months]*streamMult;
+  const streamRevNet=totalStreams*rpsNet; // after distrib, before royalties
+  const streamRevLabel=totalStreams*rpsLabel; // label share
+  const revTotalBrut=streamRevNet+otherTotal+subventions+ci;
+  const revTotalLabel=streamRevLabel+otherTotal+subventions+ci;
+  // profits
+  const profitBrut=revTotalBrut-budgetBrut;
+  const profitNet=revTotalLabel-budgetBrut;
+  const roi=budgetBrut>0?(profitNet/budgetBrut)*100:0;
+  // catalogue
+  const catMul=a.catMultiple||10;
+  const annualRev=EP>0?Math.round(revTotalLabel/EP):0;
+  const catalogVal=annualRev*catMul;
+  // KPI streams/titre/année 1 (avec décroissance)
+  const targetM=(a.targetMonths&&a.targetMonths>0)?a.targetMonths:autoTarget(budgetBrut);
+  const nonStreamTarget=otherY*(targetM/12);
+  const netBudgetForStreams=Math.max(0,budgetNet-nonStreamTarget);
+  const totalStreamsNeeded=(rpsLabel>0)?netBudgetForStreams/rpsLabel:Infinity;
+  // répartir les streams sur la période cible avec le modèle de décroissance
+  let spt1=Infinity,listenersMonth=Infinity;
+  if(isFinite(totalStreamsNeeded)&&tt>0&&targetM>0){
+    const ww=[];for(let m=0;m<targetM;m++)ww.push(Math.exp(-(a.decay||.06)*m)*(1+(a.growth||0)*m));
+    const wTotal=ww.reduce((x,y)=>x+y,0);
+    const y1m=Math.min(12,targetM);
+    const wY1=ww.slice(0,y1m).reduce((x,y)=>x+y,0);
+    const y1Streams=totalStreamsNeeded*(wY1/wTotal);
+    spt1=Math.ceil(y1Streams/tt);
+    listenersMonth=Math.ceil((y1Streams/y1m)/30);
+  }
+  // lifetime (20 ans) — le catalogue continue après EP
+  const LT=20;const ltMonths=LT*12;
+  const snFinal=snActual;
+  const dcLT=dC(snFinal,ltMonths,a.decay,a.growth);
+  const ltStreams=dcLT[ltMonths]*streamMult;
+  const ltStreamRevLabel=ltStreams*rpsLabel;
+  const ltOtherTotal=otherY*LT;
+  const ltRevLabel=ltStreamRevLabel+ltOtherTotal+subventions+ci;
+  const ltProfitNet=ltRevLabel-budgetBrut;
+  const ltRoi=budgetBrut>0?(ltProfitNet/budgetBrut)*100:0;
+  // breakeven on lifetime horizon (with user streams if set)
+  let ltBeMonth=null;
+  const oM2=otherY/12;
+  for(let m=1;m<=ltMonths;m++){
+    const sRev=dcLT[m]*rpsLabel*streamMult;
+    const oRev=m*oM2;
+    if(sRev+oRev+subventions+ci>=budgetBrut){ltBeMonth=m;break}
+  }
+  // EP-period values with user streams
+  const dcEP=dC(snFinal,months,a.decay,a.growth);
+  const epStreams=dcEP[months]*streamMult;
+  const epStreamRevLabel=epStreams*rpsLabel;
+  const epRevLabel=epStreamRevLabel+otherTotal+subventions+ci;
+  const epProfitNet=epRevLabel-budgetBrut;
+  const epRoi=budgetBrut>0?(epProfitNet/budgetBrut)*100:0;
+  // legacy
+  const sm=months>0&&epStreams>0?Math.ceil(epStreams/months):Infinity;
+  const monthlyThreshold=rpsLabel>0&&months>0?Math.ceil((budgetBrut/months)/rpsLabel):0;
+  const costPerStream=epStreams>0?budgetBrut/epStreams:0;
+  return{
+    tt, recCost, mixCost, masterCost, prodBudget, promoBudget,
+    rht, cbt, budgetBrut, subventions, creditImpot:ci, budgetNet,
+    distribMult, rpsNet, rpsLabel, liveLabel,
+    otherY, otherTotal, sn:snFinal, sm,
+    beMonth:isFinite(spt1)?targetM:ltBeMonth, totalStreams:epStreams, streamRevNet:epStreams*rpsNet, streamRevLabel:epStreamRevLabel,
+    revTotalBrut:epStreams*rpsNet+otherTotal+subventions+ci, revTotalLabel:epRevLabel, profitBrut:epStreams*rpsNet+otherTotal+subventions+ci-budgetBrut, profitNet:epProfitNet,
+    roi:epRoi, annualRev:EP>0?Math.round(epRevLabel/EP):0, catalogVal:(EP>0?Math.round(epRevLabel/EP):0)*(a.catMultiple||10), catMul:a.catMultiple||10,
+    ltProfitNet, ltRoi, ltRevLabel,
+    targetM, spt1, listenersMonth, costPerStream, monthlyThreshold, months,
+    revenuePerStream:a.rps, snForCurve:snFinal
+  }
+}
+
+function calcKPI(a,targetM){
+  const tt=totalTracks(a);
+  const distribMult=1-(a.distribFee||0)/100;
+  const rpsLabel=a.rps*distribMult*(1-a.royalty/100);
+  const liveLabel=Math.round(a.live*(a.livecom/100));
+  const otherY=liveLabel+(a.sync||0)+(a.merch||0)+(a.phys||0)+(a.youtube||0)+(a.copiePrive||0)+(a.droitsVoisins||0)+(a.mgLicences||0);
+  const subventions=(a.cnm||0)+(a.sppf||0)+(a.scpp||0)+(a.aidesTerr||0);
+  const ci=a.creditImpot||0;
+  const budgetBrut=a.avance+a.cps*tt+(a.mixPT||0)*tt+(a.masterPT||0)*tt+a.clips+(a.da||0)+a.marketing+(a.rpBudget||0)+(a.radio||0)+(a.playlist||0)+(a.cmBudget||0)+sumI(a.rh,a.duration)+sumI(a.cb||[],a.duration);
+  const budgetNet=Math.max(0,budgetBrut-subventions-ci);
+  const nonStream=otherY*(targetM/12);
+  const net=Math.max(0,budgetNet-nonStream);
+  const totalNeeded=(rpsLabel>0)?net/rpsLabel:Infinity;
+  if(!isFinite(totalNeeded)||tt<=0||targetM<=0)return Infinity;
+  const ww=[];for(let m=0;m<targetM;m++)ww.push(Math.exp(-(a.decay||.06)*m)*(1+(a.growth||0)*m));
+  const wTotal=ww.reduce((x,y)=>x+y,0);
+  const y1m=Math.min(12,targetM);
+  const wY1=ww.slice(0,y1m).reduce((x,y)=>x+y,0);
+  return Math.ceil(totalNeeded*(wY1/wTotal)/tt);
+}
+
+function dC(total,months,decay,growth){
+  if(!total||!isFinite(total))return Array(months+1).fill(0);
+  let w=[];for(let m=0;m<months;m++){const d=Math.exp(-(decay||.06)*m);const g=1+(growth||0)*m;w.push(d*g)}
+  const s=w.reduce((a,b)=>a+b,0);const pm=w.map(v=>total*(v/s));
+  let c=[0];for(let m=0;m<months;m++)c.push(c[m]+pm[m]);return c
+}
+function dCS(total,months,decay,rm,growth){
+  if(!total||!isFinite(total))return Array(months+1).fill(0);
+  let c=Array(months+1).fill(0);const ma=months-rm;if(ma<=0)return c;
+  const dc=dC(total,ma,decay,growth);for(let m=rm;m<=months;m++)c[m]=dc[m-rm];return c
+}
+function aMax(v,b){return v>=b*.85?Math.round(b*2.5):b}
+
+// ===== URL SERIALIZATION =====
+const SMAP={n:'name',d:'duration',s:'singles',r:'royalty',av:'avance',cp:'cps',mk:'marketing',cl:'clips',rp:'rps',li:'live',lc:'livecom',sy:'sync',me:'merch',ph:'phys',dc:'decay',gr:'growth',
+  ed:'exploitDur',e2:'eps',al:'albums',mx:'mixPT',ma:'masterPT',da:'da',rb:'rpBudget',ra:'radio',pl:'playlist',cb2:'cmBudget',df:'distribFee',mc:'managerCom',
+  yt:'youtube',cv:'copiePrive',dv:'droitsVoisins',cn:'cnm',sp:'sppf',sc:'scpp',at:'aidesTerr',ci:'creditImpot',mg:'mgLicences',
+  sd:'startDate',mu:'catMultiple',tm:'targetMonths'};
+function saveToURL(){
+  const d=A.map(a=>{const o={};Object.keys(SMAP).forEach(k=>{const f=SMAP[k];if(a[f]!==undefined)o[k]=a[f]});return o});
+  const enc=btoa(encodeURIComponent(JSON.stringify({ep:EP,a:d})));
+  try{const u=new URL(location.href.split('?')[0]);u.searchParams.set('s',enc);history.replaceState(null,'',u);return u.toString()}catch(e){return location.href.split('?')[0]+'?s='+enc}
+}
+function loadFromURL(){
+  const p=new URLSearchParams(location.search).get('s');if(!p)return;
+  try{const d=JSON.parse(decodeURIComponent(atob(p)));
+  if(d.ep){EP=d.ep;epR_el.value=EP;updEP()}
+  if(d.a){A=[];d.a.forEach(x=>{const a=mk();Object.keys(x).forEach(k=>{if(SMAP[k])a[SMAP[k]]=x[k]});A.push(a)});R()}}catch(e){}
+}
+
+// ===== SLIDER FILL =====
+function updateSliderFill(el){
+  const min=parseFloat(el.min)||0,max=parseFloat(el.max)||100,val=parseFloat(el.value)||0;
+  const pct=((val-min)/(max-min))*100;
+  const ac=getComputedStyle(el).getPropertyValue('--ac').trim()||'#F0F0EB';
+  el.style.background=`linear-gradient(to right,${ac} ${pct}%,var(--bg4) ${pct}%)`;
+}
+function updateAllSliders(){document.querySelectorAll('input[type="range"]').forEach(updateSliderFill)}
+
+// ===== SCROLL INDICATORS =====
+function updateScrollIndicators(){
+  document.querySelectorAll('.ytw').forEach(el=>{
+    el.classList.toggle('scrollable',el.scrollWidth>el.clientWidth+4&&el.scrollLeft<el.scrollWidth-el.clientWidth-4);
+  });
+}
+
+// ===== RENDERING =====
+function R(){rGlobal();rArtists();bindAll();rRecap();rCharts();saveToURL();requestAnimationFrame(()=>{updateAllSliders();updateScrollIndicators()})}
+
+function giHTML(key){return`<span class="gi">i<span class="gi-tt">${GTIP[key]||''}</span></span>`}
+function aiHTML(key){return`<span class="gi">i<span class="gi-tt">${ATIP[key]||''}</span></span>`}
+function tip(k){return TIP[k]?`<span class="tip">?<span class="tt">${TIP[k]}</span></span>`:'';}
+
+function spmptColor(v){return v===Infinity?'red':v>1800000?'red':v>600000?'orange':'green'}
+function spmptColorHex(v){return v===Infinity?'#FF5E5B':v>1800000?'#FF5E5B':v>600000?'#E0B040':'#40D88E'}
+
+function summary(a,r){
+  const beText=r.beMonth?'breakeven en '+Math.ceil(r.beMonth/12)+' an'+(Math.ceil(r.beMonth/12)>1?'s':''):'breakeven non atteint sur 20 ans';
+  const roiText=r.ltRoi>0?'roi 20a positif à +'+Math.round(r.ltRoi)+'%':r.ltRoi===0?'roi neutre (0%)':'roi 20a négatif à '+Math.round(r.ltRoi)+'%';
+  const verdict=r.ltRoi>50?'investissement très rentable':r.ltRoi>20?'investissement rentable':r.ltRoi>0?'investissement à l\'équilibre':r.ltRoi===0?'recoupement exact':'investissement déficitaire';
+  return`${a.name} : ${FE(r.budgetBrut)} investis → ${beText}, ${roiText}. ${verdict}. profit net label 20a ${FE(r.ltProfitNet)} (${EP}a : ${FE(r.profitNet)}). catalogue estimé à ${FE(r.catalogVal)} (${r.catMul}×).`
+}
+
+let presMode=false;
+
+function rGlobal(){
+  let tb=0,be=[],rois=[],ltRois=[],net=0,ltNet=0,catVal=0,spt1s=[];
+  A.forEach(a=>{const r=calc(a);tb+=r.budgetBrut;if(r.beMonth)be.push(r.beMonth);rois.push(r.roi);ltRois.push(r.ltRoi);net+=r.profitNet;ltNet+=r.ltProfitNet;catVal+=r.catalogVal;if(r.spt1!==Infinity)spt1s.push(r.spt1)});
+  const ab=be.length?Math.round(be.reduce((x,y)=>x+y,0)/be.length):null;
+  const altR=ltRois.length?Math.round(ltRois.reduce((x,y)=>x+y,0)/ltRois.length):0;
+  const avgSpt1=spt1s.length?Math.round(spt1s.reduce((x,y)=>x+y,0)/spt1s.length):null;
+  document.getElementById('gBar').innerHTML=`
+    <div class="gc"><div class="gc-head"><div class="gl">budget total</div>${giHTML('budget')}</div><div class="gv">${FE(tb)}</div><div class="gd">${A.length} artiste${A.length>1?'s':''} · ${FE(A.length?tb/A.length:0)}/artiste</div></div>
+    <div class="gc ${!ab?'alert':''}"><div class="gc-head"><div class="gl">breakeven moyen</div>${giHTML('breakeven')}</div><div class="gv">${ab?'m'+ab:'—'}</div><div class="gd">${ab?'~'+Math.ceil(ab/12)+'a':''}</div></div>
+    <div class="gc ${altR<0?'alert':''}"><div class="gc-head"><div class="gl">roi moyen (20a)</div>${giHTML('roi')}</div><div class="gv ${altR<0?'neg':altR>0?'pos':''}">${altR>0?'+':''}${altR}%</div><div class="gd">${FE(ltNet)} net label 20a</div></div>
+    <div class="gc"><div class="gc-head"><div class="gl">valeur catalogue</div>${giHTML('catalogue')}</div><div class="gv">${FE(catVal)}</div><div class="gd">multiple moyen</div></div>
+    <div class="gc" style="border-color:${avgSpt1?spmptColorHex(avgSpt1):'var(--border)'}"><div class="gc-head"><div class="gl">seuil moyen</div>${giHTML('seuil')}</div><div class="gv" style="color:${avgSpt1?spmptColorHex(avgSpt1):'var(--text)'}">${avgSpt1?FK(avgSpt1):'—'}</div><div class="gd">streams/titre/an 1</div></div>`
+}
+
+function msl(i,f,lab,val,min,base,step,fmt,tk){
+  const mx=['avance','marketing','clips','da','rpBudget','radio','playlist','cmBudget'].includes(f)?aMax(val,base):base;
+  return`<div class="sg"><div class="sh"><span class="sll">${lab}${tip(tk||f)}</span><span class="sv" data-i="${i}" data-f="${f}" data-min="${min}" data-mx="${mx}" data-step="${step}" data-ft="${f==='rps'?'r':f==='decay'?'d':f==='growth'?'g':'n'}">${fmt(val)}</span></div><input type="range" min="${min}" max="${mx}" step="${step}" value="${val}" data-i="${i}" data-f="${f}"></div>`
+}
+
+function ciH(items,i,tp){
+  return items.map((c,ci)=>{
+    const mx=Math.max(c.cost*3,5000);
+    const total=c.type==='mensuel'?c.cost*A[i].duration:c.cost;
+    const sub=c.type==='mensuel'?FE(c.cost)+'/m × '+A[i].duration+'m = '+FE(total):FE(c.cost);
+    return`<div class="sg"><div class="sh"><span class="sll">${c.name}<span style="margin-left:6px;display:inline-flex;gap:2px"><button class="cit ${c.type==='unique'?'act':''}" data-i="${i}" data-ci="${ci}" data-tp="${tp}" data-rt="unique">1×</button><button class="cit ${c.type==='mensuel'?'act':''}" data-i="${i}" data-ci="${ci}" data-tp="${tp}" data-rt="mensuel">/m</button></span><button class="cidel" data-i="${i}" data-ci="${ci}" data-tp="${tp}" style="margin-left:2px">×</button></span><span class="sv" data-i="${i}" data-ci="${ci}" data-tp="${tp}" data-ciamt="1" data-min="0" data-mx="${mx}" data-step="50" data-ft="n">${FE(c.cost)}</span></div><input type="range" min="0" max="${mx}" step="50" value="${c.cost}" data-i="${i}" data-ci="${ci}" data-tp="${tp}" data-cisl="1"><div class="recf">${sub}</div></div>`
+  }).join('')
+}
+
+function secH(title,i,key,content){
+  const o=A[i].sections[key]!==false;
+  return`<div class="sec ${o?'':'closed'}"><div class="sec-h" data-i="${i}" data-sec="${key}"><span class="pt">${title}</span><svg class="sec-chv" viewBox="0 0 20 20" fill="currentColor"><path d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z"/></svg></div><div class="sec-b">${content}</div></div>`
+}
+
+function heroHTML(a,r){
+  const col=spmptColor(r.spt1);
+  const idx=A.indexOf(a);
+  const beDate=r.beMonth?addMonths(a.startDate,r.beMonth):'—';
+  const targetPills=[24,60,120];
+  const pillsHTML=targetPills.map(m=>`<button class="pill ${a.targetMonths===m?'act':''}" data-i="${idx}" data-tm="${m}">${m/12}a</button>`).join('');
+  return`<div class="hero">
+    <div class="hero-label">streams / titre / an 1 pour recouper en ${r.targetM} mois</div>
+    <div class="hero-n ${col}">${r.spt1===Infinity?'∞':FK(r.spt1)}</div>
+    <div class="hero-sub">${r.listenersMonth===Infinity?'—':FK(r.listenersMonth)+' auditeurs/mois sur le catalogue'} · ${r.tt} titres · breakeven ${r.beMonth?'mois '+r.beMonth+' ('+beDate+')':'> 20 ans'}</div>
+    <div class="hero-meta"><span>budget net : ${FE(r.budgetNet)}</span><span>rev/stream label : ${r.rpsLabel.toFixed(4).replace('.',',')}€</span></div>
+    <div style="margin-top:10px;font-family:var(--mono);font-size:9px;color:var(--text3);letter-spacing:.04em">date de recouvrement souhaitée</div>
+    <div class="hero-pills">${pillsHTML}</div>
+  </div>`
+}
+
+function scenarioHTML(a){
+  const base=calc(a);
+  const pess=calc(a,0.5,0); // streams×0.5, no sync/merch/live bonus
+  const opti=calc(a,1.8,1.5);
+  return`<div class="scen"><table>
+    <tr><th></th><th>pessimiste</th><th>base</th><th>optimiste</th></tr>
+    <tr><td>streams ×</td><td>0.5×</td><td>1×</td><td>1.8×</td></tr>
+    <tr><td>breakeven</td><td>${pess.beMonth?'m'+pess.beMonth:'> 20a'}</td><td>${base.beMonth?'m'+base.beMonth:'> 20a'}</td><td>${opti.beMonth?'m'+opti.beMonth:'> 20a'}</td></tr>
+    <tr><td>profit net 20a</td><td style="color:${pess.ltProfitNet>=0?'var(--ok)':'var(--danger)'}">${FE(pess.ltProfitNet)}</td><td style="color:${base.ltProfitNet>=0?'var(--ok)':'var(--danger)'}">${FE(base.ltProfitNet)}</td><td style="color:${opti.ltProfitNet>=0?'var(--ok)':'var(--danger)'}">${FE(opti.ltProfitNet)}</td></tr>
+    <tr><td>roi 20a</td><td>${Math.round(pess.ltRoi)}%</td><td>${Math.round(base.ltRoi)}%</td><td>${Math.round(opti.ltRoi)}%</td></tr>
+    <tr><td>catalogue</td><td>${FE(pess.catalogVal)}</td><td>${FE(base.catalogVal)}</td><td>${FE(opti.catalogVal)}</td></tr>
+  </table></div>`
+}
+
+function budgetTableHTML(a,r){
+  const rows=[
+    ['avance',a.avance],['enregistrement',r.recCost],['mix',r.mixCost],['mastering',r.masterCost],
+    ['clips vidéo',a.clips],['direction artistique',a.da||0],
+    ['marketing',a.marketing],['relations presse',a.rpBudget||0],['radio plugging',a.radio||0],
+    ['playlisting',a.playlist||0],['community management',a.cmBudget||0],
+    ['ressources humaines',r.rht],['postes custom',r.cbt]
+  ].filter(r=>r[1]>0);
+  return`<table class="yt" style="margin-top:8px"><tr><th>poste</th><th>montant</th><th>%</th></tr>${rows.map(([k,v])=>`<tr><td>${k}</td><td>${FE(v)}</td><td>${r.budgetBrut>0?Math.round(v/r.budgetBrut*100)+'%':'—'}</td></tr>`).join('')}<tr class="yt-t"><td>total</td><td>${FE(r.budgetBrut)}</td><td>100%</td></tr>${r.subventions+r.creditImpot>0?`<tr><td>- financements</td><td style="color:var(--ok)">-${FE(r.subventions+r.creditImpot)}</td><td></td></tr><tr class="yt-t"><td>budget net</td><td>${FE(r.budgetNet)}</td><td></td></tr>`:''}</table>`
+}
+
+function rArtists(){
+  const l=document.getElementById('aL');l.innerHTML='';
+  A.forEach((a,i)=>{
+    const r=calc(a);
+    const el=document.createElement('div');
+    el.className='ac ac'+i%8+(a.open?' open':'');el.dataset.i=i;
+    const cm=a.chartMode||'global';
+    const beTag=r.beMonth?`<span class="tag be">be m${r.beMonth}</span>`:`<span class="tag be bad">> 20a</span>`;
+    const roiTag=`<span class="tag roi ${r.ltRoi<0?'neg':''}">${r.ltRoi>0?'+':''}${Math.round(r.ltRoi)}%</span>`;
+    const spmptTag=`<span class="tag" style="background:${spmptColorHex(r.spt1)}20;color:${spmptColorHex(r.spt1)}">${r.spt1===Infinity?'∞':FK(r.spt1)}/t/a1</span>`;
+
+    el.innerHTML=`<div class="ah" data-i="${i}"><div class="ahl"><div class="adot"></div><input class="anm" type="text" value="${a.name}" data-i="${i}" placeholder="nom" onclick="event.stopPropagation()"></div><div class="ahr">${spmptTag}<span class="tag bud">${FE(r.budgetBrut)}</span>${beTag}${roiTag}<div class="aacts"><button class="aa" data-i="${i}" data-act="dup" title="dupliquer"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg></button>${A.length>1?`<button class="aa del" data-i="${i}" data-act="del"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>`:''}</div><svg class="chv" viewBox="0 0 20 20" fill="currentColor"><path d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z"/></svg></div></div>
+    <div class="ab"><div class="anotes"><textarea placeholder="notes..." data-i="${i}">${a.notes||''}</textarea></div>
+
+    ${heroHTML(a,r)}
+
+    ${secH('contrat',i,'contrat',
+      msl(i,'duration','durée du contrat',a.duration,6,36,1,v=>v+' mois')
+      +msl(i,'exploitDur','durée exploitation post-contrat',a.exploitDur||5,0,20,1,v=>v+' ans')
+      +`<div class="recf">période totale : ${Math.ceil(a.duration/12)+(a.exploitDur||5)} ans (contrat ${Math.ceil(a.duration/12)}a + exploitation ${a.exploitDur||5}a)</div>`
+      +msl(i,'singles','singles',a.singles,0,30,1,v=>v+'')
+      +msl(i,'eps','EP (~5 titres)',a.eps||0,0,5,1,v=>v+'')
+      +msl(i,'albums','albums (~12 titres)',a.albums||0,0,5,1,v=>v+'')
+      +`<div class="recf">${r.tt} titres au total (${a.singles} singles + ${(a.eps||0)*5} EP + ${(a.albums||0)*12} albums)</div>`
+      +msl(i,'royalty','royalties artiste',a.royalty,5,50,5,v=>v+' %')
+    )}
+
+    ${secH('budget production',i,'production',
+      msl(i,'avance','avance artiste',a.avance,0,50000,500,FE)
+      +msl(i,'cps','enregistrement par titre',a.cps,0,5000,50,FE,'cps')
+      +msl(i,'mixPT','mix par titre',a.mixPT||0,0,2000,25,FE,'mixPT')
+      +msl(i,'masterPT','mastering par titre',a.masterPT||0,0,1000,25,FE,'masterPT')
+      +`<div class="recf">${FE(a.cps)}+${FE(a.mixPT||0)}+${FE(a.masterPT||0)} = ${FE(a.cps+(a.mixPT||0)+(a.masterPT||0))}/titre × ${r.tt} = ${FE(r.recCost+r.mixCost+r.masterCost)} total studio</div>`
+      +msl(i,'clips','clips vidéo',a.clips,0,50000,500,FE)
+      +msl(i,'da','direction artistique',a.da||0,0,20000,250,FE)
+    )}
+
+    ${secH('budget promotion',i,'promotion',
+      msl(i,'marketing','marketing digital',a.marketing,0,50000,500,FE)
+      +msl(i,'rpBudget','relations presse',a.rpBudget||0,0,20000,250,FE)
+      +msl(i,'radio','radio plugging',a.radio||0,0,15000,250,FE)
+      +msl(i,'playlist','playlisting DSP',a.playlist||0,0,15000,250,FE)
+      +msl(i,'cmBudget','community management',a.cmBudget||0,0,15000,250,FE)
+    )}
+
+    ${secH('budget custom',i,'custom',ciH(a.cb||[],i,'cb')+`<button class="addci" data-i="${i}" data-tp="cb">+ poste</button>`)}
+    ${secH('ressources humaines',i,'rh',ciH(a.rh,i,'rh')+`<button class="addci" data-i="${i}" data-tp="rh">+ poste rh</button>`)}
+
+    ${secH('distribution',i,'distribution',
+      msl(i,'distribFee','frais de distribution',a.distribFee||15,0,40,1,v=>v+' %')
+      +msl(i,'managerCom','commission manager',a.managerCom,0,30,1,v=>v+' %')
+    )}
+
+    ${secH('revenus',i,'revenus',
+      msl(i,'rps','revenu par stream',a.rps,.002,.006,.0005,v=>v.toFixed(4).replace('.',',')+' €')
+      +`<div class="recf">rev net/stream : ${r.rpsNet.toFixed(4).replace('.',',')}€ (après ${a.distribFee||15}% distrib) · part label : ${r.rpsLabel.toFixed(4).replace('.',',')}€ (après ${a.royalty}% royalties)</div>`
+      +msl(i,'live','cachets live annuels',a.live,0,50000,500,FE)
+      +msl(i,'livecom','commission live',a.livecom,10,30,5,v=>v+' %')
+      +msl(i,'sync','sync annuel',a.sync||0,0,30000,250,FE)
+      +msl(i,'youtube','YouTube / UGC / Content ID annuel',a.youtube||0,0,20000,250,FE,'youtube')
+      +msl(i,'merch','merch annuel',a.merch||0,0,30000,250,FE)
+      +msl(i,'phys','physique annuel',a.phys||0,0,15000,250,FE)
+      +msl(i,'copiePrive','copie privée annuel',a.copiePrive||0,0,10000,250,FE,'copiePrive')
+      +msl(i,'droitsVoisins','droits voisins producteur annuel',a.droitsVoisins||0,0,15000,250,FE,'droitsVoisins')
+    )}
+
+    ${secH('financements',i,'financements',
+      msl(i,'cnm','subvention CNM',a.cnm||0,0,50000,500,FE)
+      +msl(i,'sppf','aide SPPF',a.sppf||0,0,30000,500,FE)
+      +msl(i,'scpp','aide SCPP',a.scpp||0,0,30000,500,FE)
+      +msl(i,'aidesTerr','aides territoriales',a.aidesTerr||0,0,20000,500,FE)
+      +msl(i,'creditImpot','crédit d\'impôt phonographique',a.creditImpot||0,0,50000,500,FE)
+      +msl(i,'mgLicences','MG / licences / export annuel',a.mgLicences||0,0,50000,500,FE)
+      +`<div class="recf">total financements : ${FE(r.subventions+r.creditImpot)} → budget net ${FE(r.budgetNet)}</div>`
+    )}
+
+    ${secH('modèle de streams',i,'streams',
+      msl(i,'decay','décroissance',a.decay,.01,.15,.01,v=>Math.round(v*100)+'%','decay')
+      +msl(i,'growth','croissance artiste / mois',a.growth||0,0,.10,.005,v=>(v*100).toFixed(1)+'%','growth')
+      +`<div class="sg"><div class="sh"><span class="sll">date de début ${tip('startDate')}</span></div><input type="month" class="date-inp" value="${a.startDate||'2026-01'}" data-i="${i}" data-field="startDate"></div>`
+      +`<div class="sg"><div class="sh"><span class="sll">multiple catalogue ${tip('catMultiple')}</span><span class="sv" data-i="${i}" data-f="catMultiple" data-min="5" data-mx="25" data-step="1" data-ft="n">${a.catMultiple||10}×</span></div><input type="range" min="5" max="25" step="1" value="${a.catMultiple||10}" data-i="${i}" data-f="catMultiple"></div>`
+      +`<div class="mul-row"><button class="mul-preset ${(a.catMultiple||10)===8?'act':''}" data-i="${i}" data-mul="8">8× récent</button><button class="mul-preset ${(a.catMultiple||10)===10?'act':''}" data-i="${i}" data-mul="10">10× indé</button><button class="mul-preset ${(a.catMultiple||10)===15?'act':''}" data-i="${i}" data-mul="15">15× établi</button><button class="mul-preset ${(a.catMultiple||10)===20?'act':''}" data-i="${i}" data-mul="20">20× hit</button></div>`
+    )}
+
+    ${budgetTableHTML(a,r)}
+
+    <div class="rg">
+      <div class="rc ${r.ltProfitNet<0?'alert':''}"><div class="rl" style="display:flex;align-items:center;gap:4px">profit net label 20a ${aiHTML('profitNet')}</div><div class="rv">${FE(r.ltProfitNet)}</div><div class="rd">après distrib + royalties</div><div class="rd2">${EP}a : ${FE(r.profitNet)} · coût/str ${r.costPerStream.toFixed(4).replace('.',',')}€</div></div>
+      <div class="rc ${!r.beMonth?'alert':''}"><div class="rl" style="display:flex;align-items:center;gap:4px">breakeven ${aiHTML('breakeven')}</div><div class="rv">${r.beMonth?'mois '+r.beMonth:'> 20a'}</div><div class="rd">${r.beMonth?addMonths(a.startDate,r.beMonth):''}</div><div class="rd2">seuil : ${FK(r.monthlyThreshold)} str/mois min</div></div>
+      <div class="rc ${r.ltRoi<0?'alert':''}"><div class="rl" style="display:flex;align-items:center;gap:4px">roi 20a ${aiHTML('roi')}</div><div class="rv">${r.ltRoi>0?'+':''}${Math.round(r.ltRoi)}%</div><div class="rd">${FE(r.ltProfitNet)} / ${FE(r.budgetBrut)}</div><div class="rd2">${EP}a : ${r.roi>0?'+':''}${Math.round(r.roi)}%</div></div>
+      <div class="rc"><div class="rl" style="display:flex;align-items:center;gap:4px">catalogue ${aiHTML('catalogue')}</div><div class="rv">${FE(r.catalogVal)}</div><div class="rd">${r.catMul}× rev annuel</div><div class="rd2">rev annuel ${FE(r.annualRev)}</div></div>
+    </div>
+
+    ${scenarioHTML(a)}
+
+    <div style="margin-top:10px;padding:10px 12px;background:var(--bg3);border-radius:8px;font-size:11px;color:var(--text2);line-height:1.6;text-transform:none">${summary(a,r)}</div>
+
+    <div class="ach"><div class="tabs"><button class="tab ${cm==='global'?'act':''}" data-i="${i}" data-cm="global">recoupement</button><button class="tab ${cm==='singles'?'act':''}" data-i="${i}" data-cm="singles">par single</button><button class="tab ${cm==='scenarios'?'act':''}" data-i="${i}" data-cm="scenarios">scénarios</button><button class="tab ${cm==='sensitivity'?'act':''}" data-i="${i}" data-cm="sensitivity">sensibilité</button></div><div class="acht">${cm==='sensitivity'?'seuil streams/mois/titre vs période cible':cm==='scenarios'?'scénarios (pessimiste / base / optimiste)':'recoupement — 20 ans'}</div><div class="cw ${cm==='singles'||cm==='scenarios'?'tall':''}"><canvas id="ch-${a.id}"></canvas></div><div class="cleg" id="lg-${a.id}"></div></div></div>`;
+    l.appendChild(el)
+  })
+}
+
+function bindAll(){
+  document.querySelectorAll('.ah').forEach(h=>h.addEventListener('click',e=>{if(e.target.closest('.anm,.aacts'))return;A[+h.dataset.i].open=!A[+h.dataset.i].open;R()}));
+  document.querySelectorAll('.anm').forEach(inp=>inp.addEventListener('input',e=>{A[+e.target.dataset.i].name=e.target.value||'artiste '+(+e.target.dataset.i+1);rGlobal();rRecap()}));
+  document.querySelectorAll('.anotes textarea').forEach(t=>t.addEventListener('input',e=>{A[+e.target.dataset.i].notes=e.target.value}));
+  // sliders
+  document.querySelectorAll('input[type="range"][data-i]').forEach(s=>{
+    s.addEventListener('input',e=>{
+      const i=+e.target.dataset.i,f=e.target.dataset.f;
+      const isFloat=['rps','decay','growth'].includes(f);
+      A[i][f]=isFloat?parseFloat(e.target.value):+e.target.value;
+      const sv=e.target.parentElement.querySelector('.sv');
+      if(sv){
+        const ft=sv.dataset.ft,v=A[i][f];
+        if(f==='catMultiple')sv.textContent=v+'×';
+        else if(ft==='r')sv.textContent=v.toFixed(4).replace('.',',')+' €';
+        else if(ft==='d')sv.textContent=Math.round(v*100)+'%';
+        else if(ft==='g')sv.textContent=(v*100).toFixed(1)+'%';
+        else if(['avance','cps','marketing','clips','live','sync','merch','phys','da','rpBudget','radio','playlist','cmBudget','youtube','copiePrive','droitsVoisins','cnm','sppf','scpp','aidesTerr','creditImpot','mgLicences','mixPT','masterPT'].includes(f))sv.textContent=FE(v);
+        else if(f==='duration')sv.textContent=v+' mois';
+        else if(f==='exploitDur')sv.textContent=v+' ans';
+        else if(['royalty','livecom','distribFee','managerCom'].includes(f))sv.textContent=v+' %';
+        else sv.textContent=v+''
+      }
+      updateSliderFill(e.target);rGlobal()
+    });
+    s.addEventListener('change',()=>R())
+  });
+  // direct edit
+  document.querySelectorAll('.sv').forEach(el=>el.addEventListener('click',e=>{
+    e.stopPropagation();const i=+el.dataset.i,f=el.dataset.f,min=parseFloat(el.dataset.min),step=parseFloat(el.dataset.step),ft=el.dataset.ft;
+    const cur=A[i][f]||0;const inp=document.createElement('input');inp.className='sve';inp.type='number';inp.inputMode='decimal';
+    inp.value=ft==='r'?cur.toFixed(4):ft==='d'?(cur*100).toFixed(0):ft==='g'?(cur*100).toFixed(1):cur;
+    el.replaceWith(inp);inp.focus();inp.select();
+    const go=()=>{let v=parseFloat(inp.value);if(ft==='d'||ft==='g')v/=100;if(isNaN(v))v=cur;v=Math.max(min,v);A[i][f]=v;R()};
+    const cancel=()=>{A[i][f]=cur;R()};
+    inp.addEventListener('blur',go);inp.addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault();go()}else if(e.key==='Escape'){e.preventDefault();cancel()}})
+  }));
+  // actions
+  document.querySelectorAll('.aa').forEach(b=>b.addEventListener('click',e=>{e.stopPropagation();const i=+b.dataset.i;if(b.dataset.act==='dup'){A.splice(i+1,0,dup(A[i]));R()}else if(b.dataset.act==='del'){A.splice(i,1);R()}}));
+  // date inputs
+  document.querySelectorAll('.date-inp[data-field]').forEach(inp=>inp.addEventListener('change',e=>{A[+e.target.dataset.i][e.target.dataset.field]=e.target.value;R()}));
+  // custom item sliders
+  document.querySelectorAll('input[type="range"][data-cisl]').forEach(s=>{
+    s.addEventListener('input',e=>{const i=+e.target.dataset.i,ci=+e.target.dataset.ci,tp=e.target.dataset.tp;
+      const items=tp==='rh'?A[i].rh:A[i].cb;items[ci].cost=+e.target.value;
+      const sv=e.target.parentElement.querySelector('.sv[data-ciamt]');if(sv)sv.textContent=FE(items[ci].cost);
+      updateSliderFill(e.target);rGlobal()});
+    s.addEventListener('change',()=>R())});
+  // custom item direct edit
+  document.querySelectorAll('.sv[data-ciamt]').forEach(el=>el.addEventListener('click',e=>{
+    e.stopPropagation();const i=+el.dataset.i,ci=+el.dataset.ci,tp=el.dataset.tp;
+    const items=tp==='rh'?A[i].rh:A[i].cb;const cur=items[ci].cost;
+    const inp=document.createElement('input');inp.className='sve';inp.type='number';inp.inputMode='decimal';inp.value=cur;
+    el.replaceWith(inp);inp.focus();inp.select();
+    const go=()=>{let v=+inp.value;if(isNaN(v))v=cur;items[ci].cost=Math.max(0,v);R()};
+    const cancel=()=>{items[ci].cost=cur;R()};
+    inp.addEventListener('blur',go);inp.addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault();go()}else if(e.key==='Escape'){e.preventDefault();cancel()}})}));
+  // custom item type
+  document.querySelectorAll('.cit').forEach(b=>b.addEventListener('click',e=>{e.stopPropagation();(b.dataset.tp==='rh'?A[+b.dataset.i].rh:A[+b.dataset.i].cb)[+b.dataset.ci].type=b.dataset.rt;R()}));
+  // delete custom item
+  document.querySelectorAll('.cidel').forEach(b=>b.addEventListener('click',e=>{e.stopPropagation();(b.dataset.tp==='rh'?A[+b.dataset.i].rh:A[+b.dataset.i].cb).splice(+b.dataset.ci,1);R()}));
+  // add custom item
+  document.querySelectorAll('.addci').forEach(b=>b.addEventListener('click',e=>{e.stopPropagation();const n=prompt('nom du poste :');if(!n)return;(b.dataset.tp==='rh'?A[+b.dataset.i].rh:A[+b.dataset.i].cb).push({name:n.toLowerCase(),cost:0,type:'unique'});R()}));
+  // chart tabs
+  document.querySelectorAll('.tab[data-cm]').forEach(b=>b.addEventListener('click',e=>{e.stopPropagation();A[+b.dataset.i].chartMode=b.dataset.cm;R()}));
+  // section toggles
+  document.querySelectorAll('.sec-h').forEach(h=>h.addEventListener('click',e=>{e.stopPropagation();const i=+h.dataset.i,k=h.dataset.sec;A[i].sections[k]=!A[i].sections[k];h.parentElement.classList.toggle('closed')}));
+  // hero target pills
+  document.querySelectorAll('.hero-pills .pill[data-tm]').forEach(b=>b.addEventListener('click',e=>{e.stopPropagation();A[+b.dataset.i].targetMonths=+b.dataset.tm;R()}));
+  // catalogue multiple presets
+  document.querySelectorAll('.mul-preset[data-mul]').forEach(b=>b.addEventListener('click',e=>{e.stopPropagation();A[+b.dataset.i].catMultiple=+b.dataset.mul;R()}));
+}
+
+// ===== RECAP =====
+function rRecap(){
+  const s=document.getElementById('recapS');if(A.length<1){s.style.display='none';return}s.style.display='';
+  let tb=0,be=[],rois=[],ltRoisR=[],netL=0,ltNetL=0,catVal=0,spmpts=[];
+  A.forEach(a=>{const r=calc(a);tb+=r.budgetBrut;if(r.beMonth)be.push(r.beMonth);rois.push(r.roi);ltRoisR.push(r.ltRoi);netL+=r.profitNet;ltNetL+=r.ltProfitNet;catVal+=r.catalogVal;spmpts.push({name:a.name,spt1:r.spt1,listenersMonth:r.listenersMonth,tt:r.tt,tm:r.targetM})});
+  const ab=be.length?Math.round(be.reduce((x,y)=>x+y,0)/be.length):null;
+  const ar=ltRoisR.length?Math.round(ltRoisR.reduce((x,y)=>x+y,0)/ltRoisR.length):0;
+  const maxY=20;
+
+  // KPI comparison table
+  let kpiH=`<tr><th>artiste</th><th>streams/titre/an 1</th><th>auditeurs/mois catalogue</th><th>titres</th><th>période</th></tr>`;
+  spmpts.forEach((s,i)=>{kpiH+=`<tr><td><i class="cdot" style="background:${COL[i%8]}"></i>${s.name}</td><td style="color:${spmptColorHex(s.spt1)}">${s.spt1===Infinity?'∞':FK(s.spt1)}</td><td>${s.listenersMonth===Infinity?'∞':FK(s.listenersMonth)}</td><td>${s.tt}</td><td>${s.tm}m</td></tr>`});
+
+  // yearly table (20 years)
+  let yH=`<tr><th></th>${Array.from({length:maxY},(_,y)=>`<th>a${y+1}</th>`).join('')}<th>total</th></tr>`;
+  let tots=Array(maxY).fill(0);
+  A.forEach((a,i)=>{
+    const r=calc(a);
+    const dc=dC(r.snForCurve,maxY*12,a.decay,a.growth);
+    let yr=[];
+    for(let y=0;y<maxY;y++){
+      const yEnd=Math.min((y+1)*12,maxY*12), yStart=y*12;
+      const streamY=Math.round((dc[yEnd]-dc[yStart])*r.rpsLabel);
+      const otherYr=r.otherY;
+      const finY=y===0?r.subventions+r.creditImpot:0;
+      yr.push(streamY+otherYr+finY);
+      tots[y]+=yr[y];
+    }
+    yH+=`<tr><td><i class="cdot" style="background:${COL[i%8]}"></i>${a.name}</td>${yr.map(v=>`<td>${FE(v)}</td>`).join('')}<td>${FE(yr.reduce((x,y)=>x+y,0))}</td></tr>`
+  });
+  yH+=`<tr class="yt-t"><td>total revenus</td>${tots.map(v=>`<td>${FE(v)}</td>`).join('')}<td>${FE(tots.reduce((x,y)=>x+y,0))}</td></tr>`;
+  let cumP=0;yH+=`<tr><td>bénéfice cumulé</td>${tots.map((v,y)=>{cumP+=v;if(y===0)cumP-=tb;const cl=cumP>=0?'color:var(--ok)':'color:var(--danger)';return`<td style="${cl}">${FE(cumP)}</td>`}).join('')}<td style="color:${cumP>=0?'var(--ok)':'var(--danger)'}"><strong>${FE(cumP)}</strong></td></tr>`;
+
+  s.innerHTML=`<h2>vue globale — ${EP} ans d'exploitation</h2>
+    <div class="rmg">
+      <div class="rmc"><div class="rml">budget total</div><div class="rmv">${FE(tb)}</div><div class="rmd">${FE(A.length?tb/A.length:0)}/artiste</div></div>
+      <div class="rmc ${!ab?'alert':''}"><div class="rml">breakeven moyen</div><div class="rmv">${ab?'m'+ab:'—'}</div></div>
+      <div class="rmc ${ar<0?'alert':''}"><div class="rml">roi moyen 20a</div><div class="rmv ${ar<0?'neg':ar>0?'pos':''}">${ar>0?'+':''}${ar}%</div></div>
+      <div class="rmc"><div class="rml">profit net 20a</div><div class="rmv ${ltNetL<0?'neg':ltNetL>0?'pos':''}">${FE(ltNetL)}</div><div class="rmd">${EP}a : ${FE(netL)}</div></div>
+    </div>
+
+    <div class="ytw"><h3>seuils de recoupement comparés</h3><table class="yt">${kpiH}</table></div>
+
+    <div class="rcharts">
+      <div class="rchw"><h3>bénéfice annuel + cumulé (${maxY} ans)</h3><div class="rchc"><canvas id="rcProfit"></canvas></div><div class="rchl" id="rcProfitL"></div></div>
+      <div class="rchw"><h3>répartition budget</h3><div class="rchc"><canvas id="rcPie"></canvas></div><div class="rchl" id="rcPieL"></div></div>
+    </div>
+    <div class="rcharts">
+      <div class="rchw"><h3>sensibilité recoupement (streams/titre/an 1 vs période)</h3><div class="rchc"><canvas id="rcSensKPI"></canvas></div><div class="rchl" id="rcSensKPIL"></div></div>
+      <div class="rchw"><h3>sensibilité rev/stream (breakeven vs rps)</h3><div class="rchc"><canvas id="rcSensRPS"></canvas></div><div class="rchl" id="rcSensRPSL"></div></div>
+    </div>
+
+    <div class="ytw"><h3>projection détaillée — 20 ans</h3><table class="yt">${yH}</table></div>`
+}
+
+// ===== CHARTS =====
+function rCharts(){
+  Object.values(CX).forEach(c=>{if(c)c.destroy()});CX={};RC.forEach(c=>{if(c)c.destroy()});RC=[];
+  const grd=dk?'rgba(255,255,255,.04)':'rgba(0,0,0,.06)';const tk=dk?'#666':'#999';const wht=dk?'#fff':'#1A1A18';
+  const ttO={backgroundColor:dk?'#1E1E1C':'#fff',titleColor:dk?'#F0F0EB':'#1A1A18',bodyColor:dk?'#A0A09A':'#6B6A65',borderColor:dk?'rgba(255,255,255,.08)':'rgba(0,0,0,.1)',borderWidth:1,padding:8,bodyFont:{family:"'Space Mono'",size:10}};
+  const scY={beginAtZero:true,ticks:{callback:v=>F(v)+'€',color:tk,font:{family:"'Space Mono'",size:9}},grid:{color:grd}};
+  const scX={ticks:{color:tk,font:{size:9},maxTicksLimit:12,callback:function(v,i){return this.getLabelForValue(i)||null}},grid:{display:false}};
+
+  // Per-artist charts
+  A.forEach((a,idx)=>{
+    const cv=document.getElementById('ch-'+a.id);if(!cv)return;
+    const r=calc(a),c=COL[idx%8];
+    const months=20*12;
+    const mo=Array.from({length:months+1},(_,j)=>j),lb=mo.map(m=>m%12===0?(m===0?'0':'a'+(m/12)):'');
+    const oM=r.otherY/12;
+    let ds;const cm=a.chartMode||'global';
+
+    if(cm==='sensitivity'){
+      // Sensitivity: streams/mois/titre vs target period
+      const periods=[];for(let p=6;p<=60;p+=2)periods.push(p);
+      const data=periods.map(p=>calcKPI(a,p));
+      ds=[{label:'streams/titre/an 1',data:data,borderColor:c,borderWidth:2,pointRadius:0,fill:false}];
+      CX[a.id]=new Chart(cv,{type:'line',data:{labels:periods.map(p=>p+'m'),datasets:ds},options:{responsive:true,maintainAspectRatio:false,interaction:{intersect:false,mode:'index'},scales:{y:{beginAtZero:true,ticks:{callback:v=>FK(v),color:tk,font:{family:"'Space Mono'",size:9}},grid:{color:grd}},x:{ticks:{color:tk,font:{size:9},maxTicksLimit:15},grid:{display:false}}},plugins:{legend:{display:false},tooltip:{...ttO,callbacks:{label:ctx=>FK(Math.round(ctx.parsed.y))+' streams/titre/an 1'}}}}});
+      const lg=document.getElementById('lg-'+a.id);
+      if(lg)lg.innerHTML=`<span><i style="background:${c}"></i>streams/titre/an 1 nécessaires</span>`;
+
+    }else if(cm==='scenarios'){
+      // 3 scenario overlay
+      const pess=calc(a,0.5,0);
+      const base=calc(a);
+      const opti=calc(a,1.8,1.5);
+      const dcP=dC(pess.snForCurve,months,a.decay,a.growth);
+      const dcB=dC(base.snForCurve,months,a.decay,a.growth);
+      const dcO=dC(opti.snForCurve,months,a.decay,a.growth);
+      const pessOm=(pess.otherY)/12, baseOm=(base.otherY)/12, optiOm=(opti.otherY)/12;
+      ds=[
+        {label:'budget',data:mo.map(()=>r.budgetBrut),borderColor:'#FF5E5B',borderWidth:1.5,pointRadius:0,borderDash:[5,3],fill:false},
+        {label:'pessimiste (×0.5)',data:mo.map((_,j)=>Math.round(dcP[j]*pess.rpsLabel*0.5+j*pessOm+(j>0?0:pess.subventions+pess.creditImpot))),borderColor:shade(c,.4),borderWidth:1.5,pointRadius:0,borderDash:[3,2],fill:false},
+        {label:'base',data:mo.map((_,j)=>Math.round(dcB[j]*base.rpsLabel+j*baseOm+(j>0?0:base.subventions+base.creditImpot))),borderColor:c,borderWidth:2,pointRadius:0,fill:false},
+        {label:'optimiste (×1.8)',data:mo.map((_,j)=>Math.round(dcO[j]*opti.rpsLabel*1.8+j*optiOm+(j>0?0:opti.subventions+opti.creditImpot))),borderColor:shade(c,.15),borderWidth:1.5,pointRadius:0,borderDash:[6,2],fill:false}
+      ];
+      CX[a.id]=new Chart(cv,{type:'line',data:{labels:lb,datasets:ds},options:{responsive:true,maintainAspectRatio:false,interaction:{intersect:false,mode:'index'},scales:{y:scY,x:scX},plugins:{legend:{display:false},tooltip:{...ttO,callbacks:{title:ctx=>{const m=ctx[0].dataIndex;return m===0?'début':'a'+(Math.floor(m/12)+1)+' m'+(m%12+1)},label:ctx=>ctx.dataset.label+': '+FE(Math.round(ctx.parsed.y))}}}}});
+      const lg=document.getElementById('lg-'+a.id);
+      if(lg)lg.innerHTML=[['#FF5E5B','budget'],[shade(c,.4),'pessimiste'],[c,'base'],[shade(c,.15),'optimiste']].map(([cl,t])=>`<span><i style="background:${cl}"></i>${t}</span>`).join('');
+
+    }else if(cm==='singles'){
+      const tt=totalTracks(a);
+      const intv=tt>1?a.duration/tt:a.duration;
+      const perS=r.snForCurve>0?Math.round(r.snForCurve/tt):0;
+      const sM=[];const sRMs=[];
+      for(let s2=0;s2<Math.min(tt,20);s2++){const rm=Math.round(s2*intv);sRMs.push(rm);const cum=dCS(perS,months,a.decay,rm,a.growth);sM.push(mo.map((_,j)=>j===0?0:Math.round((cum[j]-cum[j-1])*r.rpsLabel)))}
+      ds=[];for(let s2=Math.min(tt,20)-1;s2>=0;s2--)ds.push({label:'titre '+(s2+1)+' (m'+sRMs[s2]+')',data:sM[s2],borderColor:shade(c,Math.min(s2*.08,.6)),backgroundColor:shade(c,Math.min(s2*.08,.6))+'30',borderWidth:1,pointRadius:0,fill:'origin'});
+      const totM=mo.map((_,j)=>{let sum=0;sM.forEach(sm=>sum+=sm[j]);return sum+Math.round(j*oM)});
+      ds.push({label:'total',data:totM,borderColor:wht,borderWidth:2,pointRadius:0,fill:false});
+      ds.push({label:'budget/mois',data:mo.map(()=>Math.round(r.budgetBrut/months)),borderColor:'#FF5E5B',borderWidth:1,pointRadius:0,borderDash:[4,3],fill:false});
+      CX[a.id]=new Chart(cv,{type:'line',data:{labels:lb,datasets:ds},options:{responsive:true,maintainAspectRatio:false,interaction:{intersect:false,mode:'index'},scales:{y:scY,x:scX},plugins:{legend:{display:false},tooltip:{...ttO,callbacks:{title:ctx=>{const m=ctx[0].dataIndex;return m===0?'début':'a'+(Math.floor(m/12)+1)+' m'+(m%12+1)},label:ctx=>ctx.dataset.label+': '+FE(Math.round(ctx.parsed.y))}}}}});
+      const lg=document.getElementById('lg-'+a.id);
+      if(lg)lg.innerHTML=[[wht,'total'],['#FF5E5B','budget/mois'],...Array.from({length:Math.min(tt,10)},(_,s)=>[shade(c,Math.min(s*.08,.6)),'titre '+(s+1)])].map(([cl,t])=>`<span><i style="background:${cl}"></i>${t}</span>`).join('');
+
+    }else{
+      // Global breakeven
+      const dc=dC(r.snForCurve,months,a.decay,a.growth);
+      ds=[
+        {label:'budget',data:mo.map(()=>r.budgetBrut),borderColor:'#FF5E5B',borderWidth:1.5,pointRadius:0,borderDash:[5,3],fill:false},
+        {label:'streams (label)',data:mo.map((_,j)=>Math.round(dc[j]*r.rpsLabel)),borderColor:c,borderWidth:2,pointRadius:0,backgroundColor:c+'12',fill:true},
+        {label:'autres revenus',data:mo.map(m=>Math.round(m*oM)),borderColor:'#40D88E',borderWidth:1.5,pointRadius:0,fill:false},
+        {label:'total cumulé',data:mo.map((_,j)=>Math.round(dc[j]*r.rpsLabel+j*oM+(r.subventions+r.creditImpot))),borderColor:wht,borderWidth:2,pointRadius:0,fill:false}
+      ];
+      CX[a.id]=new Chart(cv,{type:'line',data:{labels:lb,datasets:ds},options:{responsive:true,maintainAspectRatio:false,interaction:{intersect:false,mode:'index'},scales:{y:scY,x:scX},plugins:{legend:{display:false},tooltip:{...ttO,callbacks:{title:ctx=>{const m=ctx[0].dataIndex;return m===0?'début':'a'+(Math.floor(m/12)+1)+' m'+(m%12+1)},label:ctx=>ctx.dataset.label+': '+FE(Math.round(ctx.parsed.y))}}}},plugins:[{id:'ce',afterDraw(ch){const meta=ch.getDatasetMeta(0),ce=a.duration;if(!meta.data[ce])return;const x=meta.data[ce].x,c2=ch.ctx,yA=ch.chartArea;c2.save();c2.beginPath();c2.setLineDash([3,3]);c2.strokeStyle=dk?'rgba(255,255,255,.12)':'rgba(0,0,0,.12)';c2.lineWidth=1;c2.moveTo(x,yA.top);c2.lineTo(x,yA.bottom);c2.stroke();c2.fillStyle=tk;c2.font='500 8px sans-serif';c2.textAlign='center';c2.fillText('fin contrat',x,yA.top-4);c2.restore()}}]});
+      const lg=document.getElementById('lg-'+a.id);
+      if(lg)lg.innerHTML=[['#FF5E5B','budget'],[c,'streams (label)'],['#40D88E','autres'],[wht,'total cumulé']].map(([cl,t])=>`<span><i style="background:${cl}"></i>${t}</span>`).join('');
+    }
+  });
+
+  // ===== GLOBAL CHARTS =====
+  const maxY=20;
+
+  // Profit chart
+  const rcP=document.getElementById('rcProfit');
+  if(rcP&&A.length>=1){
+    const labels=Array.from({length:maxY},(_,y)=>'a'+(y+1));
+    let yp=Array(maxY).fill(0);
+    A.forEach(a=>{const r=calc(a);const dc=dC(r.snForCurve,maxY*12,a.decay,a.growth);
+      for(let y=0;y<maxY;y++){
+        const yEnd=Math.min((y+1)*12,maxY*12),yStart=y*12;
+        const streamY=Math.round((dc[yEnd]-dc[yStart])*r.rpsLabel);
+        const otherYr=r.otherY;
+        const finY=y===0?r.subventions+r.creditImpot:0;
+        yp[y]+=streamY+otherYr+finY;
+      }
+    });
+    let tb=0;A.forEach(a=>tb+=calc(a).budgetBrut);
+    const yn=yp.map((v,y)=>y===0?v-tb:v);
+    let cn=[];yn.forEach((v,y)=>cn.push(y===0?v:cn[y-1]+v));
+    RC.push(new Chart(rcP,{type:'bar',data:{labels,datasets:[
+      {type:'bar',label:'bénéfice/an',data:yn,backgroundColor:yn.map(v=>v>=0?'rgba(64,216,142,0.7)':'rgba(255,94,91,0.7)'),borderRadius:4,order:2},
+      {type:'line',label:'cumulé',data:cn,borderColor:wht,borderWidth:2,pointRadius:0,fill:false,order:1}
+    ]},options:{responsive:true,maintainAspectRatio:false,interaction:{intersect:false,mode:'index'},scales:{y:{ticks:{callback:v=>F(v)+'€',color:tk,font:{family:"'Space Mono'",size:9}},grid:{color:grd}},x:{ticks:{color:tk,font:{size:9}},grid:{display:false}}},plugins:{legend:{display:false},tooltip:{...ttO,callbacks:{label:ctx=>ctx.dataset.label+': '+FE(Math.round(ctx.parsed.y))}}}}}));
+    document.getElementById('rcProfitL').innerHTML=[['rgba(64,216,142,0.7)','bénéfice'],['rgba(255,94,91,0.7)','perte'],[wht,'cumulé']].map(([c,t])=>`<span><i style="background:${c}"></i>${t}</span>`).join('');
+  }
+
+  // Pie
+  const rcPie=document.getElementById('rcPie');
+  if(rcPie&&A.length>=1){
+    const labels=[],data=[],colors=[];
+    A.forEach((a,i)=>{const r=calc(a),b=COL[i%8];
+      [['avance',a.avance],['enregistrement',r.recCost],['mix',r.mixCost],['mastering',r.masterCost],['clips',a.clips],['DA',a.da||0],['marketing',a.marketing],['RP',a.rpBudget||0],['radio',a.radio||0],['playlisting',a.playlist||0],['CM',a.cmBudget||0],['RH',r.rht],['custom',r.cbt]].filter(p=>p[1]>0).forEach((p,pi)=>{labels.push(a.name+' — '+p[0]);data.push(p[1]);colors.push(shade(b,Math.min(pi*.07,.5)))})});
+    RC.push(new Chart(rcPie,{type:'doughnut',data:{labels,datasets:[{data,backgroundColor:colors,borderWidth:1,borderColor:dk?'#131312':'#fff'}]},options:{responsive:true,maintainAspectRatio:false,cutout:'50%',plugins:{legend:{display:false},tooltip:{...ttO,callbacks:{label:ctx=>{const tot=data.reduce((a,b)=>a+b,0);return ctx.label+': '+FE(ctx.raw)+' ('+Math.round(ctx.raw/tot*100)+'%)'}}}}}}));
+    document.getElementById('rcPieL').innerHTML=A.map((a,i)=>`<span><i style="background:${COL[i%8]}"></i>${a.name}: ${FE(calc(a).budgetBrut)}</span>`).join('');
+  }
+
+  // Sensitivity KPI chart: streams/mois/titre vs period
+  const rcSK=document.getElementById('rcSensKPI');
+  if(rcSK&&A.length>=1){
+    const periods=[];for(let p=6;p<=60;p+=3)periods.push(p);
+    const datasets=A.map((a,i)=>({
+      label:a.name,data:periods.map(p=>calcKPI(a,p)),borderColor:COL[i%8],borderWidth:2,pointRadius:0,fill:false
+    }));
+    RC.push(new Chart(rcSK,{type:'line',data:{labels:periods.map(p=>p+'m'),datasets},options:{responsive:true,maintainAspectRatio:false,interaction:{intersect:false,mode:'index'},scales:{y:{beginAtZero:true,ticks:{callback:v=>FK(v),color:tk,font:{family:"'Space Mono'",size:9}},grid:{color:grd}},x:{ticks:{color:tk,font:{size:9}},grid:{display:false}}},plugins:{legend:{display:false},tooltip:{...ttO,callbacks:{label:ctx=>ctx.dataset.label+': '+FK(Math.round(ctx.parsed.y))+' str/t/a1'}}}}}));
+    document.getElementById('rcSensKPIL').innerHTML=A.map((a,i)=>`<span><i style="background:${COL[i%8]}"></i>${a.name}</span>`).join('');
+  }
+
+  // Sensitivity RPS chart: breakeven months & ROI vs rps
+  const rcSR=document.getElementById('rcSensRPS');
+  if(rcSR&&A.length>=1){
+    const rpsVals=[];for(let r=.002;r<=.006;r+=.0005)rpsVals.push(Math.round(r*10000)/10000);
+    // Use first artist for simplicity
+    const a0=A[0];
+    const beMos=[],rois2=[];
+    rpsVals.forEach(rpsV=>{
+      const tmp=JSON.parse(JSON.stringify(a0));tmp.rps=rpsV;
+      const r=calc(tmp);
+      beMos.push(r.beMonth||EP*12+12);
+      rois2.push(Math.round(r.ltRoi));
+    });
+    RC.push(new Chart(rcSR,{type:'line',data:{labels:rpsVals.map(v=>v.toFixed(4).replace('.',',')),datasets:[
+      {label:'breakeven (mois)',data:beMos,borderColor:'#FF5E5B',borderWidth:2,pointRadius:2,fill:false,yAxisID:'y'},
+      {label:'ROI %',data:rois2,borderColor:'#40D88E',borderWidth:2,pointRadius:2,fill:false,yAxisID:'y1'}
+    ]},options:{responsive:true,maintainAspectRatio:false,interaction:{intersect:false,mode:'index'},scales:{y:{position:'left',title:{display:true,text:'mois',color:tk,font:{size:9}},ticks:{color:tk,font:{family:"'Space Mono'",size:9}},grid:{color:grd}},y1:{position:'right',title:{display:true,text:'roi %',color:tk,font:{size:9}},ticks:{color:tk,font:{family:"'Space Mono'",size:9}},grid:{display:false}},x:{title:{display:true,text:'rev/stream €',color:tk,font:{size:9}},ticks:{color:tk,font:{size:9}},grid:{display:false}}},plugins:{legend:{display:false},tooltip:{...ttO}}}}));
+    document.getElementById('rcSensRPSL').innerHTML=[['#FF5E5B','breakeven (mois)'],['#40D88E','ROI %']].map(([c,t])=>`<span><i style="background:${c}"></i>${t}</span>`).join('')+`<span style="color:var(--text3)"> · basé sur ${a0.name}</span>`;
+  }
+}
+
+// ===== PRESENTATION MODE =====
+document.getElementById('presBtn').addEventListener('click',()=>{presMode=!presMode;document.getElementById('app').classList.toggle('pres',presMode);document.getElementById('presBtn').textContent=presMode?'édition':'présentation';if(presMode){A.forEach(a=>a.open=true);R()}});
+
+// ===== ADD ARTIST =====
+document.getElementById('addBtn').addEventListener('click',()=>{A.push(mk());R();setTimeout(()=>{const c=document.querySelectorAll('.ac');c[c.length-1].scrollIntoView({behavior:'smooth',block:'start'})},50)});
+
+// ===== SHARE =====
+document.getElementById('shareBtn').addEventListener('click',async()=>{
+  const sum=A.map(a=>{const r=calc(a);return`${a.name}: ${FE(r.budgetBrut)} → be ${r.beMonth?'m'+r.beMonth:'> 20a'} · roi 20a ${Math.round(r.ltRoi)}% · ${FK(r.spt1)} str/t/a1 · catalogue ${FE(r.catalogVal)}`}).join('\n');
+  let tb=0;A.forEach(a=>tb+=calc(a).budgetBrut);
+  const t=`breakeven v2 — contrat d'artiste (${EP} ans)\n\n${sum}\n\nbudget total: ${FE(tb)}`;
+  if(navigator.share){try{await navigator.share({title:'breakeven',text:t});toast('partagé')}catch(e){if(e.name!=='AbortError')fc(t)}}else fc(t)
+});
+document.getElementById('linkBtn').addEventListener('click',()=>{const url=saveToURL();navigator.clipboard.writeText(url).then(()=>toast('lien copié')).catch(()=>toast('erreur'))});
+function fc(t){navigator.clipboard.writeText(t).then(()=>toast('copié')).catch(()=>toast('erreur'))}
+
+// ===== INIT =====
+A.push(mk());A[0].name='artiste 1';R()
+</script>
+</body>
+</html>

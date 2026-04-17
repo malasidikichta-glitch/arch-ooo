@@ -1,0 +1,56 @@
+[build]
+  publish = "public"
+  functions = "netlify/functions"
+
+[functions]
+  node_bundler = "esbuild"
+  included_files = ["netlify/functions/**"]
+
+# ---- headers ----
+[[headers]]
+  for = "/downloads/*.md"
+  [headers.values]
+    Content-Type = "text/plain; charset=utf-8"
+
+# noindex for /55asky (belt-and-suspenders with the meta tag)
+[[headers]]
+  for = "/55asky/*"
+  [headers.values]
+    X-Robots-Tag = "noindex, nofollow, noarchive, nosnippet"
+    Cache-Control = "no-store, no-cache, must-revalidate"
+
+# ---- redirects ----
+# breakeven PWA
+[[redirects]]
+  from = "/breakeven"
+  to = "/breakeven/"
+  status = 301
+
+# data dashboard
+[[redirects]]
+  from = "/data"
+  to = "/data.html"
+  status = 200
+
+# v2 plugins (primary)
+[[redirects]]
+  from = "/plugins/success"
+  to = "/success.html"
+  status = 200
+
+[[redirects]]
+  from = "/plugins"
+  to = "/plugins.html"
+  status = 200
+
+# stats (legacy v1)
+[[redirects]]
+  from = "/stats"
+  to = "/stats.html"
+  status = 200
+
+# root → plugins
+[[redirects]]
+  from = "/"
+  to = "/plugins.html"
+  status = 200
