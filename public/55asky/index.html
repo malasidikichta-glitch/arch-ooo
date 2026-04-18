@@ -4,10 +4,11 @@
 <meta charset="UTF-8">
 <meta name="robots" content="noindex, nofollow, noarchive, nosnippet">
 <meta name="googlebot" content="noindex, nofollow">
-<title>arch × 55asky — gaîté lyrique</title>
+<title>arch × 55asky · gaîté lyrique</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Geist+Mono:wght@300;400;500;600&family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
 <style>
 :root {
   --bg: #0f0f0f;
@@ -460,6 +461,112 @@ section {
   margin-bottom: 32px;
 }
 
+/* ---- budget grid ---- */
+.budget-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 24px;
+  margin-bottom: 16px;
+}
+
+.budget-grid .table {
+  margin-bottom: 0;
+}
+
+/* ---- charts ---- */
+.chart-block {
+  background: var(--bg-soft);
+  border: 1px solid var(--border);
+  padding: 32px 28px;
+  margin-bottom: 24px;
+}
+
+.chart-title {
+  font-size: 11px;
+  color: var(--accent);
+  text-transform: lowercase;
+  letter-spacing: 0.15em;
+  margin-bottom: 4px;
+  font-weight: 400;
+}
+
+.chart-subtitle {
+  font-size: 12px;
+  color: var(--text-dim);
+  margin-bottom: 24px;
+  line-height: 1.5;
+}
+
+.chart-canvas-wrap {
+  position: relative;
+  height: 320px;
+}
+
+.chart-canvas-wrap.tall {
+  height: 400px;
+}
+
+.chart-grid-2 {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 24px;
+  margin-bottom: 24px;
+}
+
+.chart-legend {
+  display: flex;
+  gap: 20px;
+  margin-top: 16px;
+  flex-wrap: wrap;
+  font-size: 11px;
+  color: var(--text-dim);
+}
+
+.chart-legend-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.chart-legend-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 2px;
+  flex-shrink: 0;
+}
+
+@media (max-width: 768px) {
+  .chart-grid-2 { grid-template-columns: 1fr; }
+  .chart-canvas-wrap { height: 280px; }
+}
+
+/* ---- total dépenses band ---- */
+.total-depense {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  padding: 14px 20px;
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-left: 2px solid var(--accent);
+  margin-bottom: 32px;
+}
+
+.total-depense-label {
+  font-size: 10px;
+  color: var(--text-dim);
+  text-transform: lowercase;
+  letter-spacing: 0.15em;
+}
+
+.total-depense-value {
+  font-family: 'Geist Mono', monospace;
+  font-size: 15px;
+  color: var(--text);
+  font-weight: 500;
+  font-variant-numeric: tabular-nums;
+}
+
 .expense-block {
   background: var(--bg-soft);
   border: 1px solid var(--border);
@@ -529,6 +636,38 @@ section {
   font-style: italic;
   color: var(--accent);
   font-size: 14px;
+}
+
+/* ---- open point ---- */
+.open-point {
+  border: 1px dashed var(--border);
+  padding: 24px 28px;
+  margin: 24px 0 32px;
+  background: transparent;
+  position: relative;
+}
+
+.open-point-tag {
+  font-size: 9px;
+  color: var(--accent-soft);
+  text-transform: lowercase;
+  letter-spacing: 0.2em;
+  margin-bottom: 12px;
+}
+
+.open-point-title {
+  font-family: 'Instrument Serif', serif;
+  font-style: italic;
+  font-size: 22px;
+  color: var(--text);
+  margin-bottom: 16px;
+  font-weight: 400;
+}
+
+.open-point-body {
+  font-size: 12px;
+  color: var(--text-dim);
+  line-height: 1.75;
 }
 
 /* ---- double date ---- */
@@ -610,7 +749,7 @@ section {
   .hero-title { font-size: 44px; }
   .info-grid { grid-template-columns: repeat(2, 1fr); }
   .scenarios { grid-template-columns: repeat(2, 1fr); }
-  .roles, .expenses, .pitch, .double-date { grid-template-columns: 1fr; }
+  .roles, .expenses, .pitch, .double-date, .budget-grid { grid-template-columns: 1fr; }
 }
 
 /* ---- note ---- */
@@ -623,6 +762,7 @@ section {
 }
 
 /* ---- gate ---- */
+body.gate-locked { overflow: hidden; height: 100vh; }
 #gate {
   position: fixed;
   inset: 0;
@@ -634,8 +774,9 @@ section {
   align-items: center;
   gap: 24px;
   padding: 24px;
+  transition: opacity 0.3s ease;
 }
-#gate.hidden { display: none; }
+#gate.hidden { opacity: 0; visibility: hidden; pointer-events: none; }
 .gate-title {
   font-family: 'Instrument Serif', serif;
   font-size: 32px;
@@ -691,11 +832,9 @@ section {
   height: 14px;
 }
 .gate-error.show { opacity: 1; }
-#content { display: none; }
-#content.unlocked { display: block; }
 </style>
 </head>
-<body>
+<body class="gate-locked">
 
 <div id="gate">
   <div class="gate-sub">— confidentiel</div>
@@ -708,7 +847,31 @@ section {
   <div class="gate-error" id="gate-error">accès refusé</div>
 </div>
 
-<div id="content"><div class="doc">
+<script>
+function gateCheck(ev) {
+  ev.preventDefault();
+  var u = document.getElementById('gate-user').value.trim().toLowerCase();
+  var p = document.getElementById('gate-pw').value;
+  if (u === '55asky' && p === 'arch_balobi') {
+    sessionStorage.setItem('arch-55asky-auth', '1');
+    revealContent();
+  } else {
+    var e = document.getElementById('gate-error');
+    e.classList.add('show');
+    setTimeout(function(){ e.classList.remove('show'); }, 2000);
+  }
+  return false;
+}
+function revealContent() {
+  document.getElementById('gate').classList.add('hidden');
+  document.body.classList.remove('gate-locked');
+}
+if (sessionStorage.getItem('arch-55asky-auth') === '1') {
+  document.addEventListener('DOMContentLoaded', revealContent);
+}
+</script>
+
+<div class="doc">
 
 <!-- HEADER -->
 <div class="header">
@@ -722,10 +885,10 @@ section {
 
 <!-- HERO -->
 <div class="hero">
-  <div class="hero-kicker">— paris · septembre 2026</div>
+  <div class="hero-kicker">paris · septembre 2026</div>
   <h1 class="hero-title">55asky<br>à la <em>gaîté lyrique</em></h1>
   <p class="hero-sub">
-    une date parisienne pour 55asky, en coréalisation arch × bleu citron, dans la foulée de la sortie de son album prévue en juin 2026.
+    une date parisienne pour 55asky, en coréalisation arch × bleu citron, suite à la sortie de son premier album prévue pour juin 2026.
   </p>
 </div>
 
@@ -757,7 +920,7 @@ section {
 
   <div class="pitch">
     <div class="pitch-block">
-      <h3>— intention</h3>
+      <h3>intention</h3>
       <p>
         une date parisienne à la gaîté lyrique, calée sur la sortie de l'album de 55asky prévue en juin. l'idée : lui offrir sa première grande date live à paris dans la foulée du projet, avec un cadre de production à la hauteur.
       </p>
@@ -766,7 +929,7 @@ section {
       </p>
     </div>
     <div class="pitch-block">
-      <h3>— ce que la date apporte</h3>
+      <h3>ce que la date apporte</h3>
       <p class="dim">
         · une première grande date parisienne dans une salle de référence<br>
         · une production prise en charge à 100% par arch (aucun risque financier pour 55asky)<br>
@@ -779,13 +942,13 @@ section {
 
   <div class="double-date">
     <div class="date-card">
-      <div class="date-card-num">— date 01</div>
+      <div class="date-card-num">date 01</div>
       <div class="date-card-day">11</div>
       <div class="date-card-month">vendredi · septembre 2026</div>
       <div class="date-card-status">ferme · annonce juin</div>
     </div>
     <div class="date-card conditional">
-      <div class="date-card-num">— date 02 (conditionnelle)</div>
+      <div class="date-card-num">date 02 (conditionnelle)</div>
       <div class="date-card-day">12</div>
       <div class="date-card-month">samedi · septembre 2026</div>
       <div class="date-card-status">ouverte si sold out rapide de la date 01</div>
@@ -820,13 +983,32 @@ section {
   </div>
 
   <div class="callout">
-    <div class="callout-label">— logique</div>
+    <div class="callout-label">logique</div>
     <div class="callout-text">
       arch prend la date en coréalisation avec bleu citron (70/30, sans minimum garanti), absorbe l'intégralité du risque, et fait passer le cachet 55asky <em>avant</em> toute ligne de résultat. la seconde date, si elle s'ouvre, ajoute un intéressement pour partager le gain lié à une mobilisation suffisamment forte pour déclencher un deuxième soir.
     </div>
   </div>
 
-  <h4 style="font-size:10px;color:var(--accent);text-transform:lowercase;letter-spacing:0.15em;margin:32px 0 16px;font-weight:400;">— structure rémunération 55asky</h4>
+  <div class="open-point">
+    <div class="open-point-tag">point ouvert</div>
+    <div class="open-point-title">scénographie & direction visuelle</div>
+    <div class="open-point-body">
+      le budget actuel couvre la lumière et la technique salle (ingé light arch + équipe gaîté). aucune enveloppe n'est positionnée pour une scénographie additionnelle.<br><br>
+      <strong style="color:var(--text);font-weight:400;">les budgets sont serrés sur cette date</strong>, difficile d'allouer de grosses enveloppes scéno sans remettre en cause l'équilibre global. cela dit, les écrans de la gaîté permettent déjà d'imaginer de belles choses côté direction visuelle et contenu vidéo, sans coût matériel additionnel. <br><br>
+      <strong style="color:var(--text);font-weight:400;">à voir ensemble</strong> : les idées de l'artiste, et comment on les rend réalisables à moindre coût.
+    </div>
+  </div>
+
+  <div class="open-point">
+    <div class="open-point-tag">point ouvert</div>
+    <div class="open-point-title">hébergement & transport</div>
+    <div class="open-point-body">
+      55asky n'étant pas basé à paris, arch prévoit de prendre en charge l'hébergement et le transport de l'équipe (catering déjà intégré dans le budget). <strong style="color:var(--text);font-weight:400;">à caler avec l'artiste et son management</strong> : combien de personnes se déplacent (artiste + entourage éventuel), combien de nuits (j-1 / j / j+1), et mode de transport (train, van, voiture).<br><br>
+      ces coûts seront ajoutés aux charges arch une fois précisés. ordre de grandeur type pour estimer en direct : <span style="color:var(--text);">~120–180 €</span> par chambre / nuit sur paris en septembre, <span style="color:var(--text);">~100–150 €</span> par aller-retour train.
+    </div>
+  </div>
+
+  <h4 style="font-size:10px;color:var(--accent);text-transform:lowercase;letter-spacing:0.15em;margin:32px 0 16px;font-weight:400;">structure rémunération 55asky</h4>
   <div class="roles">
     <div class="role-col">
       <div class="role-header">
@@ -854,7 +1036,7 @@ section {
     </div>
   </div>
   <p class="note">
-    — exemple date 02 à sold out : cachet 600 € + intéressement ~500–580 € = total <strong style="color:var(--accent);">~1 100–1 200 € net</strong>. à mi-jauge : cachet 600 € conservé, pas d'intéressement (net arch négatif).
+    exemple date 02 à sold out : cachet 600 € + intéressement ~500–580 € = total <strong style="color:var(--accent);">~1 100–1 200 € net</strong>. à mi-jauge : cachet 600 € conservé, pas d'intéressement (net arch négatif).
   </p>
 </section>
 
@@ -865,34 +1047,104 @@ section {
     <span class="section-num-title">budget prévisionnel</span>
   </div>
 
-  <div class="expenses">
-    <div class="expense-block">
-      <h4>— dépenses bleu citron (salle + exploit.)</h4>
-      <ul class="expense-lines">
-        <li><span class="label">location salle & technique</span><span class="amount">5 680 €</span></li>
-        <li><span class="label">personnel technique prod</span><span class="amount">520 €</span></li>
-        <li><span class="label">accueil & sécurité</span><span class="amount">inclus</span></li>
-        <li><span class="label">promotion</span><span class="amount">300 €</span></li>
-        <li><span class="label">commercialisation (itr, caisse)</span><span class="amount">153,50 €</span></li>
-        <li><span class="label">frais production divers</span><span class="amount">1 544,50 €</span></li>
-        <li class="total"><span>total ht</span><span>8 198,00 €</span></li>
-      </ul>
+  <div class="budget-grid">
+    <div>
+      <h4 style="font-size:10px;color:var(--accent);text-transform:lowercase;letter-spacing:0.15em;margin-bottom:16px;font-weight:400;">budget exploitation</h4>
+      <table class="table">
+        <thead>
+          <tr>
+            <th>poste</th>
+            <th class="num">montant</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>location salle & technique</td>
+            <td class="num">5 680,00 €</td>
+          </tr>
+          <tr>
+            <td>personnel technique prod</td>
+            <td class="num">520,00 €</td>
+          </tr>
+          <tr>
+            <td>accueil & sécurité</td>
+            <td class="num dim">inclus</td>
+          </tr>
+          <tr>
+            <td>promotion</td>
+            <td class="num">300,00 €</td>
+          </tr>
+          <tr>
+            <td>commercialisation</td>
+            <td class="num">153,50 €</td>
+          </tr>
+          <tr>
+            <td>frais production divers</td>
+            <td class="num">1 544,50 €</td>
+          </tr>
+          <tr class="highlight total">
+            <td><strong>total</strong></td>
+            <td class="num"><strong>8 198,00 €</strong></td>
+          </tr>
+        </tbody>
+      </table>
     </div>
-    <div class="expense-block">
-      <h4>— dépenses arch (production)</h4>
-      <ul class="expense-lines">
-        <li><span class="label">cachet 55asky (600 € net)</span><span class="amount">~1 200 €</span></li>
-        <li><span class="label">régisseur arch · cachet min.</span><span class="amount">~300 €</span></li>
-        <li><span class="label">ingé light arch · cachet min.</span><span class="amount">~300 €</span></li>
-        <li><span class="label">direction de production</span><span class="amount">incl. équipe</span></li>
-        <li><span class="label">promo artiste & réseaux</span><span class="amount">incl. équipe</span></li>
-        <li><span class="label">&nbsp;</span><span class="amount">&nbsp;</span></li>
-        <li class="total"><span>total charges arch</span><span>~1 800 €</span></li>
-      </ul>
+
+    <div>
+      <h4 style="font-size:10px;color:var(--accent);text-transform:lowercase;letter-spacing:0.15em;margin-bottom:16px;font-weight:400;">budget production</h4>
+      <table class="table">
+        <thead>
+          <tr>
+            <th>poste</th>
+            <th class="num">montant</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>cachet 55asky (600 € net)</td>
+            <td class="num">1 259,00 €</td>
+          </tr>
+          <tr>
+            <td>régisseur · cachet min.</td>
+            <td class="num">259,00 €</td>
+          </tr>
+          <tr>
+            <td>ingé light · cachet min.</td>
+            <td class="num">259,00 €</td>
+          </tr>
+          <tr>
+            <td>direction de production</td>
+            <td class="num dim">incl. équipe</td>
+          </tr>
+          <tr>
+            <td>promo artiste & réseaux</td>
+            <td class="num dim">incl. équipe</td>
+          </tr>
+          <tr class="highlight total">
+            <td><strong>total</strong></td>
+            <td class="num"><strong>1 777,00 €</strong></td>
+          </tr>
+        </tbody>
+      </table>
     </div>
   </div>
 
-  <h4 style="font-size:10px;color:var(--accent);text-transform:lowercase;letter-spacing:0.15em;margin-bottom:16px;font-weight:400;">— recettes billetterie</h4>
+  <div class="total-depense">
+    <div class="total-depense-label">total dépenses</div>
+    <div class="total-depense-value">9 975,00 €</div>
+  </div>
+
+  <p class="note" style="margin-bottom:32px;font-style:italic;">
+    chiffres prévisionnels, susceptibles d'ajustement après validation finale des devis (salle, technique, hébergement) et simulation officielle des cotisations sociales.
+  </p>
+
+  <div class="chart-block">
+    <div class="chart-title">répartition du budget</div>
+    <div class="chart-subtitle">où vont les 9 975 € de dépenses prévisionnelles</div>
+    <div class="chart-canvas-wrap"><canvas id="chartBudget"></canvas></div>
+  </div>
+
+  <h4 style="font-size:10px;color:var(--accent);text-transform:lowercase;letter-spacing:0.15em;margin:40px 0 16px;font-weight:400;">recettes billetterie (base 75% de jauge)</h4>
   <table class="table">
     <thead>
       <tr>
@@ -930,16 +1182,16 @@ section {
         <td colspan="3" class="dim"></td>
         <td class="num dim">− 2 505,67 €</td>
       </tr>
-      <tr class="highlight">
+      <tr class="highlight total">
         <td><strong>recette nette</strong></td>
-        <td colspan="3" class="dim">base de calcul de la répartition coréa</td>
+        <td colspan="3" class="dim"></td>
         <td class="num"><strong>9 110,46 €</strong></td>
       </tr>
     </tbody>
   </table>
 
   <p class="note">
-    — base de calcul billetterie : 75% des places vendables (506 payants + 75 invitations). les scénarios financiers ci-dessous explorent différents niveaux de remplissage, dont le sold out visé.
+    base de calcul billetterie : 75% des places vendables (506 payants + 75 invitations). les scénarios financiers ci-dessous explorent différents niveaux de remplissage, dont le sold out visé.
   </p>
 </section>
 
@@ -957,69 +1209,66 @@ section {
   <div class="scenarios">
 
     <div class="scenario">
-      <div class="scenario-label">— scénario bas</div>
+      <div class="scenario-label">scénario bas</div>
       <div class="scenario-name">mi-jauge</div>
       <div class="scenario-pct">50<span style="font-size:18px;color:var(--text-dim);">%</span></div>
-      <div class="scenario-tickets">375 billets payants</div>
+      <div class="scenario-tickets">375 personnes (300 payants)</div>
       <div class="scenario-result">
         <div class="scenario-result-label">net arch</div>
-        <div class="scenario-result-value neg">−2 815 €</div>
+        <div class="scenario-result-value neg">−2 792 €</div>
       </div>
     </div>
 
     <div class="scenario">
-      <div class="scenario-label">— point mort billetterie</div>
+      <div class="scenario-label">point mort billetterie</div>
       <div class="scenario-name">break coréa</div>
       <div class="scenario-pct">61<span style="font-size:18px;color:var(--text-dim);">%</span></div>
-      <div class="scenario-tickets">457 billets payants</div>
+      <div class="scenario-tickets">457 personnes (382 payants)</div>
       <div class="scenario-result">
         <div class="scenario-result-label">net arch</div>
-        <div class="scenario-result-value neg">−1 787 €</div>
+        <div class="scenario-result-value neg">−1 764 €</div>
       </div>
     </div>
 
     <div class="scenario">
-      <div class="scenario-label">— scénario intermédiaire</div>
+      <div class="scenario-label">scénario intermédiaire</div>
       <div class="scenario-name">75% de jauge</div>
       <div class="scenario-pct">75<span style="font-size:18px;color:var(--text-dim);">%</span></div>
-      <div class="scenario-tickets">506 billets payants</div>
+      <div class="scenario-tickets">581 personnes (506 payants)</div>
       <div class="scenario-result">
         <div class="scenario-result-label">net arch</div>
-        <div class="scenario-result-value neg">−1 161 €</div>
+        <div class="scenario-result-value neg">−1 138 €</div>
       </div>
     </div>
 
     <div class="scenario highlighted">
-      <div class="scenario-label">— objectif</div>
+      <div class="scenario-label">objectif</div>
       <div class="scenario-name">sold out</div>
       <div class="scenario-pct">100<span style="font-size:18px;color:var(--text-dim);">%</span></div>
-      <div class="scenario-tickets">750 billets</div>
+      <div class="scenario-tickets">750 personnes (675 payants)</div>
       <div class="scenario-result">
         <div class="scenario-result-label">net arch</div>
-        <div class="scenario-result-value pos">+1 909 €</div>
+        <div class="scenario-result-value pos">+1 932 €</div>
       </div>
     </div>
 
   </div>
 
   <div class="callout">
-    <div class="callout-label">— lecture stratégique</div>
+    <div class="callout-label">lecture stratégique</div>
     <div class="callout-text">
-      la rentabilité d'arch dépend entièrement du remplissage : le seuil de rentabilité réel se situe autour de <em>~88% de jauge</em> (environ 660 billets). en dessous, arch absorbe la différence ; 55asky conserve son cachet intégral. <br><br>
+      la rentabilité d'arch dépend entièrement du remplissage : le seuil de rentabilité réel se situe autour de <em>88% de remplissage</em> (environ 596 billets payants). en dessous, arch absorbe la différence ; 55asky conserve son cachet intégral. <br><br>
       <strong style="color:var(--text);font-weight:400;">c'est un investissement assumé.</strong> l'enjeu n'est pas la marge du soir mais de proposer une date parisienne dans de vraies conditions de production. une seconde date le 12 septembre, si la mobilisation la justifie, double la recette potentielle sans doubler certains coûts fixes, et fait basculer l'équation de façon significative.
     </div>
   </div>
 
-  <h4 style="font-size:10px;color:var(--accent);text-transform:lowercase;letter-spacing:0.15em;margin:32px 0 16px;font-weight:400;">— détail par scénario</h4>
+  <h4 style="font-size:10px;color:var(--accent);text-transform:lowercase;letter-spacing:0.15em;margin:32px 0 16px;font-weight:400;">détail par scénario</h4>
   <table class="table">
     <thead>
       <tr>
         <th>scénario</th>
-        <th class="num">billets</th>
+        <th class="num">personnes</th>
         <th class="num">recette nette</th>
-        <th class="num">résultat coréa</th>
-        <th class="num">part arch (70%)</th>
-        <th class="num">− charges arch</th>
         <th class="num">net arch</th>
       </tr>
     </thead>
@@ -1027,44 +1276,32 @@ section {
       <tr>
         <td>mi-jauge</td>
         <td class="num">375</td>
-        <td class="num">5 880 €</td>
-        <td class="num neg">−1 450 €</td>
-        <td class="num neg">−1 015 €</td>
-        <td class="num">− 1 800 €</td>
-        <td class="num neg"><strong>−2 815 €</strong></td>
+        <td class="num">6 748 €</td>
+        <td class="num neg"><strong>−2 792 €</strong></td>
       </tr>
       <tr>
         <td>break coréa</td>
         <td class="num">457</td>
         <td class="num">8 216 €</td>
-        <td class="num zero">+18 €</td>
-        <td class="num zero">+13 €</td>
-        <td class="num">− 1 800 €</td>
-        <td class="num neg"><strong>−1 787 €</strong></td>
+        <td class="num neg"><strong>−1 764 €</strong></td>
       </tr>
       <tr>
         <td>75% de jauge</td>
-        <td class="num">506</td>
+        <td class="num">581</td>
         <td class="num">9 110 €</td>
-        <td class="num pos">+912 €</td>
-        <td class="num pos">+639 €</td>
-        <td class="num">− 1 800 €</td>
-        <td class="num neg"><strong>−1 161 €</strong></td>
+        <td class="num neg"><strong>−1 138 €</strong></td>
       </tr>
       <tr class="highlight">
         <td>sold out</td>
         <td class="num">750</td>
-        <td class="num">12 245 €</td>
-        <td class="num pos">+5 299 €</td>
-        <td class="num pos">+3 709 €</td>
-        <td class="num">− 1 800 €</td>
-        <td class="num pos"><strong>+1 909 €</strong></td>
+        <td class="num">13 497 €</td>
+        <td class="num pos"><strong>+1 932 €</strong></td>
       </tr>
     </tbody>
   </table>
 
   <p class="note">
-    — <strong style="color:var(--text);font-weight:400;">charges arch</strong> = cachet 55asky (~1 200 €) + cachet régisseur arch (~300 €) + cachet ingé light arch (~300 €). à sold out sur les deux dates (11 + 12), le net arch cumulé est estimé entre <strong style="color:var(--accent);">~3 500 € et ~5 000 €</strong> selon négociation des coûts fixes salle pour la seconde date (ménage, fluides, régie, catering) — intéressement 55asky date 02 déjà déduit.
+    <strong style="color:var(--text);font-weight:400;">charges arch</strong> = cachet 55asky (1 259 €) + cachet régisseur (259 €) + cachet ingé light (259 €). à sold out sur les deux dates (11 + 12), le net arch cumulé est estimé entre 3 500 € et 5 000 € selon négociation des coûts fixes salle pour la seconde date (ménage, fluides, régie, catering), intéressement 55asky date 02 déjà déduit.
   </p>
 </section>
 
@@ -1110,7 +1347,7 @@ section {
   </div>
 
   <p class="note">
-    — arch reste employeur unique de tout le personnel déclaré côté production. bleu citron facture la prestation salle-technique dans le cadre de la coréa sans minimum garanti.
+    arch reste employeur unique de tout le personnel déclaré côté production. bleu citron facture la prestation salle-technique dans le cadre de la coréa sans minimum garanti.
   </p>
 </section>
 
@@ -1176,28 +1413,139 @@ section {
 </div>
 
 </div>
-</div>
 
 <script>
-function gateCheck(ev) {
-  ev.preventDefault();
-  var u = document.getElementById('gate-user').value.trim().toLowerCase();
-  var p = document.getElementById('gate-pw').value;
-  if (u === '55asky' && p === 'arch_balobi') {
-    sessionStorage.setItem('arch-55asky-auth', '1');
-    revealContent();
-  } else {
-    var e = document.getElementById('gate-error');
-    e.classList.add('show');
-    setTimeout(function(){ e.classList.remove('show'); }, 2000);
-  }
-  return false;
+// palette ARCH
+const COLORS = {
+  accent: '#ff4d9e',
+  accentSoft: '#ff7ab8',
+  accentFaint: 'rgba(255, 77, 158, 0.15)',
+  accentFainter: 'rgba(255, 77, 158, 0.04)',
+  text: '#e8e6e3',
+  textDim: '#8a8680',
+  textFaint: '#4a4743',
+  border: '#2a2a2a',
+  bgSoft: '#151515',
+  danger: '#ff5b4a',
+  dangerSoft: 'rgba(255, 91, 74, 0.15)',
+  positive: '#7dd87d',
+  positiveSoft: 'rgba(125, 216, 125, 0.15)',
+};
+
+// defaults for all charts
+Chart.defaults.font.family = "'Geist Mono', monospace";
+Chart.defaults.font.size = 11;
+Chart.defaults.color = COLORS.textDim;
+Chart.defaults.borderColor = COLORS.border;
+
+// ====================================================================
+// CHART 1 : répartition du budget (stacked horizontal bar)
+// ====================================================================
+const ctxBudget = document.getElementById('chartBudget');
+if (ctxBudget) {
+  new Chart(ctxBudget, {
+    type: 'bar',
+    data: {
+      labels: ['exploitation', 'production'],
+      datasets: [
+        {
+          label: 'location salle & technique',
+          data: [5680, 0],
+          backgroundColor: COLORS.accent,
+          borderColor: COLORS.bgSoft,
+          borderWidth: 2,
+        },
+        {
+          label: 'frais production divers',
+          data: [1544.5, 0],
+          backgroundColor: '#d93e85',
+          borderColor: COLORS.bgSoft,
+          borderWidth: 2,
+        },
+        {
+          label: 'personnel technique',
+          data: [520, 0],
+          backgroundColor: '#b32f6b',
+          borderColor: COLORS.bgSoft,
+          borderWidth: 2,
+        },
+        {
+          label: 'promotion + commercialisation',
+          data: [453.5, 0],
+          backgroundColor: '#8c2252',
+          borderColor: COLORS.bgSoft,
+          borderWidth: 2,
+        },
+        {
+          label: 'cachet 55asky',
+          data: [0, 1259],
+          backgroundColor: COLORS.accentSoft,
+          borderColor: COLORS.bgSoft,
+          borderWidth: 2,
+        },
+        {
+          label: 'cachet régisseur',
+          data: [0, 259],
+          backgroundColor: '#e88fbf',
+          borderColor: COLORS.bgSoft,
+          borderWidth: 2,
+        },
+        {
+          label: 'cachet ingé light',
+          data: [0, 259],
+          backgroundColor: '#d4a4c4',
+          borderColor: COLORS.bgSoft,
+          borderWidth: 2,
+        },
+      ],
+    },
+    options: {
+      indexAxis: 'y',
+      responsive: true,
+      maintainAspectRatio: false,
+      scales: {
+        x: {
+          stacked: true,
+          grid: { color: COLORS.border, drawTicks: false },
+          ticks: {
+            color: COLORS.textDim,
+            callback: (v) => v.toLocaleString('fr-FR') + ' €',
+          },
+          border: { display: false },
+        },
+        y: {
+          stacked: true,
+          grid: { display: false },
+          ticks: { color: COLORS.text, font: { size: 12 } },
+          border: { display: false },
+        },
+      },
+      plugins: {
+        legend: {
+          position: 'bottom',
+          labels: {
+            color: COLORS.textDim,
+            boxWidth: 10,
+            boxHeight: 10,
+            padding: 14,
+            font: { size: 10 },
+          },
+        },
+        tooltip: {
+          backgroundColor: '#0f0f0f',
+          borderColor: COLORS.border,
+          borderWidth: 1,
+          titleColor: COLORS.text,
+          bodyColor: COLORS.textDim,
+          padding: 12,
+          callbacks: {
+            label: (ctx) => ` ${ctx.dataset.label} : ${ctx.parsed.x.toLocaleString('fr-FR')} €`,
+          },
+        },
+      },
+    },
+  });
 }
-function revealContent() {
-  document.getElementById('gate').classList.add('hidden');
-  document.getElementById('content').classList.add('unlocked');
-}
-if (sessionStorage.getItem('arch-55asky-auth') === '1') { revealContent(); }
 </script>
 
 </body>
