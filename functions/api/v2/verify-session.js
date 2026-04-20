@@ -1,4 +1,4 @@
-import { downloadsFor } from "../../_lib/drive-links.js";
+import { downloadsFor } from "../../_lib/plugin-links.js";
 const J = { "Content-Type": "application/json" };
 
 export async function onRequestPost({ request, env }) {

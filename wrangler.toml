@@ -28,4 +28,4 @@ id = "993fb63217f445fcbc16d4ba9decbc07"
 # R2 binding for plugin files.
 [[r2_buckets]]
 binding = "R2_PLUGINS"
-bucket_name = "arch-plugins"
+bucket_name = "plugin-binaries"

@@ -1,10 +1,8 @@
-# Cloudflare Pages redirects — kept in sync with netlify.toml for parallel hosting.
+# Cloudflare Pages auto-resolves /plugins → /plugins.html, /data → /data.html, etc.
+# No extension rewriting needed — just add special paths here.
 
 # breakeven PWA (trailing slash)
 /breakeven  /breakeven/  301
 
-# clean routes
-/data       /data.html   200
-/stats      /stats.html  200
-/plugins    /plugins.html  200
+# /plugins/success is served by /success.html (Stripe callback lands here)
 /plugins/success  /success.html  200

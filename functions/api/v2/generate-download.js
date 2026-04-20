@@ -1,14 +1,14 @@
-import { DRIVE_LINKS } from "../../_lib/drive-links.js";
+import { LINKS } from "../../_lib/plugin-links.js";
 const J = { "Content-Type": "application/json" };
 
 export async function onRequestPost({ request, env }) {
   try {
     const { product, platform } = await request.json();
-    if (!product || !DRIVE_LINKS[product]) {
+    if (!product || !LINKS[product]) {
       return new Response(JSON.stringify({ error: "unknown product" }), { status: 400, headers: J });
     }
     const plat = platform === "win" || platform === "windows" ? "win" : "mac";
-    const url = DRIVE_LINKS[product][plat];
+    const url = LINKS[product][plat];
 
     try {
       const key = product + "-" + plat;
