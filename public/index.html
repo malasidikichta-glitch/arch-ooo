@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>arch</title>
+<link href="https://fonts.googleapis.com/css2?family=Geist+Mono:wght@300;400;500&family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#0f0f0f;
+  --surface:#151515;
+  --border:rgba(255,255,255,0.08);
+  --border-h:rgba(255,255,255,0.18);
+  --text:#e8e6e3;
+  --muted:#8a8680;
+  --dim:#4a4743;
+  --accent:#d4d2cd;
+}
+html{background:var(--bg);color:var(--text);font-family:'Geist Mono',monospace;font-size:13px;line-height:1.5;font-weight:300;letter-spacing:0.01em}
+body{min-height:100vh;display:flex;flex-direction:column}
+main{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:48px 24px;gap:72px}
+
+/* ---- hero ---- */
+.hero{text-align:center;display:flex;flex-direction:column;align-items:center;gap:20px}
+.hero-mark{font-size:10px;color:var(--dim);letter-spacing:0.2em;text-transform:lowercase}
+.hero-title{font-family:'Instrument Serif',serif;font-size:clamp(64px,14vw,160px);line-height:0.9;font-weight:400;letter-spacing:-0.03em;color:var(--text)}
+.hero-title em{font-style:italic;color:var(--muted)}
+.hero-sub{font-size:11px;color:var(--muted);letter-spacing:0.15em;text-transform:lowercase;max-width:380px;line-height:1.7}
+
+/* ---- next date ---- */
+.next{width:100%;max-width:520px;border:1px solid var(--border);background:var(--surface);padding:36px 32px;display:flex;flex-direction:column;gap:24px}
+.next-label{font-size:9px;color:var(--dim);letter-spacing:0.25em;text-transform:lowercase}
+.next-title{font-family:'Instrument Serif',serif;font-size:36px;line-height:1;font-weight:400;letter-spacing:-0.01em;color:var(--text)}
+.next-meta{display:grid;grid-template-columns:1fr 1fr;gap:1px;background:var(--border);border:1px solid var(--border)}
+.next-meta-cell{background:var(--bg);padding:16px 18px;display:flex;flex-direction:column;gap:6px}
+.meta-label{font-size:9px;color:var(--dim);letter-spacing:0.18em;text-transform:lowercase}
+.meta-value{font-size:13px;color:var(--text);letter-spacing:0.02em}
+.meta-value small{font-size:10px;color:var(--muted);display:block;margin-top:2px}
+.lineup{font-size:11px;color:var(--muted);letter-spacing:0.08em;text-transform:lowercase;text-align:center}
+.lineup span{color:var(--text);margin:0 4px}
+.lineup .sep{color:var(--dim);margin:0 2px}
+.tickets-btn{display:block;text-align:center;padding:14px 24px;background:transparent;border:1px solid var(--border-h);color:var(--text);text-decoration:none;font-family:'Geist Mono',monospace;font-size:11px;letter-spacing:0.15em;text-transform:lowercase;transition:background 0.2s,border-color 0.2s}
+.tickets-btn:hover{background:var(--text);color:var(--bg);border-color:var(--text)}
+
+footer{padding:32px 24px;text-align:center;font-size:10px;color:var(--dim);letter-spacing:0.1em;text-transform:lowercase}
+footer a{color:var(--muted);text-decoration:none}
+footer a:hover{color:var(--text)}
+
+@media(max-width:540px){
+  main{gap:48px;padding:36px 20px}
+  .next{padding:28px 22px}
+  .next-meta{grid-template-columns:1fr}
+  .next-title{font-size:28px}
+}
+</style>
+</head>
+<body>
+
+<main>
+
+  <div class="hero">
+    <div class="hero-mark">— arch</div>
+    <h1 class="hero-title">coming<br><em>soon</em></h1>
+    <p class="hero-sub">prochaine date · arch club</p>
+  </div>
+
+  <section class="next">
+    <div class="next-label">— next date</div>
+    <h2 class="next-title">arch club<br>· la coopé de mai</h2>
+
+    <div class="next-meta">
+      <div class="next-meta-cell">
+        <div class="meta-label">date</div>
+        <div class="meta-value">sam 02.05.2026<small>21:00 → 01:00</small></div>
+      </div>
+      <div class="next-meta-cell">
+        <div class="meta-label">lieu</div>
+        <div class="meta-value">la coopérative de mai<small>clermont-ferrand</small></div>
+      </div>
+    </div>
+
+    <div class="lineup">
+      <span>xo</span><span class="sep">·</span><span>duno</span><span class="sep">·</span><span>limak</span><span class="sep">·</span><span>mau_v</span>
+    </div>
+
+    <a class="tickets-btn" href="https://shotgun.live/fr/events/arch-club-la-cooperative-de-mai" target="_blank" rel="noopener">tickets · shotgun →</a>
+  </section>
+
+</main>
+
+<footer>&copy; 2026 arch · <a href="mailto:contact@arch-inc.fr">contact</a></footer>
+
+</body>
+</html>

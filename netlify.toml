@@ -48,9 +48,4 @@
   from = "/stats"
   to = "/stats.html"
   status = 200
-
-# root → plugins
-[[redirects]]
-  from = "/"
-  to = "/plugins.html"
-  status = 200
+# root (/) now serves public/index.html — the coming-soon landing
