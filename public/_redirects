@@ -1,0 +1,10 @@
+# Cloudflare Pages redirects — kept in sync with netlify.toml for parallel hosting.
+
+# breakeven PWA (trailing slash)
+/breakeven  /breakeven/  301
+
+# clean routes
+/data       /data.html   200
+/stats      /stats.html  200
+/plugins    /plugins.html  200
+/plugins/success  /success.html  200

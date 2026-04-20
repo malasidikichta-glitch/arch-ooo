@@ -1,0 +1,8 @@
+# Cloudflare Pages headers
+
+/55asky/*
+  X-Robots-Tag: noindex, nofollow, noarchive, nosnippet
+  Cache-Control: no-store, no-cache, must-revalidate
+
+/downloads/*.md
+  Content-Type: text/plain; charset=utf-8

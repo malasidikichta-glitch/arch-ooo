@@ -1,0 +1,31 @@
+# Cloudflare Pages config for arch.ooo
+# https://developers.cloudflare.com/pages/functions/wrangler-configuration/
+name = "arch-ooo"
+compatibility_date = "2026-04-01"
+pages_build_output_dir = "public"
+
+# KV bindings — IDs are fetched from CF after namespace creation.
+[[kv_namespaces]]
+binding = "KV_VISITS"
+id = "70e3a454aff44f10a871073ab36e1c91"
+
+[[kv_namespaces]]
+binding = "KV_EMAILS"
+id = "0a187b1dc8f344ee9c2422deaa34a8c9"
+
+[[kv_namespaces]]
+binding = "KV_MESSAGES"
+id = "d48a6a29306a4264b13cdf9c8057e4e6"
+
+[[kv_namespaces]]
+binding = "KV_DOWNLOADS"
+id = "33e38733cee1409180f942853b0a6846"
+
+[[kv_namespaces]]
+binding = "KV_REDEMPTIONS"
+id = "993fb63217f445fcbc16d4ba9decbc07"
+
+# R2 binding for plugin files.
+[[r2_buckets]]
+binding = "R2_PLUGINS"
+bucket_name = "arch-plugins"
