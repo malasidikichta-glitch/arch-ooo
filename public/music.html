@@ -10,21 +10,28 @@
 .releases-grid{display:grid;grid-template-columns:1fr 1fr;gap:32px;margin-top:2rem}
 
 .release{display:flex;flex-direction:column;gap:14px}
-
 .release-embed{border:1px solid var(--border);background:var(--surface);overflow:hidden;border-radius:8px}
 .release-embed iframe{display:block;width:100%;border:0;background:transparent}
-
 .release-empty{aspect-ratio:1;background:var(--surface);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;color:var(--dim);font-size:10px;letter-spacing:0.2em;text-transform:lowercase;padding:2rem;text-align:center}
 
-.release-socials{display:flex;gap:8px;flex-wrap:wrap}
-.release-socials a{font-size:9px;color:var(--muted);letter-spacing:0.15em;text-transform:lowercase;text-decoration:none;padding:6px 12px;border:1px solid var(--border);transition:border-color 0.2s,color 0.2s}
-.release-socials a:hover{border-color:var(--border-h);color:var(--text)}
+.pills{display:flex;gap:8px;flex-wrap:wrap}
+.pills a{font-size:9px;color:var(--muted);letter-spacing:0.15em;text-transform:lowercase;text-decoration:none;padding:6px 12px;border:1px solid var(--border);transition:border-color 0.2s,color 0.2s}
+.pills a:hover{border-color:var(--border-h);color:var(--text)}
+
+.artists-section{margin-top:5rem}
+.artists-label{font-size:10px;color:var(--dim);letter-spacing:0.2em;text-transform:lowercase;padding-bottom:12px;margin-bottom:24px;border-bottom:1px solid var(--border)}
+.artists-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:16px}
+.artist-card{background:var(--surface);border:1px solid var(--border);padding:20px 22px;display:flex;flex-direction:column;gap:12px}
+.artist-name{font-family:'Instrument Serif',serif;font-size:26px;font-weight:400;letter-spacing:-0.01em;text-transform:lowercase}
 
 .loading{padding:4rem 0;text-align:center;color:var(--dim);font-size:10px;letter-spacing:0.25em;text-transform:lowercase}
 .loading::after{content:'';animation:dots 1.5s steps(4,end) infinite}
 @keyframes dots{0%{content:''}25%{content:'.'}50%{content:'..'}75%{content:'...'}}
 
-@media(max-width:700px){.releases-grid{grid-template-columns:1fr;gap:24px}}
+@media(max-width:700px){
+  .releases-grid{grid-template-columns:1fr;gap:24px}
+  .artists-grid{grid-template-columns:1fr}
+}
 </style>
 </head>
 <body>
@@ -47,6 +54,11 @@
   <div class="loading" id="loading">loading</div>
   <div class="releases-grid" id="grid" style="display:none"></div>
 
+  <section class="artists-section" id="artists-section" style="display:none">
+    <div class="artists-label">— artistes</div>
+    <div class="artists-grid" id="artists-grid"></div>
+  </section>
+
 </main>
 
 <footer class="site-footer">
@@ -58,7 +70,7 @@
 <script>
 function escapeHtml(s){return (s||'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'})[m]);}
 
-function socialsHtml(data){
+function socialsPills(data){
   var r = data.release;
   var spotifyUrl = r?.url || (data.artist_id ? 'https://open.spotify.com/artist/'+data.artist_id : '');
   var s = data.socials || {};
@@ -70,15 +82,15 @@ function socialsHtml(data){
   if(s.shotgun)     items.push('<a href="https://shotgun.live/fr/artists/'+encodeURIComponent(s.shotgun)+'" target="_blank" rel="noopener">shotgun</a>');
   if(s.youtube)     items.push('<a href="https://youtube.com/@'+encodeURIComponent(s.youtube.replace(/^@/,''))+'" target="_blank" rel="noopener">youtube</a>');
   if(!items.length) return '';
-  return '<div class="release-socials">'+items.join('')+'</div>';
+  return '<div class="pills">'+items.join('')+'</div>';
 }
 
-function renderArtist(key, data){
+function renderRelease(key, data){
   var r = data.release;
   if(!r || !r.id){
     return '<div class="release">'+
       '<div class="release-empty">pas encore de release</div>'+
-      socialsHtml(data)+
+      socialsPills(data)+
     '</div>';
   }
   return '<div class="release">'+
@@ -89,7 +101,14 @@ function renderArtist(key, data){
         'allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" '+
         'loading="lazy"></iframe>'+
     '</div>'+
-    socialsHtml(data)+
+    socialsPills(data)+
+  '</div>';
+}
+
+function renderArtistCard(key, data){
+  return '<div class="artist-card">'+
+    '<div class="artist-name">'+escapeHtml(data.artist||key)+'</div>'+
+    socialsPills(data)+
   '</div>';
 }
 
@@ -97,9 +116,19 @@ function renderArtist(key, data){
   try {
     var res = await fetch('/api/v2/releases');
     var data = await res.json();
+
+    // Top — releases (artists with has_release=true)
     var grid = document.getElementById('grid');
-    grid.innerHTML = renderArtist('xo', data.xo) + renderArtist('duno', data.duno);
+    var releaseArtists = Object.entries(data).filter(([k,v]) => v.has_release);
+    grid.innerHTML = releaseArtists.map(([k,v]) => renderRelease(k,v)).join('');
     grid.style.display = 'grid';
+
+    // Bottom — all 4 artists with socials
+    var aGrid = document.getElementById('artists-grid');
+    var order = ['xo','duno','mau_v','limak'];
+    aGrid.innerHTML = order.filter(k => data[k]).map(k => renderArtistCard(k, data[k])).join('');
+    document.getElementById('artists-section').style.display = 'block';
+
     document.getElementById('loading').style.display = 'none';
   } catch(err){
     document.getElementById('loading').textContent = 'erreur chargement';

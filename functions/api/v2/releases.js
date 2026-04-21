@@ -4,8 +4,10 @@ const J = { "Content-Type": "application/json" };
 const ADMIN_PW = "j'aimelesdatas";
 
 const ARTISTS = {
-  xo:   { id: "0ZWPKOD6JKB2TGruY79QzP", name: "xo" },
-  duno: { id: "4nXuz5MMlZir7Kg2UWsS1K", name: "duno" },
+  xo:    { id: "0ZWPKOD6JKB2TGruY79QzP", name: "xo",    has_release: true  },
+  duno:  { id: "4nXuz5MMlZir7Kg2UWsS1K", name: "duno",  has_release: true  },
+  mau_v: { id: "7enPeNRDoyCr2Z7QveJPcV", name: "mau_v", has_release: false },
+  limak: { id: null,                     name: "limak", has_release: false },
 };
 
 const SOCIAL_KEYS = ["instagram", "tiktok", "soundcloud", "shotgun", "youtube"];
@@ -63,7 +65,12 @@ export async function onRequestGet({ env }) {
   for (const key of Object.keys(ARTISTS)) {
     const raw = await env.KV_RELEASES.get("release:" + key);
     const socials = await loadSocials(env, key);
-    const base = { artist: ARTISTS[key].name, artist_id: ARTISTS[key].id, socials };
+    const base = {
+      artist: ARTISTS[key].name,
+      artist_id: ARTISTS[key].id,
+      has_release: ARTISTS[key].has_release,
+      socials,
+    };
     if (!raw) { out[key] = { ...base, release: null }; continue; }
     try {
       const r = JSON.parse(raw);

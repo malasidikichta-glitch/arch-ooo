@@ -198,13 +198,13 @@ footer.data-foot{padding:2rem 2.5rem;border-top:1px solid var(--border);text-ali
     </div>
   </section>
 
-  <!-- RELEASES ADMIN -->
+  <!-- RELEASES / ARTISTS ADMIN -->
   <section class="section" id="sec-releases" style="display:none">
     <div class="section-head">
-      <h2 class="section-title">releases</h2>
+      <h2 class="section-title">artistes</h2>
       <span class="section-stat" id="releases-stat"></span>
     </div>
-    <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px" id="releases-grid"></div>
+    <div style="display:grid;grid-template-columns:repeat(2,1fr);gap:16px" id="releases-grid"></div>
   </section>
 
   <!-- EVENTS ADMIN -->
@@ -434,7 +434,7 @@ function renderAll(){
 // ---- releases admin ----
 function renderReleases(){
   var data = state.releases || {};
-  var artists = ['xo','duno'];
+  var artists = ['xo','duno','mau_v','limak'];
   var grid = document.getElementById('releases-grid');
   grid.innerHTML = '';
   var configured = 0;
