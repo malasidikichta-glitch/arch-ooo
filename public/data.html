@@ -462,6 +462,8 @@ function renderReleases(){
       '<input type="text" data-artist="'+key+'" data-role="tt" placeholder="@handle" value="'+escapeHtml(s.tiktok||'')+'" style="'+inpStyle+'">'+
       '<div style="font-size:8px;color:var(--dim);letter-spacing:0.18em;text-transform:lowercase;margin-top:4px;margin-bottom:4px">soundcloud username</div>'+
       '<input type="text" data-artist="'+key+'" data-role="sc" placeholder="username" value="'+escapeHtml(s.soundcloud||'')+'" style="'+inpStyle+'">'+
+      '<div style="font-size:8px;color:var(--dim);letter-spacing:0.18em;text-transform:lowercase;margin-top:4px;margin-bottom:4px">shotgun artist slug</div>'+
+      '<input type="text" data-artist="'+key+'" data-role="sg" placeholder="xo_mp3" value="'+escapeHtml(s.shotgun||'')+'" style="'+inpStyle+'">'+
       '<button data-save-artist="'+key+'" class="refresh-btn" style="width:100%;font-size:9px;padding:7px;border-color:var(--success);color:var(--success);margin-top:8px">save</button>'+
       '<div data-status-artist="'+key+'" style="font-size:9px;color:var(--muted);letter-spacing:0.08em;margin-top:6px;min-height:12px"></div>';
     grid.appendChild(div);
@@ -476,10 +478,11 @@ function renderReleases(){
       var igInp  = grid.querySelector('input[data-artist="'+artist+'"][data-role="ig"]');
       var ttInp  = grid.querySelector('input[data-artist="'+artist+'"][data-role="tt"]');
       var scInp  = grid.querySelector('input[data-artist="'+artist+'"][data-role="sc"]');
+      var sgInp  = grid.querySelector('input[data-artist="'+artist+'"][data-role="sg"]');
       var status = grid.querySelector('[data-status-artist="'+artist+'"]');
       var payload = { pw: "j'aimelesdatas", artist,
         url: urlInp ? urlInp.value.trim() : undefined,
-        socials: { instagram: igInp?.value.trim(), tiktok: ttInp?.value.trim(), soundcloud: scInp?.value.trim() } };
+        socials: { instagram: igInp?.value.trim(), tiktok: ttInp?.value.trim(), soundcloud: scInp?.value.trim(), shotgun: sgInp?.value.trim() } };
       btn.disabled = true; btn.textContent = '...'; status.textContent = '';
       try {
         var res = await fetch('/api/v2/releases', {

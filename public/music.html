@@ -67,6 +67,8 @@ function socialsHtml(data){
   if(s.instagram)   items.push('<a href="https://instagram.com/'+encodeURIComponent(s.instagram.replace(/^@/,''))+'" target="_blank" rel="noopener">instagram</a>');
   if(s.tiktok)      items.push('<a href="https://tiktok.com/@'+encodeURIComponent(s.tiktok.replace(/^@/,''))+'" target="_blank" rel="noopener">tiktok</a>');
   if(s.soundcloud)  items.push('<a href="https://soundcloud.com/'+encodeURIComponent(s.soundcloud)+'" target="_blank" rel="noopener">soundcloud</a>');
+  if(s.shotgun)     items.push('<a href="https://shotgun.live/fr/artists/'+encodeURIComponent(s.shotgun)+'" target="_blank" rel="noopener">shotgun</a>');
+  if(s.youtube)     items.push('<a href="https://youtube.com/@'+encodeURIComponent(s.youtube.replace(/^@/,''))+'" target="_blank" rel="noopener">youtube</a>');
   if(!items.length) return '';
   return '<div class="release-socials">'+items.join('')+'</div>';
 }

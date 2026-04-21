@@ -8,7 +8,7 @@ const ARTISTS = {
   duno: { id: "4nXuz5MMlZir7Kg2UWsS1K", name: "duno" },
 };
 
-const SOCIAL_KEYS = ["instagram", "tiktok", "soundcloud"];
+const SOCIAL_KEYS = ["instagram", "tiktok", "soundcloud", "shotgun", "youtube"];
 
 // Parses a Spotify URL like https://open.spotify.com/album/ABC?si=... → { kind: 'album', id: 'ABC' }
 function parseSpotifyUrl(url) {
