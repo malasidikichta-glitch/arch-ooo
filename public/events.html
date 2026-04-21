@@ -79,7 +79,6 @@ function fmtYear(iso){ if(!iso) return '—'; return String(new Date(iso).getFul
 function escapeHtml(s){return (s||'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'})[m]);}
 
 function renderEvent(e, past){
-  var lineup = (e.lineup||[]).map(a=>'<span>'+escapeHtml(String(a).toLowerCase())+'</span>').join(' · ');
   var venue = (e.venue||'').toLowerCase().trim();
   var city  = (e.city||'').toLowerCase().trim();
   // Uniform format: "arch club @ {venue} - {city}"
@@ -92,7 +91,6 @@ function renderEvent(e, past){
     '<div class="event-date">'+fmtDay(e.date)+'<span class="year">'+fmtYear(e.date)+'</span></div>'+
     '<div class="event-body">'+
       '<h3>'+escapeHtml(title)+'</h3>'+
-      (lineup?'<div class="event-lineup">'+lineup+'</div>':'')+
     '</div>'+
     (past
       ? '<div class="event-soldout">sold out</div>'
