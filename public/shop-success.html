@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>arch — commande confirmée</title>
+<link href="https://fonts.googleapis.com/css2?family=Geist+Mono:wght@300;400;500&family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/_shared.css">
+<style>
+.ok{max-width:440px;margin:5rem auto;text-align:center}
+.ok-title{font-family:'Instrument Serif',serif;font-size:56px;line-height:1;font-weight:400;letter-spacing:-0.02em;margin-bottom:18px}
+.ok-sub{font-size:12px;color:var(--muted);letter-spacing:0.04em;line-height:1.8;margin-bottom:28px}
+.ok-box{background:var(--surface);border:1px solid var(--border);padding:24px;margin-bottom:28px;text-align:left}
+.ok-row{display:flex;justify-content:space-between;padding:6px 0;font-size:11px}
+.ok-row .lbl{color:var(--dim);letter-spacing:0.12em;text-transform:lowercase}
+.ok-row .val{color:var(--text);letter-spacing:0.02em}
+.ok-note{font-size:10px;color:var(--dim);letter-spacing:0.08em;line-height:1.7;margin-top:12px;text-align:center}
+</style>
+</head>
+<body>
+
+<nav class="topnav">
+  <a href="/" class="nav-logo">arch</a>
+  <div class="nav-links">
+    <a href="/releases">releases</a>
+    <a href="/events">events</a>
+    <a href="/shop">shop</a>
+    <a href="/plugins">plugins</a>
+    <a href="/contact">contact</a>
+  </div>
+</nav>
+
+<main>
+  <div class="ok">
+    <h1 class="ok-title">merci</h1>
+    <div class="ok-sub">ton t-shirt est en route.<br>on t'envoie un mail de confirmation avec les infos d'expédition.</div>
+
+    <div class="ok-box" id="order-box" style="display:none">
+      <div class="ok-row"><span class="lbl">produit</span><span class="val" id="v-product">—</span></div>
+      <div class="ok-row"><span class="lbl">taille</span><span class="val" id="v-size">—</span></div>
+      <div class="ok-row"><span class="lbl">email</span><span class="val" id="v-email">—</span></div>
+      <div class="ok-row"><span class="lbl">commande</span><span class="val" id="v-order">—</span></div>
+    </div>
+
+    <a href="/" class="btn" style="display:inline-block">← retour home</a>
+    <div class="ok-note">questions ? <a href="mailto:contact@arch-inc.fr" style="color:var(--muted)">contact@arch-inc.fr</a></div>
+  </div>
+</main>
+
+<footer class="site-footer">
+  &copy; 2026 arch
+</footer>
+
+<script>
+var sid = new URLSearchParams(location.search).get('session_id');
+if (sid) {
+  fetch('/api/v2/verify-merch-session', {
+    method: 'POST',
+    headers: {'Content-Type':'application/json'},
+    body: JSON.stringify({ session_id: sid })
+  }).then(r => r.json()).then(d => {
+    if (d.ok) {
+      document.getElementById('v-product').textContent = d.product || 'arch tee';
+      document.getElementById('v-size').textContent = (d.size || '—').toUpperCase();
+      document.getElementById('v-email').textContent = d.email || '—';
+      document.getElementById('v-order').textContent = sid.slice(0, 14) + '…';
+      document.getElementById('order-box').style.display = 'block';
+    }
+  }).catch(function(){});
+}
+</script>
+<script src="/_gate.js"></script>
+</body>
+</html>

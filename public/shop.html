@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>arch — shop</title>
+<link href="https://fonts.googleapis.com/css2?family=Geist+Mono:wght@300;400;500&family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/_shared.css">
+<style>
+.product{display:grid;grid-template-columns:1fr 1fr;gap:48px;margin-top:2rem;align-items:start}
+.product-img{aspect-ratio:1;background:var(--surface-alt);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;color:var(--dim);font-size:10px;letter-spacing:0.2em;text-transform:lowercase}
+.product-info{display:flex;flex-direction:column;gap:18px}
+.product-label{font-size:9px;color:var(--dim);letter-spacing:0.25em;text-transform:lowercase}
+.product-title{font-family:'Instrument Serif',serif;font-size:44px;line-height:1;font-weight:400;letter-spacing:-0.02em}
+.product-price{font-family:'Geist Mono',monospace;font-size:16px;color:var(--text);letter-spacing:0.06em;margin-top:4px}
+.product-desc{font-size:12px;color:var(--muted);letter-spacing:0.02em;line-height:1.7;margin-top:10px}
+
+.size-label{font-size:9px;color:var(--dim);letter-spacing:0.2em;text-transform:lowercase;margin-top:20px}
+.sizes{display:flex;gap:6px;margin-top:10px}
+.size{padding:12px 0;width:52px;background:transparent;border:1px solid var(--border);color:var(--muted);font-family:'Geist Mono',monospace;font-size:11px;letter-spacing:0.1em;cursor:pointer;transition:all 0.2s}
+.size:hover{border-color:var(--border-h);color:var(--text)}
+.size.selected{border-color:var(--text);color:var(--bg);background:var(--text)}
+
+.checkout-btn{margin-top:28px;padding:16px 0;width:100%;background:transparent;border:1px solid var(--border-h);color:var(--text);font-family:'Geist Mono',monospace;font-size:11px;letter-spacing:0.15em;text-transform:lowercase;cursor:pointer;transition:background 0.2s,color 0.2s}
+.checkout-btn:hover:not(:disabled){background:var(--text);color:var(--bg)}
+.checkout-btn:disabled{opacity:0.3;cursor:not-allowed}
+
+.info{font-size:10px;color:var(--dim);letter-spacing:0.06em;line-height:1.8;margin-top:16px}
+.msg{font-size:10px;color:var(--danger);letter-spacing:0.04em;margin-top:8px;min-height:14px;transition:opacity 0.2s}
+
+@media(max-width:640px){
+  .product{grid-template-columns:1fr;gap:24px}
+  .product-title{font-size:32px}
+}
+</style>
+</head>
+<body>
+
+<nav class="topnav">
+  <a href="/" class="nav-logo">arch</a>
+  <div class="nav-links">
+    <a href="/releases">releases</a>
+    <a href="/events">events</a>
+    <a href="/shop" class="active">shop</a>
+    <a href="/plugins">plugins</a>
+    <a href="/contact">contact</a>
+  </div>
+</nav>
+
+<main>
+  <div class="page-kicker">— 03</div>
+  <h1 class="page-title">shop</h1>
+
+  <div class="product">
+    <div class="product-img">— photo à venir —</div>
+    <div class="product-info">
+      <div class="product-label">— t-shirt</div>
+      <div>
+        <div class="product-title">arch tee</div>
+        <div class="product-price">[30 €]</div>
+      </div>
+      <div class="product-desc">
+        t-shirt coton 100% — couleur noire — impression front & back<br>
+        livraison france / europe incluse · expédié sous 5 jours
+      </div>
+
+      <div class="size-label">— size</div>
+      <div class="sizes" id="sizes">
+        <div class="size" data-size="s">s</div>
+        <div class="size" data-size="m">m</div>
+        <div class="size" data-size="l">l</div>
+        <div class="size" data-size="xl">xl</div>
+      </div>
+
+      <button class="checkout-btn" id="buy-btn" disabled>select size</button>
+      <div class="msg" id="msg"></div>
+
+      <div class="info">paiement sécurisé · stripe<br>pour toute question : <a href="mailto:contact@arch-inc.fr" style="color:var(--muted);text-decoration:underline">contact@arch-inc.fr</a></div>
+    </div>
+  </div>
+
+</main>
+
+<footer class="site-footer">
+  &copy; 2026 arch · <a href="mailto:contact@arch-inc.fr">contact@arch-inc.fr</a>
+</footer>
+
+<script src="/_gate.js"></script>
+<script>
+var selected = null;
+document.querySelectorAll('.size').forEach(function(el) {
+  el.addEventListener('click', function() {
+    document.querySelectorAll('.size').forEach(e => e.classList.remove('selected'));
+    el.classList.add('selected');
+    selected = el.dataset.size;
+    var btn = document.getElementById('buy-btn');
+    btn.disabled = false;
+    btn.textContent = 'checkout · ' + selected.toUpperCase();
+  });
+});
+
+document.getElementById('buy-btn').addEventListener('click', async function() {
+  if (!selected) return;
+  var btn = document.getElementById('buy-btn');
+  var msg = document.getElementById('msg');
+  btn.disabled = true; btn.textContent = 'loading...'; msg.textContent = '';
+  try {
+    var res = await fetch('/api/v2/create-checkout-merch', {
+      method: 'POST',
+      headers: {'Content-Type':'application/json'},
+      body: JSON.stringify({ product: 'arch-tee', size: selected })
+    });
+    var data = await res.json();
+    if (data.url) { window.location = data.url; }
+    else { msg.textContent = data.error || 'erreur checkout'; btn.disabled = false; btn.textContent = 'retry'; }
+  } catch(e) {
+    msg.textContent = 'connexion impossible'; btn.disabled = false; btn.textContent = 'retry';
+  }
+});
+</script>
+</body>
+</html>

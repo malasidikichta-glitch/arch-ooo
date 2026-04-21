@@ -1,0 +1,53 @@
+/* Shared design tokens + layout for arch.ooo */
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#0f0f0f;
+  --surface:#151515;
+  --surface-alt:#1a1a1a;
+  --border:rgba(255,255,255,0.07);
+  --border-h:rgba(255,255,255,0.16);
+  --text:#e8e6e3;
+  --muted:#8a8680;
+  --dim:#4a4743;
+  --accent:#d4d2cd;
+  --danger:#ff5b4a;
+}
+html{background:var(--bg);color:var(--text);font-family:'Geist Mono',monospace;font-size:13px;line-height:1.5;font-weight:300;letter-spacing:0.01em}
+body{min-height:100vh;display:flex;flex-direction:column}
+
+/* nav */
+nav.topnav{display:flex;align-items:center;justify-content:space-between;padding:0 2.5rem;height:52px;border-bottom:1px solid var(--border);position:sticky;top:0;background:var(--bg);z-index:100}
+.nav-logo{font-family:'Instrument Serif',serif;font-size:18px;color:var(--text);text-decoration:none;letter-spacing:-0.01em;font-weight:400}
+.nav-links{display:flex;gap:2rem;align-items:center}
+.nav-links a{font-size:10px;color:var(--muted);text-decoration:none;letter-spacing:0.12em;text-transform:lowercase;transition:color 0.2s}
+.nav-links a:hover,.nav-links a.active{color:var(--text)}
+
+/* page container */
+main{flex:1;max-width:880px;width:100%;margin:0 auto;padding:4rem 2.5rem}
+.page-kicker{font-size:9px;color:var(--dim);letter-spacing:0.25em;text-transform:lowercase;margin-bottom:12px}
+.page-title{font-family:'Instrument Serif',serif;font-size:clamp(48px,8vw,88px);line-height:0.95;font-weight:400;letter-spacing:-0.02em;margin-bottom:48px;color:var(--text)}
+.page-title em{font-style:italic;color:var(--muted)}
+
+/* blocks */
+.section{margin-bottom:64px}
+.section-label{font-size:10px;color:var(--dim);letter-spacing:0.2em;text-transform:lowercase;padding-bottom:12px;margin-bottom:24px;border-bottom:1px solid var(--border)}
+
+/* buttons */
+.btn{display:inline-block;padding:14px 24px;background:transparent;border:1px solid var(--border-h);color:var(--text);text-decoration:none;font-family:'Geist Mono',monospace;font-size:10px;letter-spacing:0.15em;text-transform:lowercase;cursor:pointer;transition:background 0.2s,color 0.2s,border-color 0.2s;text-align:center}
+.btn:hover{background:var(--text);color:var(--bg);border-color:var(--text)}
+.btn.primary{background:var(--text);color:var(--bg);border-color:var(--text)}
+.btn.primary:hover{background:transparent;color:var(--text)}
+.btn:disabled{opacity:0.4;cursor:not-allowed}
+
+/* footer */
+footer.site-footer{padding:2rem 2.5rem;border-top:1px solid var(--border);text-align:center;font-size:10px;color:var(--dim);letter-spacing:0.1em;text-transform:lowercase}
+footer.site-footer a{color:var(--muted);text-decoration:none}
+footer.site-footer a:hover{color:var(--text)}
+
+/* mobile nav */
+@media(max-width:640px){
+  nav.topnav{padding:0 1.25rem;height:48px}
+  .nav-links{gap:1.2rem}
+  .nav-links a{font-size:9px;letter-spacing:0.08em}
+  main{padding:2.5rem 1.25rem}
+}

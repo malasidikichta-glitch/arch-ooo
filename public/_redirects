@@ -4,5 +4,8 @@
 # breakeven PWA (trailing slash)
 /breakeven  /breakeven/  301
 
-# /plugins/success is served by /success.html (Stripe callback lands here)
+# /plugins/success is served by /success.html (Stripe plugin callback)
 /plugins/success  /success.html  200
+
+# /shop/success is served by /shop-success.html (Stripe merch callback)
+/shop/success  /shop-success.html  200

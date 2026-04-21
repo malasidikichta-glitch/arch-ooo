@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>arch — contact</title>
+<link href="https://fonts.googleapis.com/css2?family=Geist+Mono:wght@300;400;500&family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/_shared.css">
+<style>
+.contact-grid{display:grid;grid-template-columns:1fr 1fr;gap:48px;margin-top:2rem}
+.contact-block{display:flex;flex-direction:column;gap:12px}
+.contact-label{font-size:9px;color:var(--dim);letter-spacing:0.25em;text-transform:lowercase}
+.contact-value{font-family:'Instrument Serif',serif;font-size:28px;font-weight:400;letter-spacing:-0.01em}
+.contact-value a{color:var(--text);text-decoration:none;border-bottom:1px solid var(--border-h);transition:border-color 0.2s}
+.contact-value a:hover{border-color:var(--text)}
+.contact-hint{font-size:10px;color:var(--muted);letter-spacing:0.06em;line-height:1.7;margin-top:8px}
+
+.socials{display:flex;flex-wrap:wrap;gap:16px;margin-top:12px}
+.social{font-size:10px;color:var(--muted);letter-spacing:0.15em;text-transform:lowercase;text-decoration:none;padding:10px 16px;border:1px solid var(--border);transition:all 0.2s}
+.social:hover{border-color:var(--border-h);color:var(--text)}
+
+@media(max-width:640px){.contact-grid{grid-template-columns:1fr;gap:32px}.contact-value{font-size:22px}}
+</style>
+</head>
+<body>
+
+<nav class="topnav">
+  <a href="/" class="nav-logo">arch</a>
+  <div class="nav-links">
+    <a href="/releases">releases</a>
+    <a href="/events">events</a>
+    <a href="/shop">shop</a>
+    <a href="/plugins">plugins</a>
+    <a href="/contact" class="active">contact</a>
+  </div>
+</nav>
+
+<main>
+  <div class="page-kicker">— 05</div>
+  <h1 class="page-title">contact</h1>
+
+  <div class="contact-grid">
+    <div class="contact-block">
+      <div class="contact-label">— general</div>
+      <div class="contact-value"><a href="mailto:contact@arch-inc.fr">contact@arch-inc.fr</a></div>
+      <div class="contact-hint">démos, presse, bookings, ou juste dire bonjour.</div>
+    </div>
+
+    <div class="contact-block">
+      <div class="contact-label">— basé à</div>
+      <div class="contact-value">clermont-ferrand<br>auvergne · fr</div>
+    </div>
+  </div>
+
+  <div class="section" style="margin-top:5rem">
+    <div class="section-label">— socials</div>
+    <div class="socials">
+      <a class="social" href="#" target="_blank" rel="noopener">instagram</a>
+      <a class="social" href="#" target="_blank" rel="noopener">soundcloud</a>
+      <a class="social" href="#" target="_blank" rel="noopener">spotify</a>
+      <a class="social" href="#" target="_blank" rel="noopener">bandcamp</a>
+      <a class="social" href="#" target="_blank" rel="noopener">tiktok</a>
+    </div>
+    <div class="contact-hint" style="margin-top:16px">donne-moi les liens exacts, je les branche.</div>
+  </div>
+
+</main>
+
+<footer class="site-footer">
+  &copy; 2026 arch · <a href="mailto:contact@arch-inc.fr">contact@arch-inc.fr</a>
+</footer>
+
+<script src="/_gate.js"></script>
+</body>
+</html>

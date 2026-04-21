@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>arch — releases</title>
+<link href="https://fonts.googleapis.com/css2?family=Geist+Mono:wght@300;400;500&family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/_shared.css">
+<style>
+.releases{display:grid;grid-template-columns:repeat(2,1fr);gap:32px 24px}
+.release{display:flex;flex-direction:column;gap:12px;text-decoration:none;color:var(--text);transition:opacity 0.2s}
+.release:hover{opacity:0.85}
+.release-cover{aspect-ratio:1;background:var(--surface-alt);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;color:var(--dim);font-size:10px;letter-spacing:0.2em;text-transform:lowercase}
+.release-meta{display:flex;justify-content:space-between;align-items:baseline;padding-top:8px}
+.release-artist{font-size:10px;color:var(--muted);letter-spacing:0.12em;text-transform:lowercase}
+.release-date{font-size:9px;color:var(--dim);letter-spacing:0.15em}
+.release-title{font-family:'Instrument Serif',serif;font-size:22px;font-weight:400;letter-spacing:-0.01em;line-height:1.1}
+.release-type{font-size:9px;color:var(--dim);letter-spacing:0.2em;text-transform:lowercase;margin-top:4px}
+
+@media(max-width:640px){.releases{grid-template-columns:1fr;gap:24px}}
+</style>
+</head>
+<body>
+
+<nav class="topnav">
+  <a href="/" class="nav-logo">arch</a>
+  <div class="nav-links">
+    <a href="/releases" class="active">releases</a>
+    <a href="/events">events</a>
+    <a href="/shop">shop</a>
+    <a href="/plugins">plugins</a>
+    <a href="/contact">contact</a>
+  </div>
+</nav>
+
+<main>
+  <div class="page-kicker">— 01</div>
+  <h1 class="page-title">releases</h1>
+
+  <div class="releases">
+    <div class="release">
+      <div class="release-cover">placeholder</div>
+      <div>
+        <div class="release-meta">
+          <span class="release-artist">artist</span>
+          <span class="release-date">— tba</span>
+        </div>
+        <div class="release-title">release #01</div>
+        <div class="release-type">single</div>
+      </div>
+    </div>
+    <div class="release">
+      <div class="release-cover">placeholder</div>
+      <div>
+        <div class="release-meta">
+          <span class="release-artist">artist</span>
+          <span class="release-date">— tba</span>
+        </div>
+        <div class="release-title">release #02</div>
+        <div class="release-type">ep</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="section" style="margin-top:5rem">
+    <div style="font-size:11px;color:var(--muted);letter-spacing:0.06em;line-height:1.8">
+      plus de sorties à venir. dis-moi quand tu veux que je les ajoute (titre · artiste · date · format · cover).
+    </div>
+  </div>
+
+</main>
+
+<footer class="site-footer">
+  &copy; 2026 arch · <a href="mailto:contact@arch-inc.fr">contact@arch-inc.fr</a>
+</footer>
+
+<script src="/_gate.js"></script>
+</body>
+</html>
