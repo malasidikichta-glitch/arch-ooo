@@ -25,6 +25,10 @@ id = "33e38733cee1409180f942853b0a6846"
 binding = "KV_REDEMPTIONS"
 id = "993fb63217f445fcbc16d4ba9decbc07"
 
+[[kv_namespaces]]
+binding = "KV_EVENTS"
+id = "2d25f9e5c5954770849e6d3fbdaee988"
+
 # R2 binding for plugin files.
 [[r2_buckets]]
 binding = "R2_PLUGINS"

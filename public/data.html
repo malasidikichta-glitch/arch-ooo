@@ -198,6 +198,61 @@ footer.data-foot{padding:2rem 2.5rem;border-top:1px solid var(--border);text-ali
     </div>
   </section>
 
+  <!-- EVENTS ADMIN -->
+  <section class="section" id="sec-events" style="display:none">
+    <div class="section-head">
+      <h2 class="section-title">events</h2>
+      <span class="section-stat" id="events-stat"></span>
+    </div>
+    <div style="margin-bottom:14px">
+      <button class="refresh-btn" id="btn-new-event" style="font-size:10px;padding:8px 14px">+ new event</button>
+    </div>
+    <!-- editor -->
+    <div id="event-editor" style="display:none;background:var(--surface);border:1px solid var(--border-h);padding:20px;margin-bottom:16px">
+      <div style="font-size:10px;color:var(--dim);letter-spacing:0.2em;text-transform:lowercase;margin-bottom:12px" id="editor-label">— new event</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+        <div style="grid-column:1/3">
+          <label style="font-size:9px;color:var(--dim);letter-spacing:0.18em;text-transform:lowercase">title</label>
+          <input id="ev-title" type="text" placeholder="ex: arch club · la coopé de mai" style="width:100%;margin-top:4px;padding:8px 10px;background:transparent;border:1px solid var(--border);color:var(--text);font-family:'Geist Mono',monospace;font-size:12px;outline:none">
+        </div>
+        <div>
+          <label style="font-size:9px;color:var(--dim);letter-spacing:0.18em;text-transform:lowercase">date</label>
+          <input id="ev-date" type="datetime-local" style="width:100%;margin-top:4px;padding:8px 10px;background:transparent;border:1px solid var(--border);color:var(--text);font-family:'Geist Mono',monospace;font-size:12px;outline:none;color-scheme:dark">
+        </div>
+        <div>
+          <label style="font-size:9px;color:var(--dim);letter-spacing:0.18em;text-transform:lowercase">city</label>
+          <input id="ev-city" type="text" placeholder="clermont-ferrand" style="width:100%;margin-top:4px;padding:8px 10px;background:transparent;border:1px solid var(--border);color:var(--text);font-family:'Geist Mono',monospace;font-size:12px;outline:none">
+        </div>
+        <div>
+          <label style="font-size:9px;color:var(--dim);letter-spacing:0.18em;text-transform:lowercase">venue</label>
+          <input id="ev-venue" type="text" placeholder="la coopérative de mai" style="width:100%;margin-top:4px;padding:8px 10px;background:transparent;border:1px solid var(--border);color:var(--text);font-family:'Geist Mono',monospace;font-size:12px;outline:none">
+        </div>
+        <div>
+          <label style="font-size:9px;color:var(--dim);letter-spacing:0.18em;text-transform:lowercase">lineup (virgule)</label>
+          <input id="ev-lineup" type="text" placeholder="xo, duno, limak, mau_v" style="width:100%;margin-top:4px;padding:8px 10px;background:transparent;border:1px solid var(--border);color:var(--text);font-family:'Geist Mono',monospace;font-size:12px;outline:none">
+        </div>
+        <div style="grid-column:1/3">
+          <label style="font-size:9px;color:var(--dim);letter-spacing:0.18em;text-transform:lowercase">ticket url</label>
+          <input id="ev-url" type="url" placeholder="https://shotgun.live/fr/events/..." style="width:100%;margin-top:4px;padding:8px 10px;background:transparent;border:1px solid var(--border);color:var(--text);font-family:'Geist Mono',monospace;font-size:12px;outline:none">
+        </div>
+        <div style="grid-column:1/3">
+          <label style="font-size:9px;color:var(--dim);letter-spacing:0.18em;text-transform:lowercase">note (pour events passés, ex: "sold out")</label>
+          <input id="ev-note" type="text" placeholder="optionnel" style="width:100%;margin-top:4px;padding:8px 10px;background:transparent;border:1px solid var(--border);color:var(--text);font-family:'Geist Mono',monospace;font-size:12px;outline:none">
+        </div>
+        <div style="grid-column:1/3;display:flex;align-items:center;gap:10px;margin-top:4px">
+          <input id="ev-hidden" type="checkbox">
+          <label for="ev-hidden" style="font-size:10px;color:var(--muted);letter-spacing:0.08em">cacher du site public (brouillon)</label>
+        </div>
+      </div>
+      <div style="display:flex;gap:8px;margin-top:16px;justify-content:flex-end">
+        <button id="btn-cancel" class="refresh-btn" style="border-color:var(--border)">cancel</button>
+        <button id="btn-save" class="refresh-btn" style="border-color:var(--success);color:var(--success)">save</button>
+      </div>
+    </div>
+    <!-- list -->
+    <div id="events-list" style="display:flex;flex-direction:column;gap:10px"></div>
+  </section>
+
   <!-- MERCH ORDERS -->
   <section class="section" id="sec-orders" style="display:none">
     <div class="section-head">
@@ -339,15 +394,17 @@ function thisMonth(){var d=new Date();return new Date(d.getFullYear(),d.getMonth
 function thisYear(){var d=new Date();return new Date(d.getFullYear(),0,1);}
 
 // ---- loaders ----
-var state = { purchases:null, orders:null, visits:null, emails:null, messages:null, promos:null, downloads:null };
+var state = { purchases:null, orders:null, visits:null, emails:null, messages:null, promos:null, downloads:null, events:null };
 
 async function loadAll(){
   document.getElementById('loading').style.display='block';
-  await Promise.all([loadPurchases(), loadOrders(), loadVisits(), loadEmails(), loadMessages(), loadPromos(), loadDownloads()]);
+  await Promise.all([loadPurchases(), loadOrders(), loadVisits(), loadEmails(), loadMessages(), loadPromos(), loadDownloads(), loadEvents()]);
   renderAll();
   document.getElementById('loading').style.display='none';
   document.getElementById('last-refresh').textContent = new Date().toLocaleTimeString('fr-FR');
 }
+
+async function loadEvents(){ try{ state.events = await (await fetch('/api/v2/events?all=1')).json(); }catch(e){ state.events={events:[],total:0}; } }
 
 async function loadPurchases(){ try{ state.purchases = await (await fetch('/api/v2/get-purchases')).json(); }catch(e){ state.purchases={total_revenue:0,total_purchases:0,recent:[]}; } }
 async function loadOrders(){    try{ state.orders    = await (await fetch('/api/v2/get-merch-orders')).json(); }catch(e){ state.orders={orders:[],total:0,pending:0}; } }
@@ -358,9 +415,112 @@ async function loadPromos(){    try{ state.promos    = await (await fetch('/api/
 async function loadDownloads(){ try{ state.downloads = await (await fetch('/api/v2/track-download')).json(); }catch(e){ state.downloads={}; } }
 
 function renderAll(){
-  renderKPIs(); renderRevenue(); renderOrders(); renderPurchases();
+  renderKPIs(); renderRevenue(); renderEvents(); renderOrders(); renderPurchases();
   renderVisits(); renderPromos(); renderDownloads(); renderEmails(); renderMessages();
 }
+
+// ---- events admin ----
+var editingId = null;
+
+function renderEvents(){
+  var events = state.events?.events || [];
+  document.getElementById('events-stat').textContent = events.length+' events · '+events.filter(e=>!e.hidden).length+' publics';
+  var list = document.getElementById('events-list');
+  list.innerHTML = '';
+  var now = Date.now();
+  events.sort((a,b)=>(a.date||'').localeCompare(b.date||''));
+  if(events.length===0){
+    list.innerHTML = '<div style="padding:14px;color:var(--dim);font-size:11px;letter-spacing:0.04em">aucun event. clique + new event pour commencer.</div>';
+  }
+  events.forEach(function(e){
+    var past = e.date && new Date(e.date).getTime() < now - 86400000;
+    var d = document.createElement('div');
+    d.style = 'display:grid;grid-template-columns:1fr auto;gap:12px;padding:14px 16px;background:var(--surface);border:1px solid var(--border);border-left:3px solid '+(e.hidden?'var(--dim)':(past?'var(--muted)':'var(--accent)'))+';';
+    var lineup = (e.lineup||[]).join(' · ');
+    var meta = [e.venue,e.city].filter(Boolean).join(' · ');
+    d.innerHTML =
+      '<div>'+
+        '<div style="font-family:\'Instrument Serif\',serif;font-size:18px;margin-bottom:4px">'+escapeHtml(e.title||'(untitled)')+'</div>'+
+        '<div style="font-size:10px;color:var(--muted);letter-spacing:0.08em">'+
+          (e.date?fmtDate(e.date)+' · ':'')+
+          escapeHtml(meta)+
+          (lineup?'<br><span style="color:var(--dim)">'+escapeHtml(lineup)+'</span>':'')+
+          (e.hidden?'<br><span class="badge" style="margin-top:4px;display:inline-block">brouillon</span>':'')+
+          (past?'<br><span class="badge" style="margin-top:4px;display:inline-block;color:var(--dim)">passé</span>':'')+
+        '</div>'+
+      '</div>'+
+      '<div style="display:flex;flex-direction:column;gap:4px;min-width:90px">'+
+        '<button data-edit="'+e.id+'" class="refresh-btn" style="font-size:9px;padding:5px 8px">edit</button>'+
+        '<button data-del="'+e.id+'" class="refresh-btn" style="font-size:9px;padding:5px 8px;border-color:var(--warn);color:var(--warn)">delete</button>'+
+      '</div>';
+    list.appendChild(d);
+  });
+
+  list.querySelectorAll('button[data-edit]').forEach(b => b.addEventListener('click', () => openEditor(events.find(x => x.id === b.dataset.edit))));
+  list.querySelectorAll('button[data-del]').forEach(b => b.addEventListener('click', () => deleteEvent(b.dataset.del)));
+
+  document.getElementById('sec-events').style.display='block';
+}
+
+function escapeHtml(s){return (s||'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'})[m]);}
+
+function openEditor(ev){
+  editingId = ev ? ev.id : null;
+  document.getElementById('editor-label').textContent = ev ? ('— edit: ' + ev.title) : '— new event';
+  document.getElementById('ev-title').value = ev?.title || '';
+  document.getElementById('ev-date').value = ev?.date ? new Date(ev.date).toISOString().slice(0,16) : '';
+  document.getElementById('ev-city').value = ev?.city || '';
+  document.getElementById('ev-venue').value = ev?.venue || '';
+  document.getElementById('ev-lineup').value = (ev?.lineup||[]).join(', ');
+  document.getElementById('ev-url').value = ev?.ticket_url || '';
+  document.getElementById('ev-note').value = ev?.note || '';
+  document.getElementById('ev-hidden').checked = !!ev?.hidden;
+  document.getElementById('event-editor').style.display='block';
+  document.getElementById('event-editor').scrollIntoView({behavior:'smooth',block:'nearest'});
+}
+function closeEditor(){ document.getElementById('event-editor').style.display='none'; editingId=null; }
+
+async function saveEvent(){
+  var payload = {
+    pw: "j'aimelesdatas",
+    title: document.getElementById('ev-title').value.trim(),
+    date: document.getElementById('ev-date').value ? new Date(document.getElementById('ev-date').value).toISOString() : '',
+    city: document.getElementById('ev-city').value.trim(),
+    venue: document.getElementById('ev-venue').value.trim(),
+    lineup: document.getElementById('ev-lineup').value,
+    ticket_url: document.getElementById('ev-url').value.trim(),
+    note: document.getElementById('ev-note').value.trim(),
+    hidden: document.getElementById('ev-hidden').checked,
+  };
+  if(!payload.title) { alert('title required'); return; }
+  var url = editingId ? '/api/v2/events/'+editingId : '/api/v2/events';
+  var method = editingId ? 'PUT' : 'POST';
+  try {
+    var res = await fetch(url, { method, headers:{'Content-Type':'application/json'}, body: JSON.stringify(payload) });
+    var data = await res.json();
+    if(!data.ok && !data.event){ alert('error: '+(data.error||'unknown')); return; }
+    closeEditor();
+    await loadEvents();
+    renderEvents();
+  } catch(e){ alert('error: '+e.message); }
+}
+
+async function deleteEvent(id){
+  if(!confirm('delete cet event ?')) return;
+  try {
+    await fetch('/api/v2/events/'+id, {
+      method: 'DELETE',
+      headers: {'Content-Type':'application/json'},
+      body: JSON.stringify({ pw: "j'aimelesdatas" })
+    });
+    await loadEvents();
+    renderEvents();
+  } catch(e){ alert('error: '+e.message); }
+}
+
+document.getElementById('btn-new-event')?.addEventListener('click', () => openEditor(null));
+document.getElementById('btn-cancel')?.addEventListener('click', closeEditor);
+document.getElementById('btn-save')?.addEventListener('click', saveEvent);
 
 // ---- renders ----
 function renderKPIs(){

@@ -7,17 +7,19 @@
 <link href="https://fonts.googleapis.com/css2?family=Geist+Mono:wght@300;400;500&family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="/_shared.css">
 <style>
-.releases{display:grid;grid-template-columns:repeat(2,1fr);gap:32px 24px}
-.release{display:flex;flex-direction:column;gap:12px;text-decoration:none;color:var(--text);transition:opacity 0.2s}
-.release:hover{opacity:0.85}
-.release-cover{aspect-ratio:1;background:var(--surface-alt);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;color:var(--dim);font-size:10px;letter-spacing:0.2em;text-transform:lowercase}
-.release-meta{display:flex;justify-content:space-between;align-items:baseline;padding-top:8px}
-.release-artist{font-size:10px;color:var(--muted);letter-spacing:0.12em;text-transform:lowercase}
-.release-date{font-size:9px;color:var(--dim);letter-spacing:0.15em}
-.release-title{font-family:'Instrument Serif',serif;font-size:22px;font-weight:400;letter-spacing:-0.01em;line-height:1.1}
-.release-type{font-size:9px;color:var(--dim);letter-spacing:0.2em;text-transform:lowercase;margin-top:4px}
+.artist-block{margin-bottom:3rem}
+.artist-head{display:flex;align-items:baseline;justify-content:space-between;gap:12px;padding-bottom:12px;margin-bottom:18px;border-bottom:1px solid var(--border);flex-wrap:wrap}
+.artist-name{font-family:'Instrument Serif',serif;font-size:34px;font-weight:400;letter-spacing:-0.02em}
+.artist-meta{font-size:10px;color:var(--dim);letter-spacing:0.12em;text-transform:lowercase}
+.artist-meta a{color:var(--muted);text-decoration:none;border-bottom:1px solid var(--border)}
+.artist-meta a:hover{color:var(--text);border-color:var(--text)}
+.artist-embed{border:1px solid var(--border);background:var(--surface);border-radius:4px;overflow:hidden}
+.artist-embed iframe{display:block;width:100%;border:0;background:transparent}
 
-@media(max-width:640px){.releases{grid-template-columns:1fr;gap:24px}}
+.intro{font-size:11px;color:var(--muted);letter-spacing:0.04em;line-height:1.8;margin-bottom:3rem;max-width:640px}
+.intro em{font-style:italic;color:var(--text)}
+
+@media(max-width:640px){.artist-name{font-size:26px}}
 </style>
 </head>
 <body>
@@ -37,35 +39,46 @@
   <div class="page-kicker">— 01</div>
   <h1 class="page-title">releases</h1>
 
-  <div class="releases">
-    <div class="release">
-      <div class="release-cover">placeholder</div>
-      <div>
-        <div class="release-meta">
-          <span class="release-artist">artist</span>
-          <span class="release-date">— tba</span>
-        </div>
-        <div class="release-title">release #01</div>
-        <div class="release-type">single</div>
+  <p class="intro">
+    les dernières sorties des artistes <em>arch</em> — mis à jour en temps réel via spotify.
+  </p>
+
+  <div class="artist-block">
+    <div class="artist-head">
+      <div class="artist-name">xo</div>
+      <div class="artist-meta">
+        <a href="https://open.spotify.com/intl-fr/artist/0ZWPKOD6JKB2TGruY79QzP" target="_blank" rel="noopener">spotify →</a>
       </div>
     </div>
-    <div class="release">
-      <div class="release-cover">placeholder</div>
-      <div>
-        <div class="release-meta">
-          <span class="release-artist">artist</span>
-          <span class="release-date">— tba</span>
-        </div>
-        <div class="release-title">release #02</div>
-        <div class="release-type">ep</div>
-      </div>
+    <div class="artist-embed">
+      <iframe
+        src="https://open.spotify.com/embed/artist/0ZWPKOD6JKB2TGruY79QzP?utm_source=generator&theme=0"
+        width="100%" height="420"
+        frameborder="0" allowfullscreen=""
+        allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"
+        loading="lazy"></iframe>
     </div>
   </div>
 
-  <div class="section" style="margin-top:5rem">
-    <div style="font-size:11px;color:var(--muted);letter-spacing:0.06em;line-height:1.8">
-      plus de sorties à venir. dis-moi quand tu veux que je les ajoute (titre · artiste · date · format · cover).
+  <div class="artist-block">
+    <div class="artist-head">
+      <div class="artist-name">duno</div>
+      <div class="artist-meta">
+        <a href="https://open.spotify.com/intl-fr/artist/4nXuz5MMlZir7Kg2UWsS1K" target="_blank" rel="noopener">spotify →</a>
+      </div>
     </div>
+    <div class="artist-embed">
+      <iframe
+        src="https://open.spotify.com/embed/artist/4nXuz5MMlZir7Kg2UWsS1K?utm_source=generator&theme=0"
+        width="100%" height="420"
+        frameborder="0" allowfullscreen=""
+        allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"
+        loading="lazy"></iframe>
+    </div>
+  </div>
+
+  <div style="font-size:10px;color:var(--dim);letter-spacing:0.06em;line-height:1.8;margin-top:4rem;padding:1rem;border:1px dashed var(--border);text-align:center">
+    envoie-moi les spotify IDs de limak / mau_v / autres artistes et je les branche ici.
   </div>
 
 </main>
