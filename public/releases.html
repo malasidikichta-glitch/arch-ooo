@@ -7,19 +7,14 @@
 <link href="https://fonts.googleapis.com/css2?family=Geist+Mono:wght@300;400;500&family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="/_shared.css">
 <style>
-.artist-block{margin-bottom:3rem}
-.artist-head{display:flex;align-items:baseline;justify-content:space-between;gap:12px;padding-bottom:12px;margin-bottom:18px;border-bottom:1px solid var(--border);flex-wrap:wrap}
-.artist-name{font-family:'Instrument Serif',serif;font-size:34px;font-weight:400;letter-spacing:-0.02em}
-.artist-meta{font-size:10px;color:var(--dim);letter-spacing:0.12em;text-transform:lowercase}
-.artist-meta a{color:var(--muted);text-decoration:none;border-bottom:1px solid var(--border)}
-.artist-meta a:hover{color:var(--text);border-color:var(--text)}
-.artist-embed{border:1px solid var(--border);background:var(--surface);border-radius:4px;overflow:hidden}
-.artist-embed iframe{display:block;width:100%;border:0;background:transparent}
+.intro{font-size:11px;color:var(--muted);letter-spacing:0.04em;line-height:1.8;margin-bottom:2.5rem;max-width:640px}
 
-.intro{font-size:11px;color:var(--muted);letter-spacing:0.04em;line-height:1.8;margin-bottom:3rem;max-width:640px}
-.intro em{font-style:italic;color:var(--text)}
+.playlist-wrap{border:1px solid var(--border);background:var(--surface);overflow:hidden}
+.playlist-wrap iframe{display:block;width:100%;border:0;background:transparent}
 
-@media(max-width:640px){.artist-name{font-size:26px}}
+.note{font-size:10px;color:var(--dim);letter-spacing:0.06em;line-height:1.8;margin-top:2rem;padding:1rem 1.4rem;border:1px dashed var(--border);text-align:center}
+.note a{color:var(--muted);text-decoration:underline}
+.note a:hover{color:var(--text)}
 </style>
 </head>
 <body>
@@ -39,46 +34,21 @@
   <div class="page-kicker">— 01</div>
   <h1 class="page-title">releases</h1>
 
-  <p class="intro">
-    les dernières sorties des artistes <em>arch</em> — mis à jour en temps réel via spotify.
-  </p>
+  <p class="intro">les sorties des artistes arch — mis à jour en temps réel depuis spotify.</p>
 
-  <div class="artist-block">
-    <div class="artist-head">
-      <div class="artist-name">xo</div>
-      <div class="artist-meta">
-        <a href="https://open.spotify.com/intl-fr/artist/0ZWPKOD6JKB2TGruY79QzP" target="_blank" rel="noopener">spotify →</a>
-      </div>
-    </div>
-    <div class="artist-embed">
-      <iframe
-        src="https://open.spotify.com/embed/artist/0ZWPKOD6JKB2TGruY79QzP?utm_source=generator&theme=0"
-        width="100%" height="420"
-        frameborder="0" allowfullscreen=""
-        allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"
-        loading="lazy"></iframe>
-    </div>
+  <div class="playlist-wrap">
+    <iframe
+      title="arch — releases"
+      src="https://open.spotify.com/embed/playlist/0BkfVWUXoGSRFbbegjzEoj?utm_source=generator&theme=0"
+      width="100%"
+      height="600"
+      frameborder="0"
+      allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"
+      loading="lazy"></iframe>
   </div>
 
-  <div class="artist-block">
-    <div class="artist-head">
-      <div class="artist-name">duno</div>
-      <div class="artist-meta">
-        <a href="https://open.spotify.com/intl-fr/artist/4nXuz5MMlZir7Kg2UWsS1K" target="_blank" rel="noopener">spotify →</a>
-      </div>
-    </div>
-    <div class="artist-embed">
-      <iframe
-        src="https://open.spotify.com/embed/artist/4nXuz5MMlZir7Kg2UWsS1K?utm_source=generator&theme=0"
-        width="100%" height="420"
-        frameborder="0" allowfullscreen=""
-        allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"
-        loading="lazy"></iframe>
-    </div>
-  </div>
-
-  <div style="font-size:10px;color:var(--dim);letter-spacing:0.06em;line-height:1.8;margin-top:4rem;padding:1rem;border:1px dashed var(--border);text-align:center">
-    envoie-moi les spotify IDs de limak / mau_v / autres artistes et je les branche ici.
+  <div class="note">
+    playlist curated · gérée sur <a href="https://open.spotify.com/playlist/0BkfVWUXoGSRFbbegjzEoj" target="_blank" rel="noopener">spotify</a>
   </div>
 
 </main>
