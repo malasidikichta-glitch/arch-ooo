@@ -204,8 +204,10 @@ footer.data-foot{padding:2rem 2.5rem;border-top:1px solid var(--border);text-ali
       <h2 class="section-title">events</h2>
       <span class="section-stat" id="events-stat"></span>
     </div>
-    <div style="margin-bottom:14px">
+    <div style="margin-bottom:14px;display:flex;gap:8px;flex-wrap:wrap">
       <button class="refresh-btn" id="btn-new-event" style="font-size:10px;padding:8px 14px">+ new event</button>
+      <button class="refresh-btn" id="btn-sync-shotgun" style="font-size:10px;padding:8px 14px;border-color:var(--accent);color:var(--accent)">sync shotgun →</button>
+      <span id="sync-status" style="font-size:10px;color:var(--muted);letter-spacing:0.08em;padding:8px 0"></span>
     </div>
     <!-- editor -->
     <div id="event-editor" style="display:none;background:var(--surface);border:1px solid var(--border-h);padding:20px;margin-bottom:16px">
@@ -521,6 +523,23 @@ async function deleteEvent(id){
 document.getElementById('btn-new-event')?.addEventListener('click', () => openEditor(null));
 document.getElementById('btn-cancel')?.addEventListener('click', closeEditor);
 document.getElementById('btn-save')?.addEventListener('click', saveEvent);
+document.getElementById('btn-sync-shotgun')?.addEventListener('click', async function(){
+  var btn = document.getElementById('btn-sync-shotgun');
+  var status = document.getElementById('sync-status');
+  btn.disabled = true; btn.textContent = 'syncing…'; status.textContent = '';
+  try {
+    var res = await fetch('/api/v2/sync-shotgun?pw=' + encodeURIComponent("j'aimelesdatas"));
+    var d = await res.json();
+    if(d.ok){
+      status.textContent = '+'+d.created+' new, '+d.updated+' updated';
+      await loadEvents();
+      renderEvents();
+    } else {
+      status.textContent = 'error: ' + (d.error || 'unknown');
+    }
+  } catch(e){ status.textContent = 'error: ' + e.message; }
+  btn.disabled = false; btn.textContent = 'sync shotgun →';
+});
 
 // ---- renders ----
 function renderKPIs(){
