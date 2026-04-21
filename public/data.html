@@ -198,6 +198,15 @@ footer.data-foot{padding:2rem 2.5rem;border-top:1px solid var(--border);text-ali
     </div>
   </section>
 
+  <!-- RELEASES ADMIN -->
+  <section class="section" id="sec-releases" style="display:none">
+    <div class="section-head">
+      <h2 class="section-title">releases</h2>
+      <span class="section-stat" id="releases-stat"></span>
+    </div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px" id="releases-grid"></div>
+  </section>
+
   <!-- EVENTS ADMIN -->
   <section class="section" id="sec-events" style="display:none">
     <div class="section-head">
@@ -396,17 +405,18 @@ function thisMonth(){var d=new Date();return new Date(d.getFullYear(),d.getMonth
 function thisYear(){var d=new Date();return new Date(d.getFullYear(),0,1);}
 
 // ---- loaders ----
-var state = { purchases:null, orders:null, visits:null, emails:null, messages:null, promos:null, downloads:null, events:null };
+var state = { purchases:null, orders:null, visits:null, emails:null, messages:null, promos:null, downloads:null, events:null, releases:null };
 
 async function loadAll(){
   document.getElementById('loading').style.display='block';
-  await Promise.all([loadPurchases(), loadOrders(), loadVisits(), loadEmails(), loadMessages(), loadPromos(), loadDownloads(), loadEvents()]);
+  await Promise.all([loadPurchases(), loadOrders(), loadVisits(), loadEmails(), loadMessages(), loadPromos(), loadDownloads(), loadEvents(), loadReleases()]);
   renderAll();
   document.getElementById('loading').style.display='none';
   document.getElementById('last-refresh').textContent = new Date().toLocaleTimeString('fr-FR');
 }
 
 async function loadEvents(){ try{ state.events = await (await fetch('/api/v2/events?all=1')).json(); }catch(e){ state.events={events:[],total:0}; } }
+async function loadReleases(){ try{ state.releases = await (await fetch('/api/v2/releases')).json(); }catch(e){ state.releases={}; } }
 
 async function loadPurchases(){ try{ state.purchases = await (await fetch('/api/v2/get-purchases')).json(); }catch(e){ state.purchases={total_revenue:0,total_purchases:0,recent:[]}; } }
 async function loadOrders(){    try{ state.orders    = await (await fetch('/api/v2/get-merch-orders')).json(); }catch(e){ state.orders={orders:[],total:0,pending:0}; } }
@@ -417,8 +427,67 @@ async function loadPromos(){    try{ state.promos    = await (await fetch('/api/
 async function loadDownloads(){ try{ state.downloads = await (await fetch('/api/v2/track-download')).json(); }catch(e){ state.downloads={}; } }
 
 function renderAll(){
-  renderKPIs(); renderRevenue(); renderEvents(); renderOrders(); renderPurchases();
+  renderKPIs(); renderRevenue(); renderReleases(); renderEvents(); renderOrders(); renderPurchases();
   renderVisits(); renderPromos(); renderDownloads(); renderEmails(); renderMessages();
+}
+
+// ---- releases admin ----
+function renderReleases(){
+  var data = state.releases || {};
+  var artists = ['xo','duno'];
+  var grid = document.getElementById('releases-grid');
+  grid.innerHTML = '';
+  var configured = 0;
+  artists.forEach(function(key){
+    var a = data[key] || { artist: key };
+    var r = a.release;
+    if(r && r.id) configured++;
+    var div = document.createElement('div');
+    div.style = 'background:var(--surface);border:1px solid var(--border);padding:16px';
+    div.innerHTML =
+      '<div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:10px">'+
+        '<div style="font-family:\'Instrument Serif\',serif;font-size:18px">'+(a.artist||key)+'</div>'+
+        (r?.url?'<a href="'+escapeHtml(r.url)+'" target="_blank" rel="noopener" style="font-size:9px;color:var(--muted);letter-spacing:0.15em;text-decoration:none">open →</a>':'<span style="font-size:9px;color:var(--dim)">no release</span>')+
+      '</div>'+
+      '<div style="font-size:10px;color:var(--muted);letter-spacing:0.08em;margin-bottom:10px">'+
+        (r ? (r.title ? escapeHtml(r.title) : (r.kind+' · '+r.id)) : '(colle une url spotify ci-dessous)')+
+      '</div>'+
+      '<input type="url" data-artist="'+key+'" data-role="rel-url" placeholder="https://open.spotify.com/album/..." '+
+        'value="'+escapeHtml(r?.url||'')+'" '+
+        'style="width:100%;padding:8px 10px;background:transparent;border:1px solid var(--border);color:var(--text);font-family:\'Geist Mono\',monospace;font-size:10px;letter-spacing:0.04em;outline:none;margin-bottom:8px">'+
+      '<button data-save-artist="'+key+'" class="refresh-btn" style="width:100%;font-size:9px;padding:7px;border-color:var(--success);color:var(--success)">save</button>'+
+      '<div data-status-artist="'+key+'" style="font-size:9px;color:var(--muted);letter-spacing:0.08em;margin-top:6px;min-height:12px"></div>';
+    grid.appendChild(div);
+  });
+  document.getElementById('releases-stat').textContent = configured + '/' + artists.length + ' configured';
+  document.getElementById('sec-releases').style.display='block';
+
+  grid.querySelectorAll('button[data-save-artist]').forEach(function(btn){
+    btn.addEventListener('click', async function(){
+      var artist = btn.dataset.saveArtist;
+      var input = grid.querySelector('input[data-artist="'+artist+'"]');
+      var status = grid.querySelector('[data-status-artist="'+artist+'"]');
+      var url = input.value.trim();
+      if(!url){ status.textContent = 'url required'; return; }
+      btn.disabled = true; btn.textContent = '...'; status.textContent = '';
+      try {
+        var res = await fetch('/api/v2/releases', {
+          method: 'POST',
+          headers: {'Content-Type':'application/json'},
+          body: JSON.stringify({ pw: "j'aimelesdatas", artist, url })
+        });
+        var d = await res.json();
+        if(d.ok){
+          status.textContent = 'ok · ' + (d.release.kind || '') + ' · ' + (d.release.id || '').slice(0,10);
+          await loadReleases();
+          renderReleases();
+        } else {
+          status.textContent = 'error: ' + (d.error || 'unknown');
+        }
+      } catch(e){ status.textContent = 'error: ' + e.message; }
+      btn.disabled = false; btn.textContent = 'save';
+    });
+  });
 }
 
 // ---- events admin ----

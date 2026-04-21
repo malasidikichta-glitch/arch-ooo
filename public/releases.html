@@ -7,14 +7,26 @@
 <link href="https://fonts.googleapis.com/css2?family=Geist+Mono:wght@300;400;500&family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="/_shared.css">
 <style>
+.releases-grid{display:grid;grid-template-columns:1fr 1fr;gap:32px;margin-top:2rem}
+
+.release{display:flex;flex-direction:column;gap:10px}
+.release-head{display:flex;justify-content:space-between;align-items:baseline;padding-bottom:10px;border-bottom:1px solid var(--border)}
+.release-artist{font-family:'Instrument Serif',serif;font-size:22px;font-weight:400;letter-spacing:-0.01em;text-transform:lowercase}
+.release-link{font-size:9px;color:var(--muted);letter-spacing:0.15em;text-transform:lowercase;text-decoration:none}
+.release-link:hover{color:var(--text)}
+
+.release-embed{border:1px solid var(--border);background:var(--surface);overflow:hidden;border-radius:8px}
+.release-embed iframe{display:block;width:100%;border:0;background:transparent}
+
+.release-empty{aspect-ratio:1;background:var(--surface);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;color:var(--dim);font-size:10px;letter-spacing:0.2em;text-transform:lowercase;padding:2rem;text-align:center}
+
 .intro{font-size:11px;color:var(--muted);letter-spacing:0.04em;line-height:1.8;margin-bottom:2.5rem;max-width:640px}
 
-.playlist-wrap{border:1px solid var(--border);background:var(--surface);overflow:hidden}
-.playlist-wrap iframe{display:block;width:100%;border:0;background:transparent}
+.loading{padding:4rem 0;text-align:center;color:var(--dim);font-size:10px;letter-spacing:0.25em;text-transform:lowercase}
+.loading::after{content:'';animation:dots 1.5s steps(4,end) infinite}
+@keyframes dots{0%{content:''}25%{content:'.'}50%{content:'..'}75%{content:'...'}}
 
-.note{font-size:10px;color:var(--dim);letter-spacing:0.06em;line-height:1.8;margin-top:2rem;padding:1rem 1.4rem;border:1px dashed var(--border);text-align:center}
-.note a{color:var(--muted);text-decoration:underline}
-.note a:hover{color:var(--text)}
+@media(max-width:700px){.releases-grid{grid-template-columns:1fr;gap:24px}}
 </style>
 </head>
 <body>
@@ -34,22 +46,10 @@
   <div class="page-kicker">— 01</div>
   <h1 class="page-title">releases</h1>
 
-  <p class="intro">les sorties des artistes arch — mis à jour en temps réel depuis spotify.</p>
+  <p class="intro">dernières sorties xo + duno · spotify embed · preview intégré.</p>
 
-  <div class="playlist-wrap">
-    <iframe
-      title="arch — releases"
-      src="https://open.spotify.com/embed/playlist/0BkfVWUXoGSRFbbegjzEoj?utm_source=generator&theme=0"
-      width="100%"
-      height="600"
-      frameborder="0"
-      allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"
-      loading="lazy"></iframe>
-  </div>
-
-  <div class="note">
-    playlist curated · gérée sur <a href="https://open.spotify.com/playlist/0BkfVWUXoGSRFbbegjzEoj" target="_blank" rel="noopener">spotify</a>
-  </div>
+  <div class="loading" id="loading">loading</div>
+  <div class="releases-grid" id="grid" style="display:none"></div>
 
 </main>
 
@@ -59,5 +59,44 @@
 
 <script src="/_track.js"></script>
 <script src="/_gate.js"></script>
+<script>
+function escapeHtml(s){return (s||'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'})[m]);}
+
+function renderArtist(key, data){
+  var r = data.release;
+  if(!r || !r.id){
+    return '<div class="release">'+
+      '<div class="release-head"><div class="release-artist">'+escapeHtml(data.artist||key)+'</div><span class="release-link">—</span></div>'+
+      '<div class="release-empty">pas encore de release configurée</div>'+
+    '</div>';
+  }
+  return '<div class="release">'+
+    '<div class="release-head">'+
+      '<div class="release-artist">'+escapeHtml(data.artist||key)+'</div>'+
+      '<a class="release-link" href="'+escapeHtml(r.url)+'" target="_blank" rel="noopener">open in spotify →</a>'+
+    '</div>'+
+    '<div class="release-embed">'+
+      '<iframe '+
+        'src="'+escapeHtml(r.embed_url)+'" '+
+        'height="380" frameborder="0" allowfullscreen="" '+
+        'allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" '+
+        'loading="lazy"></iframe>'+
+    '</div>'+
+  '</div>';
+}
+
+(async function(){
+  try {
+    var res = await fetch('/api/v2/releases');
+    var data = await res.json();
+    var grid = document.getElementById('grid');
+    grid.innerHTML = renderArtist('xo', data.xo) + renderArtist('duno', data.duno);
+    grid.style.display = 'grid';
+    document.getElementById('loading').style.display = 'none';
+  } catch(err){
+    document.getElementById('loading').textContent = 'erreur chargement';
+  }
+})();
+</script>
 </body>
 </html>
