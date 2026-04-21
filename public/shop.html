@@ -17,7 +17,7 @@
 
 .size-label{font-size:9px;color:var(--dim);letter-spacing:0.2em;text-transform:lowercase;margin-top:20px}
 .sizes{display:flex;gap:6px;margin-top:10px}
-.size{padding:12px 0;width:52px;background:transparent;border:1px solid var(--border);color:var(--muted);font-family:'Geist Mono',monospace;font-size:11px;letter-spacing:0.1em;cursor:pointer;transition:all 0.2s}
+.size{padding:12px 14px;min-width:56px;background:transparent;border:1px solid var(--border);color:var(--muted);font-family:'Geist Mono',monospace;font-size:12px;letter-spacing:0.1em;cursor:pointer;transition:all 0.2s;text-align:center;user-select:none;text-transform:lowercase}
 .size:hover{border-color:var(--border-h);color:var(--text)}
 .size.selected{border-color:var(--text);color:var(--bg);background:var(--text)}
 
@@ -66,10 +66,10 @@
 
       <div class="size-label">— size</div>
       <div class="sizes" id="sizes">
-        <div class="size" data-size="s">s</div>
-        <div class="size" data-size="m">m</div>
-        <div class="size" data-size="l">l</div>
-        <div class="size" data-size="xl">xl</div>
+        <button type="button" class="size" data-size="s">s</button>
+        <button type="button" class="size" data-size="m">m</button>
+        <button type="button" class="size" data-size="l">l</button>
+        <button type="button" class="size" data-size="xl">xl</button>
       </div>
 
       <button class="checkout-btn" id="buy-btn" disabled>select size</button>
@@ -89,14 +89,22 @@
 <script src="/_gate.js"></script>
 <script>
 var selected = null;
+var buyBtn = document.getElementById('buy-btn');
 document.querySelectorAll('.size').forEach(function(el) {
   el.addEventListener('click', function() {
+    // toggle: if already selected, deselect
+    if (el.classList.contains('selected')) {
+      el.classList.remove('selected');
+      selected = null;
+      buyBtn.disabled = true;
+      buyBtn.textContent = 'select size';
+      return;
+    }
     document.querySelectorAll('.size').forEach(e => e.classList.remove('selected'));
     el.classList.add('selected');
     selected = el.dataset.size;
-    var btn = document.getElementById('buy-btn');
-    btn.disabled = false;
-    btn.textContent = 'checkout · ' + selected.toUpperCase();
+    buyBtn.disabled = false;
+    buyBtn.textContent = 'checkout · ' + selected;
   });
 });
 

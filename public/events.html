@@ -11,7 +11,7 @@
 .event.past{opacity:0.45}
 .event-date{font-family:'Instrument Serif',serif;font-size:32px;font-weight:400;letter-spacing:-0.01em;line-height:1}
 .event-date .year{font-size:11px;color:var(--muted);display:block;margin-top:6px;font-family:'Geist Mono',monospace;letter-spacing:0.12em}
-.event-body h3{font-family:'Instrument Serif',serif;font-size:22px;font-weight:400;letter-spacing:-0.01em;margin-bottom:6px}
+.event-body h3{font-family:'Instrument Serif',serif;font-size:22px;font-weight:400;letter-spacing:-0.01em;margin-bottom:6px;text-transform:lowercase}
 .event-venue{font-size:10px;color:var(--muted);letter-spacing:0.12em;text-transform:lowercase}
 .event-lineup{font-size:10px;color:var(--muted);letter-spacing:0.05em;margin-top:6px}
 .event-lineup span{color:var(--text)}
@@ -78,20 +78,26 @@ function fmtYear(iso){ if(!iso) return '—'; return String(new Date(iso).getFul
 function escapeHtml(s){return (s||'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'})[m]);}
 
 function renderEvent(e, past){
-  var lineup = (e.lineup||[]).map(a=>'<span>'+escapeHtml(a)+'</span>').join(' · ');
-  var venueCity = [e.venue, e.city].filter(Boolean).join(' · ');
+  var lineup = (e.lineup||[]).map(a=>'<span>'+escapeHtml(String(a).toLowerCase())+'</span>').join(' · ');
+  var venue = (e.venue||'').toLowerCase().trim();
+  var city  = (e.city||'').toLowerCase().trim();
+  // Uniform format: "arch club @ {venue} - {city}"
+  var title;
+  if (venue && city)      title = 'arch club @ ' + venue + ' - ' + city;
+  else if (venue)          title = 'arch club @ ' + venue;
+  else if (city)           title = 'arch club - ' + city;
+  else                     title = (e.title || '—').toLowerCase();
   return '<div class="event'+(past?' past':'')+'">'+
     '<div class="event-date">'+fmtDay(e.date)+'<span class="year">'+fmtYear(e.date)+'</span></div>'+
     '<div class="event-body">'+
-      '<h3>'+escapeHtml(e.title||'—')+'</h3>'+
-      (venueCity?'<div class="event-venue">'+escapeHtml(venueCity)+'</div>':'')+
+      '<h3>'+escapeHtml(title)+'</h3>'+
       (lineup?'<div class="event-lineup">'+lineup+'</div>':'')+
     '</div>'+
     (past
       ? '<div class="event-status">'+(e.note||'passé')+'</div>'
       : (e.ticket_url
           ? '<a class="event-tickets" href="'+escapeHtml(e.ticket_url)+'" target="_blank" rel="noopener">tickets →</a>'
-          : '<div class="event-status">date to announce</div>'))+
+          : '<div class="event-status">date à venir</div>'))+
   '</div>';
 }
 

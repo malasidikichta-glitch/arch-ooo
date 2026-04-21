@@ -4,30 +4,32 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>arch — plugins</title>
-<link href="https://fonts.googleapis.com/css2?family=Geist+Mono:wght@300;400;500&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Geist+Mono:wght@300;400;500&family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet">
 <style>
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
 :root{
-  --bg:#1a1917;
-  --surface:#222220;
+  --bg:#0f0f0f;
+  --surface:#151515;
+  --surface-alt:#1a1a1a;
   --border:rgba(255,255,255,0.07);
-  --border-h:rgba(255,255,255,0.14);
-  --text:#d4d2cd;
-  --muted:#6a6864;
-  --dim:#3c3a38;
+  --border-h:rgba(255,255,255,0.16);
+  --text:#e8e6e3;
+  --muted:#8a8680;
+  --dim:#4a4743;
   --accent:#d4d2cd;
 }
-html{background:var(--bg);color:var(--text);font-family:'Geist Mono',monospace;font-size:13px}
+html{background:var(--bg);color:var(--text);font-family:'Geist Mono',monospace;font-size:13px;line-height:1.5;font-weight:300}
 body{min-height:100vh;padding-bottom:80px}
-nav{display:flex;align-items:center;justify-content:space-between;padding:0 2.5rem;height:50px;border-bottom:1px solid var(--border)}
-.nav-logo{font-size:13px;font-weight:300;color:var(--text);text-decoration:none;letter-spacing:0.06em}
-.nav-links{display:flex;gap:2.5rem}
-.nav-links a{font-size:11px;color:var(--muted);text-decoration:none;letter-spacing:0.06em;transition:color 0.2s}
+
+nav.topnav{display:flex;align-items:center;justify-content:space-between;padding:0 2.5rem;height:52px;border-bottom:1px solid var(--border);position:sticky;top:0;background:var(--bg);z-index:100}
+.nav-logo{font-family:'Instrument Serif',serif;font-size:18px;color:var(--text);text-decoration:none;letter-spacing:-0.01em;font-weight:400}
+.nav-links{display:flex;gap:2rem;align-items:center}
+.nav-links a{font-size:10px;color:var(--muted);text-decoration:none;letter-spacing:0.12em;text-transform:lowercase;transition:color 0.2s}
 .nav-links a:hover,.nav-links a.active{color:var(--text)}
 
-.page{max-width:720px;margin:0 auto;padding:0 2.5rem}
-.page-header{padding:4rem 0 3rem;border-bottom:1px solid var(--border)}
-.page-header h1{font-size:11px;font-weight:300;letter-spacing:0.1em;color:var(--muted)}
+main.page{max-width:880px;margin:0 auto;padding:3rem 2.5rem 2rem;width:100%}
+.page-kicker{font-size:9px;color:var(--dim);letter-spacing:0.25em;text-transform:lowercase;margin-bottom:12px}
+.page-title{font-family:'Instrument Serif',serif;font-size:clamp(48px,8vw,88px);line-height:0.95;font-weight:400;letter-spacing:-0.02em;margin-bottom:48px;color:var(--text)}
 
 .section-label{
   padding:2.5rem 0 1.5rem;
@@ -39,7 +41,7 @@ nav{display:flex;align-items:center;justify-content:space-between;padding:0 2.5r
 .plugin{border-bottom:1px solid var(--border);padding:2rem 0;transition:border-color 0.2s}
 .plugin.in-cart{border-left:2px solid var(--accent);padding-left:1.5rem}
 .plugin-top{display:flex;align-items:baseline;justify-content:space-between;margin-bottom:1rem}
-.plugin-name{font-size:1.8rem;font-weight:300;letter-spacing:0.06em;color:var(--text);line-height:1}
+.plugin-name{font-family:'Instrument Serif',serif;font-size:2rem;font-weight:400;letter-spacing:-0.01em;color:var(--text);line-height:1;text-transform:lowercase}
 .plugin-type{font-size:10px;letter-spacing:0.08em;color:var(--muted)}
 .plugin-specs{list-style:none;display:flex;flex-direction:column;gap:3px;margin-bottom:1.4rem}
 .plugin-specs li{font-size:11px;color:var(--muted);letter-spacing:0.02em;line-height:1.5}
@@ -111,10 +113,9 @@ nav{display:flex;align-items:center;justify-content:space-between;padding:0 2.5r
 .msg-confirm{font-size:10px;color:var(--muted);letter-spacing:0.04em;margin-top:8px;min-height:16px;opacity:0;transition:opacity 0.3s}
 .msg-confirm.visible{opacity:1}
 
-footer{max-width:720px;margin:0 auto;padding:2.5rem 2.5rem;display:flex;align-items:center;justify-content:space-between}
-.footer-l{font-size:10px;color:var(--muted);letter-spacing:0.06em}
-.footer-r a{font-size:10px;color:var(--muted);text-decoration:none}
-.footer-r a:hover{color:var(--text)}
+footer.site-footer{padding:2rem 2.5rem;border-top:1px solid var(--border);text-align:center;font-size:10px;color:var(--dim);letter-spacing:0.1em;text-transform:lowercase}
+footer.site-footer a{color:var(--muted);text-decoration:none}
+footer.site-footer a:hover{color:var(--text)}
 
 
 @media(max-width:600px){
@@ -144,15 +145,20 @@ footer{max-width:720px;margin:0 auto;padding:2.5rem 2.5rem;display:flex;align-it
 
 <div id="site" class="unlocked">
 
-<nav>
+<nav class="topnav">
   <a href="/" class="nav-logo">arch</a>
   <div class="nav-links">
+    <a href="/releases">releases</a>
+    <a href="/events">events</a>
+    <a href="/shop">shop</a>
     <a href="/plugins" class="active">plugins</a>
+    <a href="/contact">contact</a>
   </div>
 </nav>
 
-<div class="page">
-  <div class="page-header"><h1>arch audio — plugins</h1></div>
+<main class="page">
+  <div class="page-kicker">— 04</div>
+  <h1 class="page-title">plugins</h1>
 
   <div class="bundle-box" id="card-bundle">
     <div class="plugin-top">
@@ -424,9 +430,10 @@ footer{max-width:720px;margin:0 auto;padding:2.5rem 2.5rem;display:flex;align-it
   <div class="msg-confirm" id="msg-confirm"></div>
 </div>
 
-<footer>
-  <span class="footer-l">&copy; 2026 arch</span>
-  <div class="footer-r"><a href="mailto:contact@arch-inc.fr">contact</a></div>
+</main>
+
+<footer class="site-footer">
+  &copy; 2026 arch · <a href="mailto:contact@arch-inc.fr">contact@arch-inc.fr</a>
 </footer>
 
 </div><!-- /site -->
