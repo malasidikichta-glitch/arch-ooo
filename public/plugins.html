@@ -5,6 +5,11 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>arch — plugins</title>
 <link href="https://fonts.googleapis.com/css2?family=Geist+Mono:wght@300;400;500&family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet">
+<!-- warm up YouTube connection for faster video load -->
+<link rel="preconnect" href="https://www.youtube-nocookie.com" crossorigin>
+<link rel="preconnect" href="https://i.ytimg.com" crossorigin>
+<link rel="preconnect" href="https://yt3.ggpht.com" crossorigin>
+<link rel="dns-prefetch" href="https://www.google.com">
 <style>
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
 :root{
@@ -148,7 +153,7 @@ footer.site-footer a:hover{color:var(--text)}
 <nav class="topnav">
   <a href="/" class="nav-logo">arch</a>
   <div class="nav-links">
-    <a href="/releases">releases</a>
+    <a href="/music">music</a>
     <a href="/events">events</a>
     <a href="/shop">shop</a>
     <a href="/plugins" class="active">plugins</a>
@@ -509,7 +514,7 @@ function toggleVideo(id) {
     var vid = VIDEOS[id];
     var desc = DESCRIPTIONS[id] || '';
     if (vid) {
-      wrap.innerHTML = '<div class="video-inner"><iframe src="https://www.youtube.com/embed/' + vid + '?rel=0&loop=1&playlist=' + vid + '" allowfullscreen></iframe><div class="video-desc">' + desc + '</div></div>';
+      wrap.innerHTML = '<div class="video-inner"><iframe src="https://www.youtube-nocookie.com/embed/' + vid + '?rel=0&loop=1&playlist=' + vid + '&modestbranding=1" allowfullscreen loading="eager"></iframe><div class="video-desc">' + desc + '</div></div>';
     } else {
       wrap.innerHTML = '<div class="video-inner"><div style="width:240px;min-width:240px;height:300px;border:1px solid var(--border);border-radius:6px;display:flex;align-items:center;justify-content:center;font-size:10px;color:var(--dim)">video coming soon</div><div class="video-desc">' + desc + '</div></div>';
     }

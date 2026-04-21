@@ -24,6 +24,18 @@ main.home{flex:1;max-width:1100px;width:100%;margin:0 auto;padding:0 2.5rem;disp
 .next a.tickets{font-size:10px;color:var(--text);letter-spacing:0.2em;text-transform:lowercase;text-decoration:none;padding:12px 22px;border:1px solid var(--border-h);transition:background 0.2s,color 0.2s;white-space:nowrap}
 .next a.tickets:hover{background:var(--text);color:var(--bg)}
 
+.say{max-width:720px;margin:0 auto 6vh;padding:0 0 40px;width:100%}
+.say-label{font-size:9px;color:var(--dim);letter-spacing:0.25em;text-transform:lowercase;margin-bottom:12px}
+.say-box{display:flex;gap:8px;align-items:stretch;border:1px solid var(--border);background:var(--surface)}
+.say-input{flex:1;padding:14px 16px;background:transparent;border:none;color:var(--text);font-family:'Geist Mono',monospace;font-size:12px;letter-spacing:0.02em;outline:none;resize:none;min-height:46px;line-height:1.4}
+.say-input::placeholder{color:var(--dim)}
+.say-send{padding:0 20px;background:transparent;border:none;border-left:1px solid var(--border);color:var(--muted);font-family:'Geist Mono',monospace;font-size:10px;letter-spacing:0.15em;cursor:pointer;text-transform:lowercase;transition:color 0.2s,background 0.2s}
+.say-send:hover{color:var(--text);background:rgba(255,255,255,0.03)}
+.say-send:disabled{opacity:0.4;cursor:not-allowed}
+.say-confirm{font-size:10px;color:var(--muted);letter-spacing:0.08em;margin-top:8px;min-height:14px}
+.say-confirm.ok{color:var(--muted)}
+.say-confirm.err{color:#ff5b4a}
+
 @media(max-width:640px){
   main.home{padding:0 1.25rem}
   .hero{padding:6vh 0 4vh}
@@ -37,7 +49,7 @@ main.home{flex:1;max-width:1100px;width:100%;margin:0 auto;padding:0 2.5rem;disp
 <nav class="topnav">
   <a href="/" class="nav-logo">arch</a>
   <div class="nav-links">
-    <a href="/releases">releases</a>
+    <a href="/music">music</a>
     <a href="/events">events</a>
     <a href="/shop">shop</a>
     <a href="/plugins">plugins</a>
@@ -62,6 +74,15 @@ main.home{flex:1;max-width:1100px;width:100%;margin:0 auto;padding:0 2.5rem;disp
     <a class="tickets" href="https://shotgun.live/fr/events/arch-club-la-cooperative-de-mai" target="_blank" rel="noopener">tickets →</a>
   </section>
 
+  <section class="say">
+    <div class="say-label">— feel free to say anything</div>
+    <div class="say-box">
+      <textarea class="say-input" id="home-msg" placeholder="..." rows="1"></textarea>
+      <button class="say-send" id="home-send">send</button>
+    </div>
+    <div class="say-confirm" id="home-confirm"></div>
+  </section>
+
 </main>
 
 <footer class="site-footer">
@@ -70,5 +91,33 @@ main.home{flex:1;max-width:1100px;width:100%;margin:0 auto;padding:0 2.5rem;disp
 
 <script src="/_track.js"></script>
 <script src="/_gate.js"></script>
+<script>
+(function(){
+  var input = document.getElementById('home-msg');
+  var btn = document.getElementById('home-send');
+  var ok = document.getElementById('home-confirm');
+  if(!input||!btn||!ok) return;
+  input.addEventListener('keydown', function(e){
+    if(e.key==='Enter' && !e.shiftKey){ e.preventDefault(); send(); }
+  });
+  btn.addEventListener('click', send);
+  async function send(){
+    var msg = input.value.trim();
+    if(!msg){ ok.textContent='écris quelque chose'; ok.className='say-confirm err'; return; }
+    btn.disabled = true; btn.textContent='...';
+    try {
+      var res = await fetch('/api/v2/store-message', {
+        method: 'POST',
+        headers: {'Content-Type':'application/json'},
+        body: JSON.stringify({ message: msg })
+      });
+      var d = await res.json();
+      if(d.ok){ ok.textContent = 'merci · reçu'; ok.className='say-confirm ok'; input.value=''; }
+      else { ok.textContent = 'erreur: '+(d.error||'inconnu'); ok.className='say-confirm err'; }
+    } catch(e){ ok.textContent='erreur connexion'; ok.className='say-confirm err'; }
+    btn.disabled = false; btn.textContent='send';
+  }
+})();
+</script>
 </body>
 </html>

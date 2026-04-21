@@ -1,6 +1,9 @@
 # Cloudflare Pages auto-resolves /plugins → /plugins.html, /data → /data.html, etc.
 # No extension rewriting needed — just add special paths here.
 
+# /releases is now /music — 301 for SEO
+/releases  /music  301
+
 # breakeven PWA (trailing slash)
 /breakeven  /breakeven/  301
 

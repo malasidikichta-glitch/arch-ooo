@@ -18,6 +18,7 @@
 .event-tickets{font-size:10px;letter-spacing:0.15em;text-transform:lowercase;padding:10px 18px;border:1px solid var(--border-h);color:var(--text);text-decoration:none;transition:background 0.2s,color 0.2s;white-space:nowrap}
 .event-tickets:hover{background:var(--text);color:var(--bg)}
 .event-status{font-size:9px;color:var(--dim);letter-spacing:0.2em;text-transform:lowercase}
+.event-soldout{font-size:9px;letter-spacing:0.2em;text-transform:lowercase;padding:6px 10px;border:1px solid var(--border-h);color:var(--muted);white-space:nowrap}
 .empty-note{font-size:11px;color:var(--dim);letter-spacing:0.04em;padding:2rem 0;text-align:center}
 .loading{font-size:10px;color:var(--dim);letter-spacing:0.2em;text-transform:lowercase;padding:3rem 0;text-align:center}
 .loading::after{content:'';animation:dots 1.5s steps(4,end) infinite}
@@ -31,7 +32,7 @@
 <nav class="topnav">
   <a href="/" class="nav-logo">arch</a>
   <div class="nav-links">
-    <a href="/releases">releases</a>
+    <a href="/music">music</a>
     <a href="/events" class="active">events</a>
     <a href="/shop">shop</a>
     <a href="/plugins">plugins</a>
@@ -44,7 +45,7 @@
   <h1 class="page-title">events</h1>
 
   <div style="display:flex;justify-content:space-between;align-items:baseline;gap:12px;margin:-20px 0 32px;flex-wrap:wrap">
-    <div style="font-size:11px;color:var(--muted);letter-spacing:0.04em">arch club · paris · clermont-ferrand · lyon</div>
+    <div style="font-size:11px;color:var(--muted);letter-spacing:0.04em">arch club</div>
     <a href="https://shotgun.live/fr/venues/arch-inc" target="_blank" rel="noopener" style="font-size:10px;color:var(--text);letter-spacing:0.15em;text-transform:lowercase;text-decoration:none;padding:8px 14px;border:1px solid var(--border-h);transition:background 0.2s,color 0.2s" onmouseover="this.style.background='var(--text)';this.style.color='var(--bg)'" onmouseout="this.style.background='transparent';this.style.color='var(--text)'">voir sur shotgun →</a>
   </div>
 
@@ -94,7 +95,7 @@ function renderEvent(e, past){
       (lineup?'<div class="event-lineup">'+lineup+'</div>':'')+
     '</div>'+
     (past
-      ? '<div class="event-status">'+(e.note||'passé')+'</div>'
+      ? '<div class="event-soldout">sold out</div>'
       : (e.ticket_url
           ? '<a class="event-tickets" href="'+escapeHtml(e.ticket_url)+'" target="_blank" rel="noopener">tickets →</a>'
           : '<div class="event-status">date à venir</div>'))+

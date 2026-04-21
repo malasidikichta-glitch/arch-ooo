@@ -444,6 +444,8 @@ function renderReleases(){
     if(r && r.id) configured++;
     var div = document.createElement('div');
     div.style = 'background:var(--surface);border:1px solid var(--border);padding:16px';
+    var s = a.socials || {};
+    var inpStyle = 'width:100%;padding:8px 10px;background:transparent;border:1px solid var(--border);color:var(--text);font-family:\'Geist Mono\',monospace;font-size:10px;letter-spacing:0.04em;outline:none;margin-bottom:6px';
     div.innerHTML =
       '<div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:10px">'+
         '<div style="font-family:\'Instrument Serif\',serif;font-size:18px">'+(a.artist||key)+'</div>'+
@@ -452,10 +454,15 @@ function renderReleases(){
       '<div style="font-size:10px;color:var(--muted);letter-spacing:0.08em;margin-bottom:10px">'+
         (r ? (r.title ? escapeHtml(r.title) : (r.kind+' · '+r.id)) : '(colle une url spotify ci-dessous)')+
       '</div>'+
-      '<input type="url" data-artist="'+key+'" data-role="rel-url" placeholder="https://open.spotify.com/album/..." '+
-        'value="'+escapeHtml(r?.url||'')+'" '+
-        'style="width:100%;padding:8px 10px;background:transparent;border:1px solid var(--border);color:var(--text);font-family:\'Geist Mono\',monospace;font-size:10px;letter-spacing:0.04em;outline:none;margin-bottom:8px">'+
-      '<button data-save-artist="'+key+'" class="refresh-btn" style="width:100%;font-size:9px;padding:7px;border-color:var(--success);color:var(--success)">save</button>'+
+      '<div style="font-size:8px;color:var(--dim);letter-spacing:0.18em;text-transform:lowercase;margin-bottom:4px">spotify url</div>'+
+      '<input type="url" data-artist="'+key+'" data-role="rel-url" placeholder="https://open.spotify.com/album/..." value="'+escapeHtml(r?.url||'')+'" style="'+inpStyle+'">'+
+      '<div style="font-size:8px;color:var(--dim);letter-spacing:0.18em;text-transform:lowercase;margin-top:8px;margin-bottom:4px">instagram handle</div>'+
+      '<input type="text" data-artist="'+key+'" data-role="ig" placeholder="@handle" value="'+escapeHtml(s.instagram||'')+'" style="'+inpStyle+'">'+
+      '<div style="font-size:8px;color:var(--dim);letter-spacing:0.18em;text-transform:lowercase;margin-top:4px;margin-bottom:4px">tiktok handle</div>'+
+      '<input type="text" data-artist="'+key+'" data-role="tt" placeholder="@handle" value="'+escapeHtml(s.tiktok||'')+'" style="'+inpStyle+'">'+
+      '<div style="font-size:8px;color:var(--dim);letter-spacing:0.18em;text-transform:lowercase;margin-top:4px;margin-bottom:4px">soundcloud username</div>'+
+      '<input type="text" data-artist="'+key+'" data-role="sc" placeholder="username" value="'+escapeHtml(s.soundcloud||'')+'" style="'+inpStyle+'">'+
+      '<button data-save-artist="'+key+'" class="refresh-btn" style="width:100%;font-size:9px;padding:7px;border-color:var(--success);color:var(--success);margin-top:8px">save</button>'+
       '<div data-status-artist="'+key+'" style="font-size:9px;color:var(--muted);letter-spacing:0.08em;margin-top:6px;min-height:12px"></div>';
     grid.appendChild(div);
   });
@@ -465,20 +472,24 @@ function renderReleases(){
   grid.querySelectorAll('button[data-save-artist]').forEach(function(btn){
     btn.addEventListener('click', async function(){
       var artist = btn.dataset.saveArtist;
-      var input = grid.querySelector('input[data-artist="'+artist+'"]');
+      var urlInp = grid.querySelector('input[data-artist="'+artist+'"][data-role="rel-url"]');
+      var igInp  = grid.querySelector('input[data-artist="'+artist+'"][data-role="ig"]');
+      var ttInp  = grid.querySelector('input[data-artist="'+artist+'"][data-role="tt"]');
+      var scInp  = grid.querySelector('input[data-artist="'+artist+'"][data-role="sc"]');
       var status = grid.querySelector('[data-status-artist="'+artist+'"]');
-      var url = input.value.trim();
-      if(!url){ status.textContent = 'url required'; return; }
+      var payload = { pw: "j'aimelesdatas", artist,
+        url: urlInp ? urlInp.value.trim() : undefined,
+        socials: { instagram: igInp?.value.trim(), tiktok: ttInp?.value.trim(), soundcloud: scInp?.value.trim() } };
       btn.disabled = true; btn.textContent = '...'; status.textContent = '';
       try {
         var res = await fetch('/api/v2/releases', {
           method: 'POST',
           headers: {'Content-Type':'application/json'},
-          body: JSON.stringify({ pw: "j'aimelesdatas", artist, url })
+          body: JSON.stringify(payload)
         });
         var d = await res.json();
         if(d.ok){
-          status.textContent = 'ok · ' + (d.release.kind || '') + ' · ' + (d.release.id || '').slice(0,10);
+          status.textContent = 'saved';
           await loadReleases();
           renderReleases();
         } else {

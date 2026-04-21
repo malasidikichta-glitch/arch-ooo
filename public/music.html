@@ -3,24 +3,22 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>arch — releases</title>
+<title>arch — music</title>
 <link href="https://fonts.googleapis.com/css2?family=Geist+Mono:wght@300;400;500&family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="/_shared.css">
 <style>
 .releases-grid{display:grid;grid-template-columns:1fr 1fr;gap:32px;margin-top:2rem}
 
-.release{display:flex;flex-direction:column;gap:10px}
-.release-head{display:flex;justify-content:space-between;align-items:baseline;padding-bottom:10px;border-bottom:1px solid var(--border)}
-.release-artist{font-family:'Instrument Serif',serif;font-size:22px;font-weight:400;letter-spacing:-0.01em;text-transform:lowercase}
-.release-link{font-size:9px;color:var(--muted);letter-spacing:0.15em;text-transform:lowercase;text-decoration:none}
-.release-link:hover{color:var(--text)}
+.release{display:flex;flex-direction:column;gap:14px}
 
 .release-embed{border:1px solid var(--border);background:var(--surface);overflow:hidden;border-radius:8px}
 .release-embed iframe{display:block;width:100%;border:0;background:transparent}
 
 .release-empty{aspect-ratio:1;background:var(--surface);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;color:var(--dim);font-size:10px;letter-spacing:0.2em;text-transform:lowercase;padding:2rem;text-align:center}
 
-.intro{font-size:11px;color:var(--muted);letter-spacing:0.04em;line-height:1.8;margin-bottom:2.5rem;max-width:640px}
+.release-socials{display:flex;gap:8px;flex-wrap:wrap}
+.release-socials a{font-size:9px;color:var(--muted);letter-spacing:0.15em;text-transform:lowercase;text-decoration:none;padding:6px 12px;border:1px solid var(--border);transition:border-color 0.2s,color 0.2s}
+.release-socials a:hover{border-color:var(--border-h);color:var(--text)}
 
 .loading{padding:4rem 0;text-align:center;color:var(--dim);font-size:10px;letter-spacing:0.25em;text-transform:lowercase}
 .loading::after{content:'';animation:dots 1.5s steps(4,end) infinite}
@@ -34,7 +32,7 @@
 <nav class="topnav">
   <a href="/" class="nav-logo">arch</a>
   <div class="nav-links">
-    <a href="/releases" class="active">releases</a>
+    <a href="/music" class="active">music</a>
     <a href="/events">events</a>
     <a href="/shop">shop</a>
     <a href="/plugins">plugins</a>
@@ -44,9 +42,7 @@
 
 <main>
   <div class="page-kicker">— 01</div>
-  <h1 class="page-title">releases</h1>
-
-  <p class="intro">dernières sorties xo + duno · spotify embed · preview intégré.</p>
+  <h1 class="page-title">dernières sorties</h1>
 
   <div class="loading" id="loading">loading</div>
   <div class="releases-grid" id="grid" style="display:none"></div>
@@ -62,19 +58,28 @@
 <script>
 function escapeHtml(s){return (s||'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'})[m]);}
 
+function socialsHtml(data){
+  var r = data.release;
+  var spotifyUrl = r?.url || (data.artist_id ? 'https://open.spotify.com/artist/'+data.artist_id : '');
+  var s = data.socials || {};
+  var items = [];
+  if(spotifyUrl)    items.push('<a href="'+escapeHtml(spotifyUrl)+'" target="_blank" rel="noopener">spotify</a>');
+  if(s.instagram)   items.push('<a href="https://instagram.com/'+encodeURIComponent(s.instagram.replace(/^@/,''))+'" target="_blank" rel="noopener">instagram</a>');
+  if(s.tiktok)      items.push('<a href="https://tiktok.com/@'+encodeURIComponent(s.tiktok.replace(/^@/,''))+'" target="_blank" rel="noopener">tiktok</a>');
+  if(s.soundcloud)  items.push('<a href="https://soundcloud.com/'+encodeURIComponent(s.soundcloud)+'" target="_blank" rel="noopener">soundcloud</a>');
+  if(!items.length) return '';
+  return '<div class="release-socials">'+items.join('')+'</div>';
+}
+
 function renderArtist(key, data){
   var r = data.release;
   if(!r || !r.id){
     return '<div class="release">'+
-      '<div class="release-head"><div class="release-artist">'+escapeHtml(data.artist||key)+'</div><span class="release-link">—</span></div>'+
-      '<div class="release-empty">pas encore de release configurée</div>'+
+      '<div class="release-empty">pas encore de release</div>'+
+      socialsHtml(data)+
     '</div>';
   }
   return '<div class="release">'+
-    '<div class="release-head">'+
-      '<div class="release-artist">'+escapeHtml(data.artist||key)+'</div>'+
-      '<a class="release-link" href="'+escapeHtml(r.url)+'" target="_blank" rel="noopener">open in spotify →</a>'+
-    '</div>'+
     '<div class="release-embed">'+
       '<iframe '+
         'src="'+escapeHtml(r.embed_url)+'" '+
@@ -82,6 +87,7 @@ function renderArtist(key, data){
         'allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" '+
         'loading="lazy"></iframe>'+
     '</div>'+
+    socialsHtml(data)+
   '</div>';
 }
 
