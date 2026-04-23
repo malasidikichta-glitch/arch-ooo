@@ -1,6 +1,8 @@
 User-agent: *
 Disallow: /55asky/
 Disallow: /55asky
+Disallow: /cca_ilkhom/
+Disallow: /cca_ilkhom
 Disallow: /data
 Disallow: /data.html
 Disallow: /stats

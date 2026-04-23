@@ -1,0 +1,365 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="robots" content="noindex, nofollow, noarchive, nosnippet">
+<meta name="googlebot" content="noindex, nofollow">
+<title>récap avances ilkhom</title>
+<style>
+  :root {
+    --bg: #0f0f0f;
+    --fg: #ededed;
+    --dim: #8a8a8a;
+    --accent: #e8c547;
+    --cca: #ff9f43;
+    --merch: #7bd88f;
+    --gift: #5eb3ff;
+    --perso: #ff7a7a;
+    --flou: #c8a3ff;
+    --border: #1f1f1f;
+    --card: #161616;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { background: var(--bg); color: var(--fg); font-family: 'Geist Mono', 'JetBrains Mono', 'SF Mono', ui-monospace, monospace; font-size: 13px; line-height: 1.55; -webkit-font-smoothing: antialiased; }
+  body { padding: 48px 28px 80px; max-width: 1000px; margin: 0 auto; }
+  
+  .header { margin-bottom: 40px; }
+  h1 { font-size: 24px; font-weight: 500; letter-spacing: -0.03em; margin-bottom: 6px; text-transform: lowercase; }
+  .subtitle { color: var(--dim); font-size: 12px; }
+  
+  /* Totals summary */
+  .totals { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin: 32px 0 48px; }
+  .total-card { background: var(--card); border: 1px solid var(--border); border-radius: 10px; padding: 24px 22px; position: relative; overflow: hidden; }
+  .total-card::before { content: ''; position: absolute; left: 0; top: 0; bottom: 0; width: 3px; }
+  .total-card.arch::before { background: var(--cca); }
+  .total-card.perso::before { background: var(--perso); }
+  .total-card .lbl { font-size: 10px; text-transform: uppercase; letter-spacing: 0.12em; color: var(--dim); margin-bottom: 12px; }
+  .total-card .val { font-size: 36px; font-weight: 500; letter-spacing: -0.03em; font-variant-numeric: tabular-nums; }
+  .total-card.arch .val { color: var(--cca); }
+  .total-card.perso .val { color: var(--perso); }
+  .total-card .desc { font-size: 11px; color: var(--dim); margin-top: 10px; line-height: 1.5; }
+  
+  /* Super-title (block separator) */
+  .super-title { font-size: 11px; text-transform: uppercase; letter-spacing: 0.15em; color: var(--dim); margin: 48px 0 16px; padding-bottom: 6px; border-bottom: 1px dashed var(--border); }
+  
+  /* Sections */
+  section { margin-bottom: 40px; }
+  h2 { font-size: 14px; font-weight: 500; margin-bottom: 14px; text-transform: lowercase; letter-spacing: -0.01em; display: flex; align-items: baseline; gap: 12px; padding-bottom: 10px; border-bottom: 1px solid var(--border); flex-wrap: wrap; }
+  h2 .dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
+  h2 .dot.cca { background: var(--cca); }
+  h2 .dot.merch { background: var(--merch); }
+  h2 .dot.gift { background: var(--gift); }
+  h2 .dot.perso { background: var(--perso); }
+  h2 .dot.flou { background: var(--flou); }
+  h2 .count { font-size: 10px; color: var(--dim); text-transform: uppercase; letter-spacing: 0.1em; font-weight: 400; }
+  h2 .total { margin-left: auto; font-variant-numeric: tabular-nums; color: var(--fg); font-weight: 500; }
+  
+  /* Tables */
+  table { width: 100%; border-collapse: collapse; font-variant-numeric: tabular-nums; }
+  th { text-align: left; font-weight: 400; color: var(--dim); font-size: 10px; text-transform: uppercase; letter-spacing: 0.1em; padding: 8px 12px; border-bottom: 1px solid var(--border); }
+  th.num { text-align: right; }
+  td { padding: 12px 12px; border-bottom: 1px solid var(--border); vertical-align: top; }
+  td.num { text-align: right; white-space: nowrap; }
+  td.date { color: var(--dim); white-space: nowrap; width: 92px; font-size: 12px; }
+  td.eur { font-weight: 500; font-size: 14px; white-space: nowrap; }
+  td.desc { color: var(--fg); }
+  td.desc .ref { display: block; color: var(--dim); margin-top: 3px; font-size: 11px; }
+  
+  tr.cca td.eur { color: var(--cca); }
+  tr.merch td.eur { color: var(--merch); }
+  tr.gift td.eur { color: var(--gift); }
+  tr.perso td.eur { color: var(--perso); }
+  tr.flou td.eur { color: var(--flou); }
+  
+  tfoot tr { border-top: 2px solid var(--border); }
+  tfoot td { padding-top: 14px; font-weight: 500; }
+  tfoot td.date { color: var(--fg); }
+  
+  /* Calc */
+  .calc-line { display: flex; align-items: center; gap: 8px; padding: 14px 16px; background: var(--card); border-radius: 6px; margin: 10px 0; font-variant-numeric: tabular-nums; flex-wrap: wrap; }
+  .calc-line .qty { color: var(--fg); font-weight: 500; font-size: 14px; }
+  .calc-line .op { color: var(--dim); }
+  .calc-line .price { color: var(--fg); font-size: 14px; }
+  .calc-line .eq { color: var(--dim); }
+  .calc-line .result { margin-left: auto; font-weight: 500; font-size: 15px; font-variant-numeric: tabular-nums; }
+  .calc-line.vendus { border-left: 2px solid var(--merch); }
+  .calc-line.vendus .result { color: var(--merch); }
+  .calc-line.gifts { border-left: 2px solid var(--gift); }
+  .calc-line.gifts .result { color: var(--gift); }
+  .calc-note { font-size: 11px; color: var(--dim); line-height: 1.6; margin: 8px 4px 18px; }
+  
+  /* Stock table */
+  .stock-table { margin: 12px 0 16px; }
+  .stock-table th { text-align: center; }
+  .stock-table td { text-align: center; color: var(--fg); padding: 10px 12px; }
+  .stock-table td.label { text-align: left; color: var(--dim); font-size: 11px; text-transform: uppercase; letter-spacing: 0.08em; }
+  
+  .footer { margin-top: 56px; color: var(--dim); font-size: 10px; border-top: 1px solid var(--border); padding-top: 18px; text-transform: uppercase; letter-spacing: 0.08em; }
+  
+  @media (max-width: 720px) {
+    .totals { grid-template-columns: 1fr; }
+    body { padding: 28px 14px 60px; font-size: 12px; }
+    td, th { padding: 10px 8px; }
+    td.date { width: 70px; font-size: 11px; }
+    td.eur { font-size: 13px; }
+    h1 { font-size: 21px; }
+    .total-card .val { font-size: 28px; }
+  }
+
+  /* ---- gate ---- */
+  body.gate-locked { overflow: hidden; height: 100vh; padding: 0; max-width: none; }
+  #gate {
+    position: fixed; inset: 0; z-index: 10000;
+    background: var(--bg);
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+    gap: 20px; padding: 24px;
+  }
+  #gate.hidden { display: none; }
+  .gate-sub { font-size: 10px; color: var(--dim); letter-spacing: 0.25em; text-transform: uppercase; }
+  .gate-title { font-size: 28px; font-weight: 500; letter-spacing: -0.02em; text-transform: lowercase; }
+  .gate-form { display: flex; width: 100%; max-width: 280px; }
+  .gate-input { flex: 1; padding: 10px 12px; background: transparent; border: 1px solid var(--border); border-right: none; color: var(--fg); font-family: inherit; font-size: 12px; letter-spacing: 0.06em; outline: none; }
+  .gate-input:focus { border-color: var(--dim); }
+  .gate-input::placeholder { color: var(--dim); }
+  .gate-btn { padding: 10px 14px; background: transparent; border: 1px solid var(--border); color: var(--dim); font-family: inherit; font-size: 10px; letter-spacing: 0.12em; cursor: pointer; text-transform: lowercase; transition: border-color 0.2s, color 0.2s; }
+  .gate-btn:hover { border-color: var(--fg); color: var(--fg); }
+  .gate-err { font-size: 10px; color: #ff5b4a; opacity: 0; transition: opacity 0.25s; height: 14px; letter-spacing: 0.06em; }
+  .gate-err.show { opacity: 1; }
+  #content { display: none; }
+  #content.unlocked { display: block; }
+</style>
+</head>
+<body class="gate-locked">
+
+<div id="gate">
+  <div class="gate-sub">— privé</div>
+  <div class="gate-title">récap avances ilkhom</div>
+  <form class="gate-form" onsubmit="return gateCheck(event)">
+    <input type="password" class="gate-input" id="gate-pw" placeholder="password" autocomplete="off" required>
+    <button class="gate-btn" type="submit">entrer</button>
+  </form>
+  <div class="gate-err" id="gate-err">accès refusé</div>
+</div>
+
+<div id="content">
+
+<div class="header">
+  <h1>récap avances ilkhom</h1>
+  <div class="subtitle">compte courant d'associé arch + dette personnelle toumaï</div>
+</div>
+
+<div class="totals">
+  <div class="total-card arch">
+    <div class="lbl">arch doit rembourser</div>
+    <div class="val">2 683,00 €</div>
+    <div class="desc">compte courant d'associé · avances ponctuelles + coût tees aoe (vendus & gifts)</div>
+  </div>
+  <div class="total-card perso">
+    <div class="lbl">toumaï doit rembourser</div>
+    <div class="val">2 010,00 €</div>
+    <div class="desc">avance personnelle pour le dépôt de capital sas</div>
+  </div>
+</div>
+
+<!-- ========== ARCH ========== -->
+<div class="super-title">◉ compte courant d'associé arch</div>
+
+<!-- Avances ponctuelles -->
+<section>
+  <h2>
+    <span class="dot cca"></span>
+    avances ponctuelles
+    <span class="count">3 lignes</span>
+    <span class="total">1 588,00 €</span>
+  </h2>
+  
+  <table>
+    <thead>
+      <tr>
+        <th style="width: 92px;">date</th>
+        <th class="num" style="width: 110px;">montant</th>
+        <th>nature</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr class="cca">
+        <td class="date">06/02/2026</td>
+        <td class="num eur">250,00 €</td>
+        <td class="desc">commande dtf — solde non couvert par le compte de l'asso</td>
+      </tr>
+      <tr class="cca">
+        <td class="date">10/02/2026</td>
+        <td class="num eur">338,00 €</td>
+        <td class="desc">majoration sherpa transfert (production accélérée pour lyon)</td>
+      </tr>
+      <tr class="cca">
+        <td class="date">30/03/2026</td>
+        <td class="num eur">1 000,00 €</td>
+        <td class="desc">cachet alex</td>
+      </tr>
+    </tbody>
+    <tfoot>
+      <tr>
+        <td class="date">total</td>
+        <td class="num eur" style="color: var(--cca);">1 588,00 €</td>
+        <td></td>
+      </tr>
+    </tfoot>
+  </table>
+</section>
+
+<!-- Tees AOE -->
+<section>
+  <h2>
+    <span class="dot merch"></span>
+    tees aoe tournée
+    <span class="count">146 tees · blanks + dtf avancés</span>
+    <span class="total">1 095,00 €</span>
+  </h2>
+  
+  <table class="stock-table">
+    <thead>
+      <tr>
+        <th class="label">stock</th>
+        <th>vendus</th>
+        <th>gifts</th>
+        <th>total</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td class="label">arch</td>
+        <td>120</td>
+        <td>41</td>
+        <td>161</td>
+      </tr>
+      <tr>
+        <td class="label">aoe</td>
+        <td>117</td>
+        <td>29</td>
+        <td>146</td>
+      </tr>
+      <tr>
+        <td class="label" style="color: var(--fg);">total</td>
+        <td style="color: var(--fg); font-weight: 500;">237</td>
+        <td style="color: var(--fg); font-weight: 500;">70</td>
+        <td style="color: var(--fg); font-weight: 500;">307</td>
+      </tr>
+    </tbody>
+  </table>
+  
+  <div class="calc-line vendus">
+    <span class="qty">117 tees vendus</span>
+    <span class="op">×</span>
+    <span class="price">7,50 €</span>
+    <span class="eq">=</span>
+    <span class="result">877,50 €</span>
+  </div>
+  <div class="calc-note">
+    remboursement au prix coûtant (blank + dtf) des tees aoe vendus pendant la tournée.
+  </div>
+  
+  <div class="calc-line gifts">
+    <span class="qty">29 tees gifts</span>
+    <span class="op">×</span>
+    <span class="price">7,50 €</span>
+    <span class="eq">=</span>
+    <span class="result">217,50 €</span>
+  </div>
+  <div class="calc-note">
+    tees offerts aux guests/invités par arch. remboursés au même prix coûtant que les vendus — seule la destination change.
+  </div>
+</section>
+
+<!-- ========== PERSO ========== -->
+<div class="super-title">◉ dette personnelle toumaï</div>
+
+<section>
+  <h2>
+    <span class="dot perso"></span>
+    avance perso pour le dépôt de capital sas
+    <span class="count">1 ligne</span>
+    <span class="total">2 010,00 €</span>
+  </h2>
+  
+  <table>
+    <thead>
+      <tr>
+        <th style="width: 92px;">date</th>
+        <th class="num" style="width: 110px;">montant</th>
+        <th>nature</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr class="perso">
+        <td class="date">20/04/2026</td>
+        <td class="num eur">2 010,00 €</td>
+        <td class="desc">avance ilkhom pour le dépôt de capital de la sas arch (part toumaï)</td>
+      </tr>
+    </tbody>
+    <tfoot>
+      <tr>
+        <td class="date">total</td>
+        <td class="num eur" style="color: var(--perso);">2 010,00 €</td>
+        <td></td>
+      </tr>
+    </tfoot>
+  </table>
+</section>
+
+<!-- ========== À CLARIFIER ========== -->
+<section>
+  <h2>
+    <span class="dot flou"></span>
+    à clarifier
+  </h2>
+  
+  <table>
+    <tbody>
+      <tr class="flou">
+        <td class="date">19/10/2025</td>
+        <td class="num eur">1 254,35 €</td>
+        <td class="desc">probable salaire toumaï d'octobre · à confirmer</td>
+      </tr>
+      <tr class="flou">
+        <td class="date">21/12/2025</td>
+        <td class="num eur">1 360,71 €</td>
+        <td class="desc">probable salaire toumaï de décembre · à confirmer</td>
+      </tr>
+    </tbody>
+  </table>
+</section>
+
+<div class="footer">
+  généré le 23/04/2026
+</div>
+
+</div>
+
+<script>
+function gateCheck(ev){
+  ev.preventDefault();
+  var pw = document.getElementById('gate-pw').value;
+  if (pw === 'ilkhom_arch') {
+    sessionStorage.setItem('arch-cca-ilkhom-auth', '1');
+    reveal();
+  } else {
+    var e = document.getElementById('gate-err');
+    e.classList.add('show');
+    setTimeout(function(){ e.classList.remove('show'); }, 2000);
+  }
+  return false;
+}
+function reveal(){
+  document.getElementById('gate').classList.add('hidden');
+  document.getElementById('content').classList.add('unlocked');
+  document.body.classList.remove('gate-locked');
+}
+if (sessionStorage.getItem('arch-cca-ilkhom-auth') === '1') {
+  document.addEventListener('DOMContentLoaded', reveal);
+}
+</script>
+
+</body>
+</html>
