@@ -7,6 +7,6 @@
     "stripe": "^14.0.0"
   },
   "devDependencies": {
-    "wrangler": "^4.84.0"
+    "wrangler": "^4.85.0"
   }
 }
