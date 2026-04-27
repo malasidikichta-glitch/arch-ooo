@@ -70,6 +70,12 @@ main.page{max-width:880px;margin:0 auto;padding:3rem 2.5rem 2rem;width:100%}
 .video-wrap.open{max-height:500px}
 .video-inner{display:flex;gap:1.5rem;margin-top:0.8rem;align-items:flex-start}
 .video-inner iframe{width:240px;min-width:240px;height:300px;border:none;opacity:0.85;border-radius:6px}
+.video-facade{position:relative;width:240px;min-width:240px;height:300px;border-radius:6px;overflow:hidden;cursor:pointer;background:var(--surface);border:1px solid var(--border)}
+.video-facade img{width:100%;height:100%;object-fit:cover;display:block;opacity:0.7;transition:opacity 0.25s}
+.video-facade:hover img{opacity:0.9}
+.video-facade .play{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;color:var(--text);font-size:11px;letter-spacing:0.2em;text-transform:lowercase;background:rgba(0,0,0,0.25);transition:background 0.2s}
+.video-facade:hover .play{background:rgba(0,0,0,0.05)}
+.video-facade .play .triangle{display:inline-block;width:0;height:0;border-left:14px solid var(--text);border-top:9px solid transparent;border-bottom:9px solid transparent;margin-right:10px;filter:drop-shadow(0 0 6px rgba(0,0,0,0.4))}
 .video-desc{font-size:11px;color:var(--muted);letter-spacing:0.03em;line-height:1.7}
 .video-desc strong{color:var(--text);font-weight:400}
 .video-desc ul{list-style:none;padding:0;margin:0.5rem 0 0}
@@ -467,6 +473,14 @@ document.getElementById('msg-input').addEventListener('keydown', function(e){ if
   fetch('/api/v2/track-visit',{method:'POST'}).catch(function(){});
 })();
 
+// --- youtube facade: replace thumbnail with autoplay iframe on click ---
+function loadVideo(el, vid) {
+  el.outerHTML = '<iframe src="https://www.youtube-nocookie.com/embed/' + vid +
+    '?rel=0&loop=1&playlist=' + vid + '&modestbranding=1&autoplay=1&playsinline=1" ' +
+    'allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" ' +
+    'allowfullscreen></iframe>';
+}
+
 // --- youtube videos ---
 var VIDEOS = {
   shard: "TnFj89FL_NI",
@@ -514,7 +528,16 @@ function toggleVideo(id) {
     var vid = VIDEOS[id];
     var desc = DESCRIPTIONS[id] || '';
     if (vid) {
-      wrap.innerHTML = '<div class="video-inner"><iframe src="https://www.youtube-nocookie.com/embed/' + vid + '?rel=0&loop=1&playlist=' + vid + '&modestbranding=1" allowfullscreen loading="eager"></iframe><div class="video-desc">' + desc + '</div></div>';
+      // Facade pattern: show thumbnail instantly, load iframe only on click.
+      // Tries hqdefault (always exists for any youtube vid) — fast, cached on Google CDN.
+      wrap.innerHTML =
+        '<div class="video-inner">' +
+          '<div class="video-facade" onclick="loadVideo(this, \'' + vid + '\')">' +
+            '<img src="https://i.ytimg.com/vi/' + vid + '/hqdefault.jpg" alt="preview" loading="eager">' +
+            '<div class="play"><span class="triangle"></span>play</div>' +
+          '</div>' +
+          '<div class="video-desc">' + desc + '</div>' +
+        '</div>';
     } else {
       wrap.innerHTML = '<div class="video-inner"><div style="width:240px;min-width:240px;height:300px;border:1px solid var(--border);border-radius:6px;display:flex;align-items:center;justify-content:center;font-size:10px;color:var(--dim)">video coming soon</div><div class="video-desc">' + desc + '</div></div>';
     }
