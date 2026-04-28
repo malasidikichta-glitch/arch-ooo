@@ -3,7 +3,7 @@
 // Paths: {plugin}/arch-audio-{plugin}-installer.pkg (mac) / -windows-installer.exe (win)
 
 const R2 = "https://plugins.arch.ooo";
-const PLUGINS = ["shard","keys","grain","fmnt","cmpr","eqls","dist","sprd","clpr","dly","dck"];
+const PLUGINS = ["shard","keys","grain","fmnt","cmpr","eqls","dist","sprd","clpr","dly","dck","void","vrb"];
 
 function linksFor(id) {
   return {
