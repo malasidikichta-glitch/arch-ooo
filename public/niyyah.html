@@ -17,8 +17,24 @@
   --muted: #888880;
   --accent: #c8c4bc;
   --border: rgba(248, 245, 240, 0.08);
+  --header-bg: rgba(46, 44, 42, 0.92);
+  --comment-bg: rgba(248, 245, 240, 0.02);
+  --comment-form-bg: rgba(248, 245, 240, 0.025);
+  --error: #ff8a80;
   --header-h: 44px;
 }
+:root[data-theme="light"] {
+  --bg: #f5f2ec;
+  --text: #2e2c2a;
+  --muted: #7a766f;
+  --accent: #4a4743;
+  --border: rgba(46, 44, 42, 0.10);
+  --header-bg: rgba(245, 242, 236, 0.92);
+  --comment-bg: rgba(46, 44, 42, 0.025);
+  --comment-form-bg: rgba(46, 44, 42, 0.035);
+  --error: #b03c2a;
+}
+html, body { transition: background-color 0.25s ease, color 0.25s ease; }
 * { box-sizing: border-box; margin: 0; padding: 0; }
 html { scroll-behavior: smooth; scroll-padding-top: 60px; }
 body {
@@ -45,7 +61,7 @@ body {
 header.bar {
   position: sticky; top: 0; z-index: 50;
   height: var(--header-h);
-  background: rgba(46, 44, 42, 0.92);
+  background: var(--header-bg);
   backdrop-filter: blur(8px);
   -webkit-backdrop-filter: blur(8px);
   border-bottom: 1px solid var(--border);
@@ -302,7 +318,7 @@ section.comments { margin-top: 96px; padding-top: 56px; border-top: 1px solid va
 .thread { display: flex; flex-direction: column; gap: 12px; }
 .comment {
   padding: 18px 20px;
-  background: rgba(248, 245, 240, 0.02);
+  background: var(--comment-bg);
   border: 1px solid var(--border);
   border-radius: 4px;
 }
@@ -388,11 +404,11 @@ section.comments { margin-top: 96px; padding-top: 56px; border-top: 1px solid va
 }
 .inline-reply .cancel:hover { color: var(--text); }
 .inline-reply .status { font-size: 10px; color: var(--muted); }
-.inline-reply .status.err { color: #ff8a80; }
+.inline-reply .status.err { color: var(--error); }
 
 .comment-empty { font-size: 12px; color: var(--muted); font-style: italic; padding: 16px 0; }
 
-.comment-form { display: flex; flex-direction: column; gap: 10px; padding: 24px 22px; background: rgba(248, 245, 240, 0.025); border: 1px solid var(--border); border-radius: 4px; }
+.comment-form { display: flex; flex-direction: column; gap: 10px; padding: 24px 22px; background: var(--comment-form-bg); border: 1px solid var(--border); border-radius: 4px; }
 .comment-form-label { font-size: 10px; color: var(--muted); letter-spacing: 0.25em; text-transform: uppercase; margin-bottom: 4px; }
 .comment-input, .comment-textarea {
   padding: 12px 14px;
@@ -425,7 +441,7 @@ section.comments { margin-top: 96px; padding-top: 56px; border-top: 1px solid va
 .comment-submit:hover:not(:disabled) { background: var(--accent); color: var(--bg); }
 .comment-submit:disabled { opacity: 0.4; cursor: not-allowed; }
 .comment-status { font-size: 11px; color: var(--muted); min-height: 14px; letter-spacing: 0.04em; }
-.comment-status.err { color: #ff8a80; }
+.comment-status.err { color: var(--error); }
 .comment-status.ok { color: var(--accent); }
 
 /* end mark */
