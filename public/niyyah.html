@@ -993,10 +993,8 @@ section.comments { margin-top: 96px; padding-top: 56px; border-top: 1px solid va
   const stored = localStorage.getItem('niyyah-theme');
   if (stored === 'light' || stored === 'dark') {
     apply(stored);
-  } else if (window.matchMedia && window.matchMedia('(prefers-color-scheme: light)').matches) {
-    apply('light');
   } else {
-    apply('dark');
+    apply('light'); // default
   }
   btn.addEventListener('click', function(){
     apply(root.getAttribute('data-theme') === 'light' ? 'dark' : 'light');
