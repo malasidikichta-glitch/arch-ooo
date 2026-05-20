@@ -299,16 +299,96 @@ section.comments { margin-top: 96px; padding-top: 56px; border-top: 1px solid va
 .comments-sub { font-size: 12px; color: var(--muted); margin-bottom: 32px; line-height: 1.6; }
 
 .comment-list { display: flex; flex-direction: column; gap: 24px; margin-bottom: 48px; }
+.thread { display: flex; flex-direction: column; gap: 12px; }
 .comment {
   padding: 18px 20px;
   background: rgba(248, 245, 240, 0.02);
   border: 1px solid var(--border);
   border-radius: 4px;
 }
+.comment.reply {
+  margin-left: 32px;
+  padding: 14px 18px;
+  background: transparent;
+  border-left: 1px solid var(--border);
+  border-top: none;
+  border-right: none;
+  border-bottom: none;
+  border-radius: 0;
+}
 .comment-head { display: flex; justify-content: space-between; align-items: baseline; gap: 12px; margin-bottom: 10px; flex-wrap: wrap; }
 .comment-name { font-size: 12px; color: var(--accent); letter-spacing: 0.02em; }
+.comment.reply .comment-name { font-size: 11px; }
 .comment-date { font-size: 10px; color: var(--muted); letter-spacing: 0.06em; }
 .comment-text { font-size: 14px; color: var(--text); line-height: 1.7; white-space: pre-wrap; word-wrap: break-word; }
+.comment.reply .comment-text { font-size: 13px; }
+
+.comment-actions { margin-top: 10px; }
+.reply-btn {
+  background: transparent;
+  border: none;
+  color: var(--muted);
+  font-family: inherit;
+  font-size: 10px;
+  letter-spacing: 0.15em;
+  text-transform: lowercase;
+  cursor: pointer;
+  padding: 4px 0;
+  transition: color 0.2s;
+}
+.reply-btn:hover { color: var(--text); }
+.reply-btn::before { content: '↳ '; opacity: 0.6; }
+
+.inline-reply { display: none; margin-top: 12px; padding-top: 12px; border-top: 1px dashed var(--border); }
+.inline-reply.open { display: block; }
+.inline-reply .ctx {
+  font-size: 10px;
+  color: var(--muted);
+  letter-spacing: 0.06em;
+  margin-bottom: 8px;
+}
+.inline-reply .ctx em { color: var(--accent); font-style: normal; }
+.inline-reply input, .inline-reply textarea {
+  width: 100%;
+  padding: 10px 12px;
+  background: transparent;
+  border: 1px solid var(--border);
+  color: var(--text);
+  font-family: inherit;
+  font-size: 12px;
+  outline: none;
+  margin-bottom: 8px;
+}
+.inline-reply input:focus, .inline-reply textarea:focus { border-color: var(--muted); }
+.inline-reply textarea { min-height: 70px; resize: vertical; line-height: 1.5; }
+.inline-reply .row { display: flex; gap: 10px; align-items: center; }
+.inline-reply .submit {
+  padding: 7px 16px;
+  background: transparent;
+  border: 1px solid var(--accent);
+  color: var(--accent);
+  font-family: inherit;
+  font-size: 10px;
+  letter-spacing: 0.12em;
+  text-transform: lowercase;
+  cursor: pointer;
+}
+.inline-reply .submit:hover:not(:disabled) { background: var(--accent); color: var(--bg); }
+.inline-reply .submit:disabled { opacity: 0.4; cursor: not-allowed; }
+.inline-reply .cancel {
+  padding: 7px 12px;
+  background: transparent;
+  border: none;
+  color: var(--muted);
+  font-family: inherit;
+  font-size: 10px;
+  letter-spacing: 0.1em;
+  cursor: pointer;
+  text-transform: lowercase;
+}
+.inline-reply .cancel:hover { color: var(--text); }
+.inline-reply .status { font-size: 10px; color: var(--muted); }
+.inline-reply .status.err { color: #ff8a80; }
 
 .comment-empty { font-size: 12px; color: var(--muted); font-style: italic; padding: 16px 0; }
 
@@ -884,7 +964,7 @@ const heroObs = new IntersectionObserver((entries) => {
 }, { threshold: 0.35 });
 heroObs.observe(heroEl);
 
-// ---- comments forum ----
+// ---- comments forum (threaded · 2 levels like instagram/youtube) ----
 const THREAD = 'niyyah';
 function escapeHtml(s){return (s||'').replace(/[&<>"']/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));}
 function fmtDate(iso){
@@ -897,20 +977,48 @@ function fmtDate(iso){
   if (diff < 604800) return Math.floor(diff/86400) + 'j';
   return d.toLocaleDateString('fr-FR', { day: '2-digit', month: 'short', year: '2-digit' });
 }
-function renderComments(comments){
-  const list = document.getElementById('comment-list');
-  const empty = document.getElementById('comment-empty');
-  if (!comments.length) { empty.style.display = 'block'; return; }
-  empty.style.display = 'none';
-  list.innerHTML = comments.map(c =>
-    '<div class="comment">' +
+function commentNode(c, isReply){
+  const cls = isReply ? 'comment reply' : 'comment';
+  return ''+
+    '<div class="' + cls + '" data-id="' + escapeHtml(c.id) + '" data-name="' + escapeHtml(c.name) + '">' +
       '<div class="comment-head">' +
         '<span class="comment-name">' + escapeHtml(c.name) + '</span>' +
         '<span class="comment-date">' + fmtDate(c.date) + '</span>' +
       '</div>' +
       '<div class="comment-text">' + escapeHtml(c.message) + '</div>' +
-    '</div>'
-  ).join('');
+      '<div class="comment-actions">' +
+        '<button class="reply-btn" type="button" onclick="openReply(\'' + c.id + '\', \'' + (escapeHtml(c.name).replace(/'/g, '\\\'')) + '\', ' + (isReply ? "this.closest('.thread').querySelector('.comment').dataset.id" : "'" + c.id + "'") + ')">répondre</button>' +
+      '</div>' +
+      '<div class="inline-reply" id="reply-' + c.id + '">' +
+        '<div class="ctx">en réponse à <em>' + escapeHtml(c.name) + '</em></div>' +
+        '<input type="text" id="reply-name-' + c.id + '" placeholder="ton nom (facultatif)" maxlength="40">' +
+        '<textarea id="reply-msg-' + c.id + '" placeholder="ta réponse…" maxlength="2000"></textarea>' +
+        '<div class="row">' +
+          '<button class="submit" type="button" data-id="' + c.id + '" onclick="submitReply(this)">publier</button>' +
+          '<button class="cancel" type="button" onclick="closeReply(\'' + c.id + '\')">annuler</button>' +
+          '<span class="status" id="reply-status-' + c.id + '"></span>' +
+        '</div>' +
+      '</div>' +
+    '</div>';
+}
+function renderComments(all){
+  const list = document.getElementById('comment-list');
+  const empty = document.getElementById('comment-empty');
+  if (!all.length) { empty.style.display = 'block'; list.innerHTML = ''; list.appendChild(empty); return; }
+  empty.style.display = 'none';
+  // group: roots (no reply_to) + replies grouped by their root
+  const roots = all.filter(c => !c.reply_to);
+  const repliesByRoot = {};
+  for (const c of all) {
+    if (c.reply_to) (repliesByRoot[c.reply_to] = repliesByRoot[c.reply_to] || []).push(c);
+  }
+  list.innerHTML = roots.map(root => {
+    const replies = (repliesByRoot[root.id] || []).sort((a,b)=>(a.date||'').localeCompare(b.date||''));
+    return '<div class="thread">' +
+      commentNode(root, false) +
+      replies.map(r => commentNode(r, true)).join('') +
+    '</div>';
+  }).join('');
 }
 async function loadComments(){
   try {
@@ -918,6 +1026,55 @@ async function loadComments(){
     const data = await res.json();
     renderComments(data.comments || []);
   } catch(e){ /* silent */ }
+}
+function openReply(commentId, parentName, rootId){
+  // close any open reply
+  document.querySelectorAll('.inline-reply.open').forEach(el => el.classList.remove('open'));
+  const form = document.getElementById('reply-' + commentId);
+  if (!form) return;
+  form.classList.add('open');
+  form.dataset.rootId = rootId;
+  // if replying to a sub-comment, pre-prefix @name in the textarea
+  const msg = document.getElementById('reply-msg-' + commentId);
+  if (rootId !== commentId && parentName && !msg.value.startsWith('@')) {
+    msg.value = '@' + parentName.replace(/\s+/g, '_') + ' ';
+  }
+  msg.focus();
+  // place cursor at end
+  msg.selectionStart = msg.selectionEnd = msg.value.length;
+}
+function closeReply(commentId){
+  const form = document.getElementById('reply-' + commentId);
+  if (form) form.classList.remove('open');
+}
+async function submitReply(btn){
+  const commentId = btn.dataset.id;
+  const form = document.getElementById('reply-' + commentId);
+  const rootId = form.dataset.rootId || commentId;
+  const name = document.getElementById('reply-name-' + commentId).value.trim() || 'anonyme';
+  const message = document.getElementById('reply-msg-' + commentId).value.trim();
+  const status = document.getElementById('reply-status-' + commentId);
+  if (!message) { status.textContent = 'message vide'; status.className = 'status err'; return; }
+  btn.disabled = true; btn.textContent = '...'; status.textContent = '';
+  try {
+    const res = await fetch('/api/v2/comments', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ thread: THREAD, name, message, reply_to: rootId })
+    });
+    const d = await res.json();
+    if (d.ok) {
+      closeReply(commentId);
+      await loadComments();
+    } else {
+      status.textContent = d.error || 'erreur';
+      status.className = 'status err';
+    }
+  } catch(e) {
+    status.textContent = 'erreur réseau';
+    status.className = 'status err';
+  }
+  btn.disabled = false; btn.textContent = 'publier';
 }
 async function submitComment(ev){
   ev.preventDefault();
@@ -951,6 +1108,12 @@ async function submitComment(ev){
   btn.disabled = false; btn.textContent = 'envoyer';
   return false;
 }
+// expose globals for inline handlers
+window.openReply = openReply;
+window.closeReply = closeReply;
+window.submitReply = submitReply;
+window.submitComment = submitComment;
+
 loadComments();
 
 // active TOC entry via IntersectionObserver
