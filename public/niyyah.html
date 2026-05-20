@@ -87,14 +87,18 @@ header.bar .title-bar {
   background: transparent;
   border: 1px solid var(--border);
   color: var(--muted);
-  font-family: inherit;
-  font-size: 10px;
-  letter-spacing: 0.12em;
-  padding: 5px 11px;
+  font-family: 'Apple Color Emoji', 'Segoe UI Symbol', system-ui, sans-serif;
+  font-size: 14px;
+  width: 28px;
+  height: 28px;
+  padding: 0;
   cursor: pointer;
-  text-transform: lowercase;
-  transition: color 0.2s, border-color 0.2s, background 0.2s;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
   line-height: 1;
+  transition: color 0.2s, border-color 0.2s, background 0.2s;
 }
 .theme-toggle:hover { color: var(--text); border-color: var(--muted); }
 header.bar .title-bar .ar {
@@ -509,7 +513,7 @@ section.comments { margin-top: 96px; padding-top: 56px; border-top: 1px solid va
 <header class="bar">
   <a href="/" class="home">← arch.ooo</a>
   <div class="title-bar">niyyah <span class="ar">نيّة</span></div>
-  <button class="theme-toggle" id="theme-toggle" aria-label="basculer jour / nuit">jour</button>
+  <button class="theme-toggle" id="theme-toggle" aria-label="basculer jour / nuit">☀</button>
 </header>
 
 <main>
@@ -983,10 +987,10 @@ section.comments { margin-top: 96px; padding-top: 56px; border-top: 1px solid va
   function apply(t) {
     if (t === 'light') {
       root.setAttribute('data-theme', 'light');
-      btn.textContent = 'nuit';
+      btn.textContent = '☾';
     } else {
       root.removeAttribute('data-theme');
-      btn.textContent = 'jour';
+      btn.textContent = '☀';
     }
     localStorage.setItem('niyyah-theme', t);
   }
