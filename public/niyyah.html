@@ -20,7 +20,7 @@
   --header-h: 44px;
 }
 * { box-sizing: border-box; margin: 0; padding: 0; }
-html { scroll-behavior: smooth; }
+html { scroll-behavior: smooth; scroll-padding-top: 60px; }
 body {
   background: var(--bg);
   color: var(--text);
@@ -151,18 +151,25 @@ article {
   padding: 56px 0;
 }
 
-/* hero */
+/* hero — full viewport */
 .hero {
-  padding: 48px 0 96px;
+  min-height: calc(100vh - var(--header-h));
+  margin-top: calc(0px - 56px); /* compensate article padding */
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
   text-align: center;
   border-bottom: 1px solid var(--border);
   margin-bottom: 80px;
+  padding: 40px 0;
+  scroll-margin-top: 0;
 }
 .hero h1 {
-  font-size: clamp(48px, 9vw, 88px);
+  font-size: clamp(56px, 11vw, 120px);
   font-weight: 300;
-  letter-spacing: -0.02em;
-  margin-bottom: 16px;
+  letter-spacing: -0.03em;
+  margin-bottom: 20px;
   line-height: 1;
 }
 .hero .arabic {
@@ -187,6 +194,9 @@ article {
   color: var(--muted);
 }
 .hero .by em { font-style: normal; color: var(--text); }
+
+/* scroll-margin so sticky header doesn't cover section starts */
+section.preface, section.chapter { scroll-margin-top: 60px; }
 
 /* preface */
 section.preface {
@@ -278,7 +288,7 @@ article li { margin-bottom: 0.4em; }
   aside.toc { display: none; }
   main { padding: 0 20px 80px; }
   article { padding: 24px 0; max-width: 100%; }
-  .hero { padding: 24px 0 56px; margin-bottom: 48px; }
+  .hero { padding: 24px 0; margin-bottom: 48px; min-height: calc(100vh - var(--header-h) - 48px); }
   section.preface { padding-bottom: 48px; margin-bottom: 48px; }
   section.chapter { padding: 48px 0; }
 }
