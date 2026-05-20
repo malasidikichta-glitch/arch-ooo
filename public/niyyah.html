@@ -293,6 +293,61 @@ article hr {
 article ul, article ol { margin: 0 0 1.4em 1.2em; }
 article li { margin-bottom: 0.4em; }
 
+/* comments forum */
+section.comments { margin-top: 96px; padding-top: 56px; border-top: 1px solid var(--border); }
+.comments-label { font-size: 10px; color: var(--muted); letter-spacing: 0.3em; text-transform: uppercase; margin-bottom: 6px; }
+.comments-sub { font-size: 12px; color: var(--muted); margin-bottom: 32px; line-height: 1.6; }
+
+.comment-list { display: flex; flex-direction: column; gap: 24px; margin-bottom: 48px; }
+.comment {
+  padding: 18px 20px;
+  background: rgba(248, 245, 240, 0.02);
+  border: 1px solid var(--border);
+  border-radius: 4px;
+}
+.comment-head { display: flex; justify-content: space-between; align-items: baseline; gap: 12px; margin-bottom: 10px; flex-wrap: wrap; }
+.comment-name { font-size: 12px; color: var(--accent); letter-spacing: 0.02em; }
+.comment-date { font-size: 10px; color: var(--muted); letter-spacing: 0.06em; }
+.comment-text { font-size: 14px; color: var(--text); line-height: 1.7; white-space: pre-wrap; word-wrap: break-word; }
+
+.comment-empty { font-size: 12px; color: var(--muted); font-style: italic; padding: 16px 0; }
+
+.comment-form { display: flex; flex-direction: column; gap: 10px; padding: 24px 22px; background: rgba(248, 245, 240, 0.025); border: 1px solid var(--border); border-radius: 4px; }
+.comment-form-label { font-size: 10px; color: var(--muted); letter-spacing: 0.25em; text-transform: uppercase; margin-bottom: 4px; }
+.comment-input, .comment-textarea {
+  padding: 12px 14px;
+  background: transparent;
+  border: 1px solid var(--border);
+  color: var(--text);
+  font-family: inherit;
+  font-size: 13px;
+  letter-spacing: 0.01em;
+  outline: none;
+  width: 100%;
+  resize: vertical;
+}
+.comment-input:focus, .comment-textarea:focus { border-color: var(--muted); }
+.comment-input::placeholder, .comment-textarea::placeholder { color: var(--muted); }
+.comment-textarea { min-height: 90px; line-height: 1.6; }
+.comment-row { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
+.comment-submit {
+  padding: 10px 22px;
+  background: transparent;
+  border: 1px solid var(--accent);
+  color: var(--accent);
+  font-family: inherit;
+  font-size: 11px;
+  letter-spacing: 0.15em;
+  text-transform: lowercase;
+  cursor: pointer;
+  transition: background 0.2s, color 0.2s;
+}
+.comment-submit:hover:not(:disabled) { background: var(--accent); color: var(--bg); }
+.comment-submit:disabled { opacity: 0.4; cursor: not-allowed; }
+.comment-status { font-size: 11px; color: var(--muted); min-height: 14px; letter-spacing: 0.04em; }
+.comment-status.err { color: #ff8a80; }
+.comment-status.ok { color: var(--accent); }
+
 /* end mark */
 .end {
   margin-top: 96px;
@@ -363,6 +418,7 @@ article li { margin-bottom: 0.4em; }
         <li><a href="#ch9"><span class="toc-num">IX</span><span class="toc-title">le hasard et l'intention</span></a></li>
         <li><a href="#ch10"><span class="toc-num">X</span><span class="toc-title">le pouvoir de ceux qui entraînent</span></a></li>
         <li><a href="#ch11"><span class="toc-num">XI</span><span class="toc-title">niyyah</span></a></li>
+      <li><a href="#comments"><span class="toc-num">∎</span><span class="toc-title">commentaires</span></a></li>
     </ul>
   </aside>
 
@@ -390,6 +446,7 @@ article li { margin-bottom: 0.4em; }
         <li><a href="#ch9"><span class="num">IX</span><span>le hasard et l'intention</span></a></li>
         <li><a href="#ch10"><span class="num">X</span><span>le pouvoir de ceux qui entraînent</span></a></li>
         <li><a href="#ch11"><span class="num">XI</span><span>niyyah</span></a></li>
+        <li><a href="#comments"><span class="num">∎</span><span>commentaires</span></a></li>
       </ol>
     </nav>
 
@@ -777,6 +834,25 @@ article li { margin-bottom: 0.4em; }
   <p>C'est tout ce que je sais avec certitude. Le reste, je continue à le chercher.</p></div>
 </section>
 
+    <section class="comments" id="comments">
+      <div class="comments-label">— commentaires</div>
+      <div class="comments-sub">échangez librement vos pensées sur l'essai. pas d'inscription, juste un nom et un message.</div>
+
+      <div class="comment-list" id="comment-list">
+        <div class="comment-empty" id="comment-empty">aucun commentaire pour le moment · sois le premier à écrire</div>
+      </div>
+
+      <form class="comment-form" id="comment-form" onsubmit="return submitComment(event)">
+        <div class="comment-form-label">— nouveau commentaire</div>
+        <input class="comment-input" type="text" id="comment-name" placeholder="ton nom ou pseudo (facultatif)" maxlength="40" autocomplete="nickname">
+        <textarea class="comment-textarea" id="comment-message" placeholder="ton message…" maxlength="2000" required></textarea>
+        <div class="comment-row">
+          <button class="comment-submit" type="submit" id="comment-submit">envoyer</button>
+          <div class="comment-status" id="comment-status"></div>
+        </div>
+      </form>
+    </section>
+
     <div class="end">
       <a href="/">← retour arch.ooo</a>
     </div>
@@ -807,6 +883,75 @@ const heroObs = new IntersectionObserver((entries) => {
   entries.forEach(e => { if (e.isIntersecting) hideToc(); else showToc(); });
 }, { threshold: 0.35 });
 heroObs.observe(heroEl);
+
+// ---- comments forum ----
+const THREAD = 'niyyah';
+function escapeHtml(s){return (s||'').replace(/[&<>"']/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));}
+function fmtDate(iso){
+  const d = new Date(iso);
+  const now = new Date();
+  const diff = (now - d) / 1000;
+  if (diff < 60) return 'à l\'instant';
+  if (diff < 3600) return Math.floor(diff/60) + ' min';
+  if (diff < 86400) return Math.floor(diff/3600) + 'h';
+  if (diff < 604800) return Math.floor(diff/86400) + 'j';
+  return d.toLocaleDateString('fr-FR', { day: '2-digit', month: 'short', year: '2-digit' });
+}
+function renderComments(comments){
+  const list = document.getElementById('comment-list');
+  const empty = document.getElementById('comment-empty');
+  if (!comments.length) { empty.style.display = 'block'; return; }
+  empty.style.display = 'none';
+  list.innerHTML = comments.map(c =>
+    '<div class="comment">' +
+      '<div class="comment-head">' +
+        '<span class="comment-name">' + escapeHtml(c.name) + '</span>' +
+        '<span class="comment-date">' + fmtDate(c.date) + '</span>' +
+      '</div>' +
+      '<div class="comment-text">' + escapeHtml(c.message) + '</div>' +
+    '</div>'
+  ).join('');
+}
+async function loadComments(){
+  try {
+    const res = await fetch('/api/v2/comments?thread=' + THREAD);
+    const data = await res.json();
+    renderComments(data.comments || []);
+  } catch(e){ /* silent */ }
+}
+async function submitComment(ev){
+  ev.preventDefault();
+  const name = document.getElementById('comment-name').value.trim() || 'anonyme';
+  const message = document.getElementById('comment-message').value.trim();
+  const btn = document.getElementById('comment-submit');
+  const status = document.getElementById('comment-status');
+  if (!message) { status.textContent = 'écris quelque chose'; status.className = 'comment-status err'; return false; }
+  btn.disabled = true; btn.textContent = '...'; status.textContent = ''; status.className = 'comment-status';
+  try {
+    const res = await fetch('/api/v2/comments', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ thread: THREAD, name, message })
+    });
+    const d = await res.json();
+    if (d.ok) {
+      status.textContent = 'merci · publié';
+      status.className = 'comment-status ok';
+      document.getElementById('comment-message').value = '';
+      await loadComments();
+      setTimeout(() => { status.textContent = ''; }, 3000);
+    } else {
+      status.textContent = 'erreur : ' + (d.error || 'inconnue');
+      status.className = 'comment-status err';
+    }
+  } catch(e) {
+    status.textContent = 'erreur réseau';
+    status.className = 'comment-status err';
+  }
+  btn.disabled = false; btn.textContent = 'envoyer';
+  return false;
+}
+loadComments();
 
 // active TOC entry via IntersectionObserver
 const tocLinks = document.querySelectorAll('aside.toc a');
