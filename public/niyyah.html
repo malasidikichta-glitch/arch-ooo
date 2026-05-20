@@ -124,42 +124,49 @@ aside.toc .toc-num {
 }
 aside.toc a.active .toc-num { color: var(--accent); }
 
-/* Mobile TOC: collapsible · hidden until preface */
-details.toc-mobile {
-  margin: 32px 0 0;
-  border: 1px solid var(--border);
-  border-radius: 4px;
-  padding: 0 16px;
+/* Mobile TOC: static block · hidden until preface */
+.toc-mobile {
+  margin: 32px 0 56px;
+  padding: 20px 0;
+  border-top: 1px solid var(--border);
+  border-bottom: 1px solid var(--border);
   opacity: 0;
-  max-height: 0;
-  overflow: hidden;
-  transition: opacity 0.35s ease, max-height 0.35s ease, margin 0.35s ease;
+  transition: opacity 0.35s ease;
   pointer-events: none;
 }
-details.toc-mobile.show {
+.toc-mobile.show {
   opacity: 1;
-  max-height: 800px;
   pointer-events: auto;
 }
-details.toc-mobile summary {
-  padding: 14px 0;
+.toc-mobile .toc-mobile-label {
   font-size: 10px;
   color: var(--muted);
-  letter-spacing: 0.2em;
+  letter-spacing: 0.25em;
   text-transform: uppercase;
-  cursor: pointer;
+  margin-bottom: 16px;
+}
+.toc-mobile ol {
   list-style: none;
   display: flex;
-  align-items: center;
-  justify-content: space-between;
+  flex-direction: column;
+  gap: 6px;
+  padding: 0;
 }
-details.toc-mobile summary::-webkit-details-marker { display: none; }
-details.toc-mobile summary::after { content: '+'; font-size: 14px; color: var(--muted); }
-details.toc-mobile[open] summary::after { content: '−'; }
-details.toc-mobile ol { list-style: none; padding: 8px 0 16px; counter-reset: ch; }
-details.toc-mobile li { padding: 4px 0; font-size: 12px; }
-details.toc-mobile a { color: var(--muted); text-decoration: none; }
-details.toc-mobile a:hover { color: var(--text); }
+.toc-mobile li { font-size: 12px; line-height: 1.5; }
+.toc-mobile a {
+  display: grid;
+  grid-template-columns: 36px 1fr;
+  gap: 10px;
+  color: var(--muted);
+  text-decoration: none;
+  padding: 4px 0;
+  transition: color 0.2s;
+}
+.toc-mobile a:hover { color: var(--text); }
+.toc-mobile .num {
+  color: var(--muted);
+  letter-spacing: 0.15em;
+}
 
 /* content column */
 article {
@@ -310,7 +317,7 @@ article li { margin-bottom: 0.4em; }
   section.chapter { padding: 48px 0; }
 }
 @media (min-width: 901px) {
-  details.toc-mobile { display: none; }
+  .toc-mobile { display: none; }
 }
 
 /* print */
@@ -368,23 +375,23 @@ article li { margin-bottom: 0.4em; }
       <div class="by"><em>xo</em></div>
     </section>
 
-    <details class="toc-mobile">
-      <summary>sommaire · 11 chapitres</summary>
+    <nav class="toc-mobile" aria-label="sommaire">
+      <div class="toc-mobile-label">— sommaire</div>
       <ol>
-        <li><a href="#preface">préface</a></li>
-        <li><a href="#ch1">I — les stories du lundi matin</a></li>
-        <li><a href="#ch2">II — la peur, c'est normal</a></li>
-        <li><a href="#ch3">III — ce que l'IA fait vraiment</a></li>
-        <li><a href="#ch4">IV — ce que j'ai fait avec</a></li>
-        <li><a href="#ch5">V — l'outil n'est pas neutre</a></li>
-        <li><a href="#ch6">VI — la menace identitaire</a></li>
-        <li><a href="#ch7">VII — qui a créé quoi, et pour qui</a></li>
-        <li><a href="#ch8">VIII — le plagiat industrialisé</a></li>
-        <li><a href="#ch9">IX — le hasard et l'intention</a></li>
-        <li><a href="#ch10">X — le pouvoir de ceux qui entraînent</a></li>
-        <li><a href="#ch11">XI — niyyah</a></li>
+        <li><a href="#preface"><span class="num">·</span><span>préface</span></a></li>
+        <li><a href="#ch1"><span class="num">I</span><span>les stories du lundi matin</span></a></li>
+        <li><a href="#ch2"><span class="num">II</span><span>la peur, c'est normal</span></a></li>
+        <li><a href="#ch3"><span class="num">III</span><span>ce que l'IA fait vraiment</span></a></li>
+        <li><a href="#ch4"><span class="num">IV</span><span>ce que j'ai fait avec</span></a></li>
+        <li><a href="#ch5"><span class="num">V</span><span>l'outil n'est pas neutre</span></a></li>
+        <li><a href="#ch6"><span class="num">VI</span><span>la menace identitaire</span></a></li>
+        <li><a href="#ch7"><span class="num">VII</span><span>qui a créé quoi, et pour qui</span></a></li>
+        <li><a href="#ch8"><span class="num">VIII</span><span>le plagiat industrialisé</span></a></li>
+        <li><a href="#ch9"><span class="num">IX</span><span>le hasard et l'intention</span></a></li>
+        <li><a href="#ch10"><span class="num">X</span><span>le pouvoir de ceux qui entraînent</span></a></li>
+        <li><a href="#ch11"><span class="num">XI</span><span>niyyah</span></a></li>
       </ol>
-    </details>
+    </nav>
 
     <section class="preface" id="preface">
       
@@ -792,7 +799,7 @@ updateProgress();
 
 // hide TOC while hero is in view, show it once user scrolls into the essay body
 const heroEl = document.getElementById('hero');
-const tocEls = document.querySelectorAll('aside.toc, details.toc-mobile');
+const tocEls = document.querySelectorAll('aside.toc, .toc-mobile');
 const showToc = () => tocEls.forEach(el => el.classList.add('show'));
 const hideToc = () => tocEls.forEach(el => el.classList.remove('show'));
 hideToc();
