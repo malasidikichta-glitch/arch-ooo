@@ -89,6 +89,13 @@ aside.toc {
   padding: 40px 0;
   font-size: 11px;
   letter-spacing: 0.02em;
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.35s ease, visibility 0.35s ease;
+}
+aside.toc.show {
+  opacity: 1;
+  visibility: visible;
 }
 aside.toc .toc-label {
   font-size: 10px;
@@ -117,12 +124,22 @@ aside.toc .toc-num {
 }
 aside.toc a.active .toc-num { color: var(--accent); }
 
-/* Mobile TOC: collapsible */
+/* Mobile TOC: collapsible · hidden until preface */
 details.toc-mobile {
   margin: 32px 0 0;
   border: 1px solid var(--border);
   border-radius: 4px;
   padding: 0 16px;
+  opacity: 0;
+  max-height: 0;
+  overflow: hidden;
+  transition: opacity 0.35s ease, max-height 0.35s ease, margin 0.35s ease;
+  pointer-events: none;
+}
+details.toc-mobile.show {
+  opacity: 1;
+  max-height: 800px;
+  pointer-events: auto;
 }
 details.toc-mobile summary {
   padding: 14px 0;
@@ -772,6 +789,17 @@ function updateProgress() {
 }
 window.addEventListener('scroll', updateProgress, { passive: true });
 updateProgress();
+
+// hide TOC while hero is in view, show it once user scrolls into the essay body
+const heroEl = document.getElementById('hero');
+const tocEls = document.querySelectorAll('aside.toc, details.toc-mobile');
+const showToc = () => tocEls.forEach(el => el.classList.add('show'));
+const hideToc = () => tocEls.forEach(el => el.classList.remove('show'));
+hideToc();
+const heroObs = new IntersectionObserver((entries) => {
+  entries.forEach(e => { if (e.isIntersecting) hideToc(); else showToc(); });
+}, { threshold: 0.35 });
+heroObs.observe(heroEl);
 
 // active TOC entry via IntersectionObserver
 const tocLinks = document.querySelectorAll('aside.toc a');
