@@ -87,29 +87,27 @@ header.bar .title-bar {
   border: 1px solid var(--border);
   color: var(--muted);
   font-family: 'Geist Mono', ui-monospace, monospace;
-  font-size: 12px;
-  padding: 4px 0;
+  font-size: 10px;
+  letter-spacing: 0.12em;
+  padding: 3px;
   cursor: pointer;
   display: inline-flex;
   align-items: center;
   border-radius: 14px;
   line-height: 1;
-  font-variant-emoji: text;
+  text-transform: lowercase;
   transition: border-color 0.2s;
 }
 .theme-toggle:hover { border-color: var(--muted); }
-.theme-toggle .t-icon {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  width: 24px;
-  height: 22px;
+.theme-toggle .t-opt {
+  display: inline-block;
+  padding: 5px 10px;
   color: var(--muted);
-  transition: color 0.2s, background 0.2s;
   border-radius: 11px;
+  transition: color 0.2s, background 0.2s;
   line-height: 1;
 }
-.theme-toggle .t-icon.active {
+.theme-toggle .t-opt.active {
   color: var(--text);
   background: var(--comment-bg);
 }
@@ -524,7 +522,7 @@ section.comments { margin-top: 96px; padding-top: 56px; border-top: 1px solid va
 
 <header class="bar">
   <div class="title-bar">niyyah <span class="ar">نيّة</span></div>
-  <button class="theme-toggle" id="theme-toggle" aria-label="basculer jour / nuit"><span class="t-icon t-sun">☀︎</span><span class="t-icon t-moon">☾︎</span></button>
+  <button class="theme-toggle" id="theme-toggle" aria-label="basculer clair / sombre"><span class="t-opt t-light">clair</span><span class="t-opt t-dark">sombre</span></button>
 </header>
 
 <main>
@@ -995,17 +993,17 @@ section.comments { margin-top: 96px; padding-top: 56px; border-top: 1px solid va
   const root = document.documentElement;
   const btn = document.getElementById('theme-toggle');
   if (!btn) return;
-  const sun = btn.querySelector('.t-sun');
-  const moon = btn.querySelector('.t-moon');
+  const optLight = btn.querySelector('.t-light');
+  const optDark = btn.querySelector('.t-dark');
   function apply(t) {
     if (t === 'light') {
       root.setAttribute('data-theme', 'light');
-      sun.classList.add('active');
-      moon.classList.remove('active');
+      optLight.classList.add('active');
+      optDark.classList.remove('active');
     } else {
       root.removeAttribute('data-theme');
-      moon.classList.add('active');
-      sun.classList.remove('active');
+      optDark.classList.add('active');
+      optLight.classList.remove('active');
     }
     localStorage.setItem('niyyah-theme', t);
   }
