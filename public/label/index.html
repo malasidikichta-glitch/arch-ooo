@@ -258,6 +258,8 @@ var ACCOUNTS = {
   sam:     { pw: 'arch-sam-2026',     role: 'actionnaire',              display: 'sam' },
   ilkhom:  { pw: 'arch-ilkhom-2026',  role: 'actionnaire',              display: 'ilkhom' }
 };
+// localStorage (pas sessionStorage) : partagé entre toutes les pages arch.ooo,
+// pour que /cca_ilkhom, /arch_admin_sam, etc. soient déverrouillés en même temps.
 var SESSION_KEY = 'arch-label-auth';
 
 function gateCheck(ev){
@@ -266,7 +268,7 @@ function gateCheck(ev){
   var pw = document.getElementById('gate-pw').value;
   var acc = ACCOUNTS[id];
   if (acc && acc.pw === pw) {
-    try { sessionStorage.setItem(SESSION_KEY, JSON.stringify({ id: id, ts: Date.now() })); } catch(e){}
+    try { localStorage.setItem(SESSION_KEY, JSON.stringify({ id: id, ts: Date.now() })); } catch(e){}
     reveal(id);
   } else {
     var e = document.getElementById('gate-err');
@@ -288,13 +290,24 @@ function reveal(id){
 }
 
 function logout(){
-  try { sessionStorage.removeItem(SESSION_KEY); } catch(e){}
+  try { localStorage.removeItem(SESSION_KEY); } catch(e){}
+  // legacy per-page session keys (au cas où)
+  try { sessionStorage.removeItem('arch-cca-ilkhom-auth'); } catch(e){}
+  try { sessionStorage.removeItem('arch-admin-sam-auth'); } catch(e){}
   location.reload();
 }
 
 (function(){
+  // migration : si une session sessionStorage existait, on la promeut en localStorage
   try {
-    var raw = sessionStorage.getItem(SESSION_KEY);
+    var legacy = sessionStorage.getItem(SESSION_KEY);
+    if (legacy && !localStorage.getItem(SESSION_KEY)) {
+      localStorage.setItem(SESSION_KEY, legacy);
+      sessionStorage.removeItem(SESSION_KEY);
+    }
+  } catch(e){}
+  try {
+    var raw = localStorage.getItem(SESSION_KEY);
     if (!raw) return;
     var s = JSON.parse(raw);
     if (s && s.id && ACCOUNTS[s.id]) {

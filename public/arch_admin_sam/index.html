@@ -863,8 +863,16 @@ body.gate-locked { overflow: hidden; height: 100vh; padding: 0 !important; }
     }
     return false;
   };
+  function hasLabelSession(){
+    try {
+      var raw = localStorage.getItem('arch-label-auth');
+      if (!raw) return false;
+      var s = JSON.parse(raw);
+      return !!(s && s.id);
+    } catch(e){ return false; }
+  }
   try {
-    if (sessionStorage.getItem("arch-admin-sam-auth") === '1') {
+    if (hasLabelSession() || sessionStorage.getItem("arch-admin-sam-auth") === '1') {
       if (document.readyState === 'loading') {
         document.addEventListener('DOMContentLoaded', reveal);
       } else { reveal(); }

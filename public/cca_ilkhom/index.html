@@ -356,7 +356,16 @@ function reveal(){
   document.getElementById('content').classList.add('unlocked');
   document.body.classList.remove('gate-locked');
 }
-if (sessionStorage.getItem('arch-cca-ilkhom-auth') === '1') {
+// SSO via /label (localStorage partagé) ou session legacy
+function hasLabelSession(){
+  try {
+    var raw = localStorage.getItem('arch-label-auth');
+    if (!raw) return false;
+    var s = JSON.parse(raw);
+    return !!(s && s.id);
+  } catch(e){ return false; }
+}
+if (hasLabelSession() || sessionStorage.getItem('arch-cca-ilkhom-auth') === '1') {
   document.addEventListener('DOMContentLoaded', reveal);
 }
 </script>
