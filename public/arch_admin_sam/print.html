@@ -1,0 +1,586 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8" />
+<meta name="robots" content="noindex, nofollow, noarchive, nosnippet">
+<meta name="googlebot" content="noindex, nofollow">
+<title>fiche admin artistes — arch sas</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@800;900&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+<style>
+  :root {
+    --ink: #000;
+    --grey: #888;
+    --grey-soft: #b8b8b8;
+    --accent: #d44a1a;
+    --paper: #ffffff;
+    --rule: #000;
+  }
+
+  * { box-sizing: border-box; }
+  html, body {
+    margin: 0;
+    padding: 0;
+    background: #2a2a2a;
+    font-family: 'Inter', 'Helvetica Neue', Arial, sans-serif;
+    color: var(--ink);
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  /* On-screen background; print uses pure white */
+  body { padding: 32px 0; }
+
+  .page {
+    position: relative;
+    width: 210mm;
+    height: 297mm;
+    background: var(--paper);
+    margin: 0 auto 24px;
+    overflow: hidden;
+    padding: 16mm 14mm 14mm 14mm;
+    box-shadow: 0 12px 40px rgba(0,0,0,0.35);
+  }
+
+  /* ---------- WATERMARK ---------- */
+  .watermark {
+    position: absolute;
+    top: 50%;
+    left: 0;
+    transform: translateY(-50%);
+    width: 175%;            /* extends well past the right edge */
+    pointer-events: none;
+    z-index: 0;
+    line-height: 0.78;
+    font-family: 'Barlow Condensed', 'Helvetica Neue', Arial Narrow, sans-serif;
+    font-weight: 900;
+    color: #000;
+    opacity: 0.11;
+    font-size: 95vh;        /* fallback; overridden by inline px below */
+    letter-spacing: -0.04em;
+    user-select: none;
+    white-space: nowrap;
+    text-transform: lowercase;
+  }
+  .watermark span { display: block; }
+
+  /* Make sure content sits above watermark */
+  .page > *:not(.watermark) { position: relative; z-index: 1; }
+
+  /* ---------- HEADER ---------- */
+  .header {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    align-items: start;
+    padding-bottom: 6mm;
+    border-bottom: 1.5px solid var(--ink);
+  }
+  .header .col-left { justify-self: start; }
+  .header .col-center { justify-self: center; text-align: center; }
+  .header .col-right { justify-self: end; text-align: right; }
+
+  .arch-mark {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-weight: 900;
+    font-size: 22pt;
+    line-height: 1;
+    letter-spacing: -0.03em;
+    color: var(--ink);
+    text-transform: lowercase;
+  }
+  .arch-mark::after {
+    content: "";
+    display: inline-block;
+    width: 4px;
+    height: 4px;
+    background: var(--accent);
+    margin-left: 3px;
+    vertical-align: 4px;
+    border-radius: 1px;
+  }
+
+  .doc-title {
+    font-family: 'Inter', sans-serif;
+    font-weight: 700;
+    font-size: 10pt;
+    letter-spacing: 0.01em;
+    color: var(--ink);
+    line-height: 1.2;
+  }
+  .doc-sub {
+    font-family: 'Inter', sans-serif;
+    font-weight: 400;
+    font-size: 7pt;
+    color: var(--grey);
+    margin-top: 2px;
+    letter-spacing: 0.02em;
+  }
+
+  .page-num {
+    font-family: 'Inter', sans-serif;
+    font-weight: 700;
+    font-size: 10pt;
+    color: var(--ink);
+    letter-spacing: 0.02em;
+  }
+  .page-org {
+    font-family: 'Inter', sans-serif;
+    font-weight: 400;
+    font-size: 7pt;
+    color: var(--grey);
+    margin-top: 2px;
+    letter-spacing: 0.02em;
+  }
+
+  /* ---------- ARTIST NAME BLOCK ---------- */
+  .name-block {
+    margin-top: 10mm;
+    margin-bottom: 8mm;
+  }
+  .artist-name {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-weight: 900;
+    font-size: 110pt;
+    line-height: 0.86;
+    letter-spacing: -0.045em;
+    color: var(--ink);
+    text-transform: lowercase;
+    margin: 0;
+  }
+  .artist-tag {
+    font-family: 'Inter', sans-serif;
+    font-weight: 500;
+    font-size: 8pt;
+    color: var(--grey);
+    margin-top: 4mm;
+    letter-spacing: 0.04em;
+    text-transform: lowercase;
+  }
+  .artist-civil {
+    font-family: 'Inter', sans-serif;
+    font-weight: 500;
+    font-size: 9.5pt;
+    color: var(--ink);
+    margin-top: 2mm;
+    letter-spacing: 0;
+  }
+  .artist-civil .sep {
+    color: var(--grey-soft);
+    margin: 0 6px;
+  }
+
+  /* ---------- IDS GRID ---------- */
+  .ids {
+    margin-top: 8mm;
+    border-top: 1.5px solid var(--ink);
+    border-bottom: 1.5px solid var(--ink);
+    padding: 4mm 0 4mm 0;
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    column-gap: 8mm;
+  }
+  .id-cell .id-label {
+    font-family: 'Inter', sans-serif;
+    font-weight: 700;
+    font-size: 6.5pt;
+    color: var(--grey);
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    margin-bottom: 2mm;
+  }
+  .id-cell .id-value {
+    font-family: 'Inter', sans-serif;
+    font-weight: 600;
+    font-size: 10pt;
+    color: var(--ink);
+    font-variant-numeric: tabular-nums;
+    letter-spacing: 0.01em;
+  }
+  .id-cell.accent .id-value { color: var(--accent); }
+  .id-cell.accent .id-label { color: var(--accent); opacity: 0.85; }
+
+  /* ---------- SECTIONS ---------- */
+  .section { margin-top: 6mm; }
+  .section-title {
+    font-family: 'Inter', sans-serif;
+    font-weight: 700;
+    font-size: 7.5pt;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--ink);
+    padding-bottom: 2mm;
+    border-bottom: 1.5px solid var(--ink);
+    margin-bottom: 3mm;
+  }
+  .row {
+    display: grid;
+    grid-template-columns: 42mm 1fr;
+    column-gap: 6mm;
+    padding: 1.8mm 0;
+    border-bottom: 0.5px solid #ececec;
+    align-items: baseline;
+  }
+  .row:last-child { border-bottom: none; }
+  .row .label {
+    font-family: 'Inter', sans-serif;
+    font-weight: 700;
+    font-size: 7pt;
+    color: var(--grey);
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+  }
+  .row .value {
+    font-family: 'Inter', sans-serif;
+    font-weight: 500;
+    font-size: 8.5pt;
+    color: var(--ink);
+    line-height: 1.45;
+  }
+  .row.accent .value { color: var(--accent); font-weight: 600; }
+
+  /* ---------- FOOTER ---------- */
+  .footer {
+    position: absolute;
+    left: 14mm;
+    right: 14mm;
+    bottom: 8mm;
+    border-top: 1.5px solid var(--ink);
+    padding-top: 2.5mm;
+    font-family: 'Inter', sans-serif;
+    font-size: 6.5pt;
+    color: var(--grey);
+    letter-spacing: 0.04em;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    z-index: 2;
+  }
+  .footer .dot {
+    display: inline-block;
+    width: 4px; height: 4px;
+    background: var(--accent);
+    border-radius: 50%;
+    margin: 0 4px;
+    vertical-align: 1.5px;
+  }
+  .footer .right { color: var(--ink); font-weight: 600; }
+
+  /* ---------- PRINT ---------- */
+  @page {
+    size: A4;
+    margin: 0;
+  }
+  @media print {
+    html, body { background: #fff; padding: 0; }
+    .page {
+      margin: 0;
+      box-shadow: none;
+      page-break-after: always;
+      break-after: page;
+    }
+    .page:last-child {
+      page-break-after: auto;
+      break-after: auto;
+    }
+  }
+
+/* ---- gate ---- */
+body.gate-locked { overflow: hidden; height: 100vh; padding: 0 !important; }
+#sam-gate {
+  position: fixed; inset: 0; z-index: 9999;
+  background: #0f0f0f;
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  gap: 16px;
+  font-family: 'Geist Mono', 'JetBrains Mono', 'SF Mono', ui-monospace, monospace;
+  color: #ededed;
+}
+#sam-gate.hidden { display: none; }
+#sam-gate .gate-sub { font-size: 10px; color: #8a8a8a; letter-spacing: 0.25em; text-transform: uppercase; }
+#sam-gate .gate-title { font-size: 28px; font-weight: 500; letter-spacing: -0.02em; text-transform: lowercase; }
+#sam-gate .gate-form { display: flex; width: 100%; max-width: 280px; }
+#sam-gate .gate-input { flex: 1; padding: 10px 12px; background: transparent; border: 1px solid #1f1f1f; border-right: none; color: #ededed; font-family: inherit; font-size: 12px; letter-spacing: 0.06em; outline: none; }
+#sam-gate .gate-input:focus { border-color: #8a8a8a; }
+#sam-gate .gate-input::placeholder { color: #8a8a8a; }
+#sam-gate .gate-btn { padding: 10px 14px; background: transparent; border: 1px solid #1f1f1f; color: #8a8a8a; font-family: inherit; font-size: 10px; letter-spacing: 0.12em; cursor: pointer; text-transform: lowercase; transition: border-color 0.2s, color 0.2s; }
+#sam-gate .gate-btn:hover { border-color: #ededed; color: #ededed; }
+#sam-gate .gate-err { font-size: 10px; color: #ff5b4a; opacity: 0; transition: opacity 0.25s; height: 14px; letter-spacing: 0.06em; }
+#sam-gate .gate-err.show { opacity: 1; }
+#sam-content { display: none; }
+#sam-content.unlocked { display: block; }
+
+</style>
+</head>
+<body class="gate-locked">
+
+<div id="sam-gate">
+  <div class="gate-sub">— privé</div>
+  <div class="gate-title">arch admin · sam · print</div>
+  <form class="gate-form" onsubmit="return samGateCheck(event)">
+    <input type="password" class="gate-input" id="sam-gate-pw" placeholder="password" autocomplete="off" required>
+    <button class="gate-btn" type="submit">entrer</button>
+  </form>
+  <div class="gate-err" id="sam-gate-err">accès refusé</div>
+</div>
+
+<div id="sam-content">
+
+<!-- ============================= PAGE 1 — XO ============================= -->
+<section class="page" data-screen-label="01 xo">
+  <div class="watermark" aria-hidden="true"><span>arch</span></div>
+
+  <header class="header">
+    <div class="col-left">
+      <div class="arch-mark">arch</div>
+    </div>
+    <div class="col-center">
+      <div class="doc-title">fiche admin artistes</div>
+      <div class="doc-sub">document confidentiel · usage interne</div>
+    </div>
+    <div class="col-right">
+      <div class="page-num">1 / 2</div>
+      <div class="page-org">arch sas</div>
+    </div>
+  </header>
+
+  <div class="name-block">
+    <h1 class="artist-name">xo</h1>
+    <div class="artist-tag">1 person on stage</div>
+    <div class="artist-civil">
+      Toumaï Mathey Pericard (he/his)
+      <span class="sep">·</span>D.O.B. 06/02/2003
+      <span class="sep">·</span>+33 7 69 09 47 14
+    </div>
+  </div>
+
+  <div class="ids">
+    <div class="id-cell">
+      <div class="id-label">N° SOCIÉTAIRE SACEM</div>
+      <div class="id-value">1846941</div>
+    </div>
+    <div class="id-cell">
+      <div class="id-label">N° PROGRAMME SACEM</div>
+      <div class="id-value">30000193088</div>
+    </div>
+    <div class="id-cell">
+      <div class="id-label">N° SÉCU SOCIALE</div>
+      <div class="id-value">1 03 02 63 003 021</div>
+    </div>
+    <div class="id-cell" style="margin-top:5mm;">
+      <div class="id-label">SNCF</div>
+      <div class="id-value">29090104</div>
+    </div>
+    <div class="id-cell" style="margin-top:5mm;">
+      <div class="id-label">TGV MAX</div>
+      <div class="id-value">921134615</div>
+    </div>
+    <div class="id-cell accent" style="margin-top:5mm;">
+      <div class="id-label">LATE CHECK-OUT</div>
+      <div class="id-value">à demander systématiquement</div>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-title">Booking &amp; Logistique</div>
+    <div class="row">
+      <div class="label">BOOKING</div>
+      <div class="value">Marc Resplandy — marc@a4system.com</div>
+    </div>
+    <div class="row">
+      <div class="label">LOGISTIQUE</div>
+      <div class="value">Anouk — anouk@a4system.com</div>
+    </div>
+    <div class="row">
+      <div class="label">MANAGER / RÉGIE</div>
+      <div class="value">Sam Pouilhe — sam@edn-prod.fr</div>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-title">Transport</div>
+    <div class="row accent">
+      <div class="label">PRÉFÉRENCE</div>
+      <div class="value">Train 1ère classe · siège isolé bas · 1 bagage 20kg — avion en dernier recours</div>
+    </div>
+    <div class="row">
+      <div class="label">VOL</div>
+      <div class="value">Air France ou partenaire SkyTeam · Business class si vol &gt; 5h</div>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-title">Hébergement</div>
+    <div class="row">
+      <div class="label">HÔTEL</div>
+      <div class="value">2 chambres single, 3H — petit-dej + wifi inclus + room service 24h</div>
+    </div>
+    <div class="row accent">
+      <div class="label">CHECK-OUT</div>
+      <div class="value">Late check-out à demander systématiquement</div>
+    </div>
+    <div class="row">
+      <div class="label">CONFIRMATION</div>
+      <div class="value">Hôtel à confirmer par mail avant réservation</div>
+    </div>
+  </div>
+
+  <footer class="footer">
+    <div>arch sas <span class="dot"></span> clermont-ferrand <span class="dot"></span> document confidentiel à usage interne <span class="dot"></span> tous les déplacements doivent être confirmés par mail avant réservation</div>
+    <div class="right">1 / 2</div>
+  </footer>
+</section>
+
+
+<!-- ============================= PAGE 2 — DUNO ============================= -->
+<section class="page" data-screen-label="02 duno">
+  <div class="watermark" aria-hidden="true"><span>arch</span></div>
+
+  <header class="header">
+    <div class="col-left">
+      <div class="arch-mark">arch</div>
+    </div>
+    <div class="col-center">
+      <div class="doc-title">fiche admin artistes</div>
+      <div class="doc-sub">document confidentiel · usage interne</div>
+    </div>
+    <div class="col-right">
+      <div class="page-num">2 / 2</div>
+      <div class="page-org">arch sas</div>
+    </div>
+  </header>
+
+  <div class="name-block">
+    <h1 class="artist-name">duno</h1>
+    <div class="artist-tag">1 person on stage</div>
+    <div class="artist-civil">
+      Paul Jouandon (he/his)
+      <span class="sep">·</span>D.O.B. 02/11/1997
+      <span class="sep">·</span>+33 6 63 67 95 43
+    </div>
+  </div>
+
+  <div class="ids">
+    <div class="id-cell">
+      <div class="id-label">N° SOCIÉTAIRE SACEM</div>
+      <div class="id-value">1043236</div>
+    </div>
+    <div class="id-cell">
+      <div class="id-label">N° PROGRAMME SACEM</div>
+      <div class="id-value">30000192500</div>
+    </div>
+    <div class="id-cell">
+      <div class="id-label">N° SÉCU SOCIALE</div>
+      <div class="id-value">1 97 11 63 113 088 88</div>
+    </div>
+    <div class="id-cell" style="margin-top:5mm;">
+      <div class="id-label">N° CONGÉS SPECTACLES</div>
+      <div class="id-value">B0653822</div>
+    </div>
+    <div class="id-cell accent" style="margin-top:5mm; grid-column: span 2;">
+      <div class="id-label">LATE CHECK-OUT</div>
+      <div class="id-value">à demander systématiquement</div>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-title">Contacts</div>
+    <div class="row">
+      <div class="label">MAIL PRIORITAIRE</div>
+      <div class="value">pauljouandon@icloud.com</div>
+    </div>
+    <div class="row">
+      <div class="label">MAIL ARTISTE</div>
+      <div class="value">prodbyduno@gmail.com</div>
+    </div>
+    <div class="row">
+      <div class="label">ADRESSE</div>
+      <div class="value">15b Impasse Montelloy, 63000 Clermont-Ferrand</div>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-title">Booking &amp; Logistique</div>
+    <div class="row">
+      <div class="label">BOOKING</div>
+      <div class="value">Clément Ruspil — clem@a4system.com</div>
+    </div>
+    <div class="row">
+      <div class="label">LOGISTIQUE</div>
+      <div class="value">Anouk — anouk@a4system.com</div>
+    </div>
+    <div class="row">
+      <div class="label">MANAGER / RÉGIE</div>
+      <div class="value">Sam Pouilhe — sam@edn-prod.fr</div>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-title">Transport</div>
+    <div class="row accent">
+      <div class="label">PRÉFÉRENCE</div>
+      <div class="value">Train 1ère classe · siège isolé bas · 1 bagage 20kg — avion en dernier recours</div>
+    </div>
+    <div class="row">
+      <div class="label">VOL</div>
+      <div class="value">Air France ou partenaire SkyTeam · Business class si vol &gt; 5h</div>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-title">Hébergement</div>
+    <div class="row">
+      <div class="label">HÔTEL</div>
+      <div class="value">2 chambres single, 3H — petit-dej + wifi inclus + room service 24h</div>
+    </div>
+    <div class="row accent">
+      <div class="label">CHECK-OUT</div>
+      <div class="value">Late check-out à demander systématiquement</div>
+    </div>
+    <div class="row">
+      <div class="label">CONFIRMATION</div>
+      <div class="value">Hôtel à confirmer par mail avant réservation</div>
+    </div>
+  </div>
+
+  <footer class="footer">
+    <div>arch sas <span class="dot"></span> clermont-ferrand <span class="dot"></span> document confidentiel à usage interne <span class="dot"></span> tous les déplacements doivent être confirmés par mail avant réservation</div>
+    <div class="right">2 / 2</div>
+  </footer>
+</section>
+
+</div>
+
+<script>
+(function(){
+  function reveal(){
+    var g = document.getElementById('sam-gate');
+    if (g) g.classList.add('hidden');
+    var c = document.getElementById('sam-content');
+    if (c) c.classList.add('unlocked');
+    document.body.classList.remove('gate-locked');
+  }
+  window.samGateCheck = function(ev){
+    ev.preventDefault();
+    var pw = document.getElementById('sam-gate-pw').value;
+    if (pw === "sam_arch") {
+      try { sessionStorage.setItem("arch-admin-sam-auth", '1'); } catch(e){}
+      reveal();
+    } else {
+      var e = document.getElementById('sam-gate-err');
+      e.classList.add('show');
+      setTimeout(function(){ e.classList.remove('show'); }, 2000);
+    }
+    return false;
+  };
+  try {
+    if (sessionStorage.getItem("arch-admin-sam-auth") === '1') {
+      if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', reveal);
+      } else { reveal(); }
+    }
+  } catch(e){}
+})();
+</script>
+
+</body>
+</html>
