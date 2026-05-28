@@ -1,6 +1,6 @@
 // Events CRUD (list + create). See also ./events/[id].js for update/delete.
+import { requireAuth } from "../../_lib/auth.js";
 const J = { "Content-Type": "application/json" };
-const ADMIN_PW = "j'aimelesdatas";
 
 function slug(s) {
   return (s || "")
@@ -29,8 +29,8 @@ export async function onRequestGet({ env, request }) {
 
 export async function onRequestPost({ request, env }) {
   try {
+    if (!await requireAuth(request, env)) return new Response(JSON.stringify({ error: "unauthorized" }), { status: 401, headers: J });
     const body = await request.json();
-    if (body.pw !== ADMIN_PW) return new Response(JSON.stringify({ error: "unauthorized" }), { status: 401, headers: J });
 
     const id = body.id || slug(body.title || "") + "-" + Math.random().toString(36).slice(2, 6);
     const existing = await env.KV_EVENTS.get("event:" + id);

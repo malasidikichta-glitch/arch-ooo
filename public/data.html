@@ -129,19 +129,8 @@ footer.data-foot{padding:2rem 2.5rem;border-top:1px solid var(--border);text-ali
 </head>
 <body>
 
-<!-- gate -->
-<div id="gate">
-  <div class="gate-sub">— private</div>
-  <div class="gate-title">arch / data</div>
-  <form class="gate-form" onsubmit="return gateCheck(event)">
-    <input type="password" id="gate-pw" class="gate-input" placeholder="password" autocomplete="off" required>
-    <button class="gate-btn" type="submit">enter</button>
-  </form>
-  <div class="gate-err" id="gate-err">access denied</div>
-</div>
-
-<!-- content -->
-<div id="content">
+<!-- auth gérée côté serveur via middleware. -->
+<div id="content" style="display:block">
 
 <div class="topbar">
   <a href="/data" class="topbar-brand">arch / data</a>
@@ -375,26 +364,12 @@ footer.data-foot{padding:2rem 2.5rem;border-top:1px solid var(--border);text-ali
 </div>
 
 <script>
-// ---- gate ----
-function gateCheck(ev){
-  ev.preventDefault();
-  var pw=document.getElementById('gate-pw').value.trim();
-  if(pw==="j'aimelesdatas"){
-    sessionStorage.setItem('arch-data-auth','1');
-    show();
-  }else{
-    var e=document.getElementById('gate-err');
-    e.classList.add('show');
-    setTimeout(function(){e.classList.remove('show')},2000);
-  }
-  return false;
-}
+// auth gérée par le middleware. on charge directement.
 function show(){
-  document.getElementById('gate').classList.add('hidden');
   document.getElementById('content').classList.add('visible');
   loadAll();
 }
-if(sessionStorage.getItem('arch-data-auth')==='1') show();
+document.addEventListener('DOMContentLoaded', show);
 
 // ---- helpers ----
 function fmtEur(cents){return (cents/100).toFixed(0)+' €';}
@@ -480,7 +455,7 @@ function renderReleases(){
       var scInp  = grid.querySelector('input[data-artist="'+artist+'"][data-role="sc"]');
       var sgInp  = grid.querySelector('input[data-artist="'+artist+'"][data-role="sg"]');
       var status = grid.querySelector('[data-status-artist="'+artist+'"]');
-      var payload = { pw: "j'aimelesdatas", artist,
+      var payload = { artist,
         url: urlInp ? urlInp.value.trim() : undefined,
         socials: { instagram: igInp?.value.trim(), tiktok: ttInp?.value.trim(), soundcloud: scInp?.value.trim(), shotgun: sgInp?.value.trim() } };
       btn.disabled = true; btn.textContent = '...'; status.textContent = '';
@@ -567,7 +542,6 @@ function closeEditor(){ document.getElementById('event-editor').style.display='n
 
 async function saveEvent(){
   var payload = {
-    pw: "j'aimelesdatas",
     title: document.getElementById('ev-title').value.trim(),
     date: document.getElementById('ev-date').value ? new Date(document.getElementById('ev-date').value).toISOString() : '',
     city: document.getElementById('ev-city').value.trim(),
@@ -595,8 +569,7 @@ async function deleteEvent(id){
   try {
     await fetch('/api/v2/events/'+id, {
       method: 'DELETE',
-      headers: {'Content-Type':'application/json'},
-      body: JSON.stringify({ pw: "j'aimelesdatas" })
+      headers: {'Content-Type':'application/json'}
     });
     await loadEvents();
     renderEvents();
@@ -611,7 +584,7 @@ document.getElementById('btn-sync-shotgun')?.addEventListener('click', async fun
   var status = document.getElementById('sync-status');
   btn.disabled = true; btn.textContent = 'syncing…'; status.textContent = '';
   try {
-    var res = await fetch('/api/v2/sync-shotgun?pw=' + encodeURIComponent("j'aimelesdatas"));
+    var res = await fetch('/api/v2/sync-shotgun');
     var d = await res.json();
     if(d.ok){
       status.textContent = '+'+d.created+' new, '+d.updated+' updated';

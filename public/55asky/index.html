@@ -834,42 +834,9 @@ body.gate-locked { overflow: hidden; height: 100vh; }
 .gate-error.show { opacity: 1; }
 </style>
 </head>
-<body class="gate-locked">
+<body>
 
-<div id="gate">
-  <div class="gate-sub">— confidentiel</div>
-  <div class="gate-title">arch × 55asky</div>
-  <form class="gate-form" onsubmit="return gateCheck(event)">
-    <input class="gate-input" type="text" id="gate-user" placeholder="identifiant" autocomplete="off" autocapitalize="off" spellcheck="false" required>
-    <input class="gate-input" type="password" id="gate-pw" placeholder="mot de passe" autocomplete="off" required>
-    <button class="gate-btn" type="submit">entrer</button>
-  </form>
-  <div class="gate-error" id="gate-error">accès refusé</div>
-</div>
-
-<script>
-function gateCheck(ev) {
-  ev.preventDefault();
-  var u = document.getElementById('gate-user').value.trim().toLowerCase();
-  var p = document.getElementById('gate-pw').value;
-  if (u === '55asky' && p === 'arch_balobi') {
-    sessionStorage.setItem('arch-55asky-auth', '1');
-    revealContent();
-  } else {
-    var e = document.getElementById('gate-error');
-    e.classList.add('show');
-    setTimeout(function(){ e.classList.remove('show'); }, 2000);
-  }
-  return false;
-}
-function revealContent() {
-  document.getElementById('gate').classList.add('hidden');
-  document.body.classList.remove('gate-locked');
-}
-if (sessionStorage.getItem('arch-55asky-auth') === '1') {
-  document.addEventListener('DOMContentLoaded', revealContent);
-}
-</script>
+<!-- auth gérée côté serveur via middleware. -->
 
 <div class="doc">
 

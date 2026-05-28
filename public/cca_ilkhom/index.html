@@ -130,19 +130,11 @@
   #content.unlocked { display: block; }
 </style>
 </head>
-<body class="gate-locked">
+<body>
 
-<div id="gate">
-  <div class="gate-sub">— privé</div>
-  <div class="gate-title">récap avances ilkhom</div>
-  <form class="gate-form" onsubmit="return gateCheck(event)">
-    <input type="password" class="gate-input" id="gate-pw" placeholder="password" autocomplete="off" required>
-    <button class="gate-btn" type="submit">entrer</button>
-  </form>
-  <div class="gate-err" id="gate-err">accès refusé</div>
-</div>
+<!-- auth gérée côté serveur via middleware. la page n'est servie qu'aux sessions valides. -->
 
-<div id="content">
+<div id="content" class="unlocked">
 
 <div class="header">
   <h1>récap avances ilkhom</h1>
@@ -338,36 +330,8 @@
 </div>
 
 <script>
-function gateCheck(ev){
-  ev.preventDefault();
-  var pw = document.getElementById('gate-pw').value;
-  if (pw === 'ilkhom_arch') {
-    sessionStorage.setItem('arch-cca-ilkhom-auth', '1');
-    reveal();
-  } else {
-    var e = document.getElementById('gate-err');
-    e.classList.add('show');
-    setTimeout(function(){ e.classList.remove('show'); }, 2000);
-  }
-  return false;
-}
-function reveal(){
-  document.getElementById('gate').classList.add('hidden');
-  document.getElementById('content').classList.add('unlocked');
-  document.body.classList.remove('gate-locked');
-}
-// SSO via /label (localStorage partagé) ou session legacy
-function hasLabelSession(){
-  try {
-    var raw = localStorage.getItem('arch-label-auth');
-    if (!raw) return false;
-    var s = JSON.parse(raw);
-    return !!(s && s.id);
-  } catch(e){ return false; }
-}
-if (hasLabelSession() || sessionStorage.getItem('arch-cca-ilkhom-auth') === '1') {
-  document.addEventListener('DOMContentLoaded', reveal);
-}
+// auth gérée par le middleware Cloudflare (cookie signé HMAC).
+// si la page est rendue, c'est que la session est valide.
 </script>
 
 </body>

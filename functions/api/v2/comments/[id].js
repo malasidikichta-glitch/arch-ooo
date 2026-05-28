@@ -1,11 +1,10 @@
-// Admin: soft-delete a comment by id. Requires admin password.
+// Admin: soft-delete a comment by id. Requires a /label session.
+import { requireAuth } from "../../../_lib/auth.js";
 const J = { "Content-Type": "application/json" };
-const ADMIN_PW = "j'aimelesdatas";
 
 export async function onRequestDelete({ request, params, env }) {
   try {
-    const body = await request.json().catch(() => ({}));
-    if (body.pw !== ADMIN_PW) {
+    if (!await requireAuth(request, env)) {
       return new Response(JSON.stringify({ error: "unauthorized" }), { status: 401, headers: J });
     }
     // find by scanning (id is inside the value, but we encoded ts in the key for sort order)

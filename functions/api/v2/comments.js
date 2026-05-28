@@ -4,7 +4,6 @@
 // DELETE /api/v2/comments/:id         → admin (uses /api/v2/comments/[id].js)
 const J = { "Content-Type": "application/json" };
 
-const ADMIN_PW = "j'aimelesdatas";
 const MAX_NAME = 40;
 const MAX_MSG  = 2000;
 

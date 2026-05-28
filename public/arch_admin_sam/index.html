@@ -415,19 +415,11 @@ body.gate-locked { overflow: hidden; height: 100vh; padding: 0 !important; }
 
 </style>
 </head>
-<body class="gate-locked">
+<body>
 
-<div id="sam-gate">
-  <div class="gate-sub">— privé</div>
-  <div class="gate-title">arch admin · sam</div>
-  <form class="gate-form" onsubmit="return samGateCheck(event)">
-    <input type="password" class="gate-input" id="sam-gate-pw" placeholder="password" autocomplete="off" required>
-    <button class="gate-btn" type="submit">entrer</button>
-  </form>
-  <div class="gate-err" id="sam-gate-err">accès refusé</div>
-</div>
+<!-- auth gérée côté serveur via middleware. -->
 
-<div id="sam-content">
+<div id="sam-content" class="unlocked">
 
 <nav class="tabs" role="tablist" aria-label="artistes">
   <button class="tab" role="tab" aria-selected="true" aria-controls="page-xo" data-target="page-xo">
@@ -841,45 +833,7 @@ body.gate-locked { overflow: hidden; height: 100vh; padding: 0 !important; }
 
 </div>
 
-<script>
-(function(){
-  function reveal(){
-    var g = document.getElementById('sam-gate');
-    if (g) g.classList.add('hidden');
-    var c = document.getElementById('sam-content');
-    if (c) c.classList.add('unlocked');
-    document.body.classList.remove('gate-locked');
-  }
-  window.samGateCheck = function(ev){
-    ev.preventDefault();
-    var pw = document.getElementById('sam-gate-pw').value;
-    if (pw === "sam_arch") {
-      try { sessionStorage.setItem("arch-admin-sam-auth", '1'); } catch(e){}
-      reveal();
-    } else {
-      var e = document.getElementById('sam-gate-err');
-      e.classList.add('show');
-      setTimeout(function(){ e.classList.remove('show'); }, 2000);
-    }
-    return false;
-  };
-  function hasLabelSession(){
-    try {
-      var raw = localStorage.getItem('arch-label-auth');
-      if (!raw) return false;
-      var s = JSON.parse(raw);
-      return !!(s && s.id);
-    } catch(e){ return false; }
-  }
-  try {
-    if (hasLabelSession() || sessionStorage.getItem("arch-admin-sam-auth") === '1') {
-      if (document.readyState === 'loading') {
-        document.addEventListener('DOMContentLoaded', reveal);
-      } else { reveal(); }
-    }
-  } catch(e){}
-})();
-</script>
+<!-- auth gérée par le middleware Cloudflare (cookie signé HMAC). -->
 
 </body>
 </html>

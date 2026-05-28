@@ -36,14 +36,14 @@ nav{display:flex;align-items:center;justify-content:space-between;padding:0 2.5r
 <nav><a href="/" class="nav-logo">arch</a><div class="nav-links"><a href="/plugins">plugins</a></div></nav>
 <div class="page">
   <div class="page-header"><h1>arch audio — download stats</h1></div>
-  <div id="gate-stats"><form onsubmit="return checkStatsPass()" style="display:flex;gap:0"><input type="password" id="stats-pw" placeholder="password"><button type="submit">ok</button></form></div>
-  <div id="stats-content" style="display:none">
+  <!-- auth gérée côté serveur via middleware. -->
+  <div id="stats-content">
     <div id="loading" class="loading">chargement</div>
     <table id="table" class="stats-table" style="display:none"><thead><tr><th>plugin</th><th style="text-align:right">downloads</th></tr></thead><tbody id="tbody"></tbody></table>
   </div>
 </div>
 <script>
-function checkStatsPass(){var pw=document.getElementById('stats-pw').value.toLowerCase().trim();if(pw==='jaimelesstats'){document.getElementById('gate-stats').style.display='none';document.getElementById('stats-content').style.display='block';loadStats()}return false}
+document.addEventListener('DOMContentLoaded', loadStats);
 async function loadStats(){try{var res=await fetch("/api/track-download");var data=await res.json();var tbody=document.getElementById("tbody");var total=0;var sorted=Object.entries(data).sort(function(a,b){return b[1]-a[1]});sorted.forEach(function(item){var tr=document.createElement("tr");tr.innerHTML='<td class="name">'+item[0]+'</td><td class="count">'+item[1]+'</td>';tbody.appendChild(tr);total+=item[1]});var tr=document.createElement("tr");tr.className="total";tr.innerHTML='<td class="name">total</td><td class="count">'+total+'</td>';tbody.appendChild(tr);document.getElementById("loading").style.display="none";document.getElementById("table").style.display="table"}catch(e){document.getElementById("loading").textContent="erreur de chargement"}}
 </script>
 </body>

@@ -1,7 +1,7 @@
 // GET  /api/v2/releases → { xo: {artist, kind, id, url, title, cover, release_date}, duno: {...} }
-// POST /api/v2/releases { pw, artist: "xo"|"duno", url } → admin update (pulls oEmbed for title/cover)
+// POST /api/v2/releases { artist: "xo"|"duno", url } → admin update (requires /label session)
+import { requireAuth } from "../../_lib/auth.js";
 const J = { "Content-Type": "application/json" };
-const ADMIN_PW = "j'aimelesdatas";
 
 const ARTISTS = {
   xo:    { id: "0ZWPKOD6JKB2TGruY79QzP", name: "xo",    has_release: true  },
@@ -84,8 +84,8 @@ export async function onRequestGet({ env }) {
 
 export async function onRequestPost({ request, env }) {
   try {
+    if (!await requireAuth(request, env)) return new Response(JSON.stringify({ error: "unauthorized" }), { status: 401, headers: J });
     const body = await request.json();
-    if (body.pw !== ADMIN_PW) return new Response(JSON.stringify({ error: "unauthorized" }), { status: 401, headers: J });
     const { artist, url, socials } = body;
     if (!ARTISTS[artist]) return new Response(JSON.stringify({ error: "unknown artist" }), { status: 400, headers: J });
 

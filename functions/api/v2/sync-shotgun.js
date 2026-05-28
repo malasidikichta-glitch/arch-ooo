@@ -1,12 +1,12 @@
 // Sync Shotgun events (arch-inc venue) into KV_EVENTS.
-// Call with ?pw=<admin> to trigger. Scrapes via facebookexternalhit UA which bypasses Vercel bot-check.
+// Requires a /label session. Scrapes via facebookexternalhit UA which bypasses Vercel bot-check.
 //
 // Strategy:
 // 1. Fetch venue page + DDG search for past events → collect all event URLs
 // 2. For each URL, fetch with facebookbot UA → parse JSON-LD Event + OG meta
 // 3. Upsert into KV_EVENTS with id = slug
+import { requireAuth } from "../../_lib/auth.js";
 const J = { "Content-Type": "application/json" };
-const ADMIN_PW = "j'aimelesdatas";
 const UA = "facebookexternalhit/1.1 (+http://www.facebook.com/externalhit_uatext.php)";
 
 const VENUE_URL = "https://shotgun.live/fr/venues/arch-inc";
@@ -164,9 +164,8 @@ function isArchEvent(html) {
 
 export async function onRequestGet({ request, env }) {
   const url = new URL(request.url);
-  const pw = url.searchParams.get("pw");
   const dry = url.searchParams.get("dry") === "1";
-  if (pw !== ADMIN_PW) return new Response(JSON.stringify({ error: "unauthorized" }), { status: 401, headers: J });
+  if (!await requireAuth(request, env)) return new Response(JSON.stringify({ error: "unauthorized" }), { status: 401, headers: J });
 
   const urls = (await collectEventUrls()).filter(u => {
     const slug = slugFromUrl(u);

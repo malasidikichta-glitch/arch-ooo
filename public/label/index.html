@@ -247,75 +247,79 @@
 
 </div>
 
-<!-- ========== AUTH ========== -->
+<!-- ========== AUTH (server-side) ========== -->
 <script>
-/* ───────────────────────────────────────────
-   COMPTES — éditer ici pour ajouter / changer
-   placeholders à remplacer dès que possible.
-   ─────────────────────────────────────────── */
-var ACCOUNTS = {
-  toumai:  { pw: 'arch-toumai-2026',  role: 'actionnaire / direction',  display: 'toumaï' },
-  sam:     { pw: 'arch-sam-2026',     role: 'actionnaire',              display: 'sam' },
-  ilkhom:  { pw: 'arch-ilkhom-2026',  role: 'actionnaire',              display: 'ilkhom' }
-};
-// localStorage (pas sessionStorage) : partagé entre toutes les pages arch.ooo,
-// pour que /cca_ilkhom, /arch_admin_sam, etc. soient déverrouillés en même temps.
-var SESSION_KEY = 'arch-label-auth';
+/* Pas de mots de passe dans ce fichier.
+   La vérification est faite côté serveur via /api/v2/auth/login
+   et un cookie de session signé HMAC. */
 
-function gateCheck(ev){
+function reveal(meta){
+  document.getElementById('who').textContent = meta.display || meta.id;
+  document.getElementById('role').textContent = meta.role || '—';
+  document.getElementById('hello-name').textContent = meta.display || meta.id;
+  document.getElementById('gate').classList.add('hidden');
+  document.getElementById('content').classList.add('unlocked');
+  document.body.classList.remove('gate-locked');
+
+  // Si /label?from=... : on rebondit vers la page demandée après login
+  var params = new URLSearchParams(location.search);
+  var from = params.get('from');
+  if (from && /^\/[a-zA-Z0-9_\-\/]+$/.test(from)) {
+    // évite la boucle si from pointe vers /label
+    if (!from.startsWith('/label')) {
+      setTimeout(function(){ location.href = from; }, 200);
+    }
+  }
+}
+
+async function gateCheck(ev){
   ev.preventDefault();
   var id = (document.getElementById('gate-id').value || '').trim().toLowerCase();
   var pw = document.getElementById('gate-pw').value;
-  var acc = ACCOUNTS[id];
-  if (acc && acc.pw === pw) {
-    try { localStorage.setItem(SESSION_KEY, JSON.stringify({ id: id, ts: Date.now() })); } catch(e){}
-    reveal(id);
-  } else {
-    var e = document.getElementById('gate-err');
-    e.classList.add('show');
-    setTimeout(function(){ e.classList.remove('show'); }, 2200);
+  var err = document.getElementById('gate-err');
+  err.classList.remove('show');
+  try {
+    var res = await fetch('/api/v2/auth/login', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      credentials: 'same-origin',
+      body: JSON.stringify({ id: id, password: pw })
+    });
+    if (res.ok) {
+      var data = await res.json();
+      reveal({ id: data.id, display: data.display, role: data.role });
+    } else {
+      err.textContent = 'identifiants invalides';
+      err.classList.add('show');
+      setTimeout(function(){ err.classList.remove('show'); }, 2200);
+    }
+  } catch (e) {
+    err.textContent = 'erreur réseau';
+    err.classList.add('show');
   }
   return false;
 }
 
-function reveal(id){
-  var acc = ACCOUNTS[id];
-  if (!acc) return;
-  document.getElementById('who').textContent = acc.display;
-  document.getElementById('role').textContent = acc.role;
-  document.getElementById('hello-name').textContent = acc.display;
-  document.getElementById('gate').classList.add('hidden');
-  document.getElementById('content').classList.add('unlocked');
-  document.body.classList.remove('gate-locked');
-}
-
-function logout(){
-  try { localStorage.removeItem(SESSION_KEY); } catch(e){}
-  // legacy per-page session keys (au cas où)
-  try { sessionStorage.removeItem('arch-cca-ilkhom-auth'); } catch(e){}
-  try { sessionStorage.removeItem('arch-admin-sam-auth'); } catch(e){}
+async function logout(){
+  try { await fetch('/api/v2/auth/logout', { method: 'POST', credentials: 'same-origin' }); } catch(e){}
+  // legacy client-side session keys (au cas où)
+  try { localStorage.removeItem('arch-label-auth'); } catch(e){}
+  try { sessionStorage.clear(); } catch(e){}
   location.reload();
 }
 
-(function(){
-  // migration : si une session sessionStorage existait, on la promeut en localStorage
+(async function(){
   try {
-    var legacy = sessionStorage.getItem(SESSION_KEY);
-    if (legacy && !localStorage.getItem(SESSION_KEY)) {
-      localStorage.setItem(SESSION_KEY, legacy);
-      sessionStorage.removeItem(SESSION_KEY);
+    var res = await fetch('/api/v2/auth/me', { credentials: 'same-origin' });
+    if (res.ok) {
+      var data = await res.json();
+      if (data.authenticated) {
+        if (document.readyState === 'loading') {
+          document.addEventListener('DOMContentLoaded', function(){ reveal(data); });
+        } else { reveal(data); }
+      }
     }
-  } catch(e){}
-  try {
-    var raw = localStorage.getItem(SESSION_KEY);
-    if (!raw) return;
-    var s = JSON.parse(raw);
-    if (s && s.id && ACCOUNTS[s.id]) {
-      if (document.readyState === 'loading') {
-        document.addEventListener('DOMContentLoaded', function(){ reveal(s.id); });
-      } else { reveal(s.id); }
-    }
-  } catch(e){}
+  } catch (e) { /* stay on login */ }
 })();
 </script>
 

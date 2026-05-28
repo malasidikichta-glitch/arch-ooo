@@ -1,6 +1,6 @@
-// Single event: GET / PUT / DELETE. PUT and DELETE require admin password.
+// Single event: GET / PUT / DELETE. PUT and DELETE require a /label session.
+import { requireAuth } from "../../../_lib/auth.js";
 const J = { "Content-Type": "application/json" };
-const ADMIN_PW = "j'aimelesdatas";
 
 export async function onRequestGet({ params, env }) {
   const raw = await env.KV_EVENTS.get("event:" + params.id);
@@ -10,8 +10,8 @@ export async function onRequestGet({ params, env }) {
 
 export async function onRequestPut({ request, params, env }) {
   try {
+    if (!await requireAuth(request, env)) return new Response(JSON.stringify({ error: "unauthorized" }), { status: 401, headers: J });
     const body = await request.json();
-    if (body.pw !== ADMIN_PW) return new Response(JSON.stringify({ error: "unauthorized" }), { status: 401, headers: J });
 
     const key = "event:" + params.id;
     const raw = await env.KV_EVENTS.get(key);
@@ -34,8 +34,7 @@ export async function onRequestPut({ request, params, env }) {
 
 export async function onRequestDelete({ request, params, env }) {
   try {
-    const body = await request.json().catch(() => ({}));
-    if (body.pw !== ADMIN_PW) return new Response(JSON.stringify({ error: "unauthorized" }), { status: 401, headers: J });
+    if (!await requireAuth(request, env)) return new Response(JSON.stringify({ error: "unauthorized" }), { status: 401, headers: J });
     await env.KV_EVENTS.delete("event:" + params.id);
     return new Response(JSON.stringify({ ok: true }), { headers: J });
   } catch (err) {
