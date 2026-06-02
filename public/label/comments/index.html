@@ -1,0 +1,429 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="robots" content="noindex, nofollow, noarchive, nosnippet">
+<title>arch · label · commentaires</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Geist+Mono:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0f0f0f;
+    --fg: #ededed;
+    --dim: #8a8a8a;
+    --dimmer: #555;
+    --accent: #e8c547;
+    --ok: #7bd88f;
+    --warn: #ff9f43;
+    --info: #5eb3ff;
+    --priv: #c8a3ff;
+    --err: #ff5b4a;
+    --border: #1f1f1f;
+    --card: #161616;
+    --card-h: #1c1c1c;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body {
+    background: var(--bg); color: var(--fg);
+    font-family: 'Geist Mono', 'JetBrains Mono', 'SF Mono', ui-monospace, monospace;
+    font-size: 13px; line-height: 1.55;
+    -webkit-font-smoothing: antialiased;
+  }
+  a { color: inherit; text-decoration: none; }
+  #content { max-width: 1100px; margin: 0 auto; padding: 32px 28px 80px; }
+
+  header.bar {
+    display: flex; justify-content: space-between; align-items: baseline;
+    border-bottom: 1px solid var(--border);
+    padding-bottom: 18px; margin-bottom: 28px; gap: 16px; flex-wrap: wrap;
+  }
+  .brand { font-size: 22px; font-weight: 500; letter-spacing: -0.02em; text-transform: lowercase; }
+  .brand a { color: var(--dim); }
+  .brand a:hover { color: var(--fg); }
+  .brand .sep { color: var(--dimmer); margin: 0 8px; }
+  .toolbar { display: flex; gap: 14px; align-items: center; font-size: 11px; color: var(--dim); letter-spacing: 0.04em; }
+  .toolbar a { color: var(--dim); }
+  .toolbar a:hover { color: var(--fg); }
+
+  .super-title {
+    font-size: 10px; text-transform: uppercase; letter-spacing: 0.2em; color: var(--dim);
+    margin: 30px 0 14px; padding-bottom: 6px; border-bottom: 1px dashed var(--border);
+    display: flex; align-items: baseline; justify-content: space-between; gap: 12px;
+  }
+  .super-title .right { color: var(--dimmer); font-size: 9px; letter-spacing: 0.15em; }
+
+  .filters {
+    display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 18px;
+  }
+  .filter-input, .filter-select {
+    background: transparent; border: 1px solid var(--border); color: var(--fg);
+    font-family: inherit; font-size: 11px; padding: 7px 10px; border-radius: 4px;
+    outline: none; letter-spacing: 0.04em;
+  }
+  .filter-input:focus, .filter-select:focus { border-color: var(--dim); }
+  .filter-input::placeholder { color: var(--dimmer); }
+  .filter-input { min-width: 220px; }
+
+  .stats {
+    display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    gap: 10px; margin-bottom: 24px;
+  }
+  .stat {
+    background: var(--card); border: 1px solid var(--border); border-radius: 6px;
+    padding: 14px 16px;
+  }
+  .stat .lbl { font-size: 9px; color: var(--dim); letter-spacing: 0.18em; text-transform: uppercase; margin-bottom: 4px; }
+  .stat .val { font-size: 22px; font-weight: 500; color: var(--fg); font-variant-numeric: tabular-nums; }
+  .stat .desc { font-size: 10px; color: var(--dim); margin-top: 4px; letter-spacing: 0.04em; }
+
+  .comment {
+    background: var(--card); border: 1px solid var(--border); border-radius: 6px;
+    margin-bottom: 8px; padding: 14px 16px;
+    position: relative;
+    transition: border-color 0.15s;
+  }
+  .comment:hover { border-color: var(--dim); }
+  .comment.reply { margin-left: 22px; border-left: 2px solid var(--dimmer); }
+  .comment.deleted { opacity: 0.4; }
+
+  .comm-head {
+    display: flex; justify-content: space-between; align-items: baseline; flex-wrap: wrap; gap: 8px;
+    margin-bottom: 8px;
+  }
+  .comm-name {
+    font-size: 13px; color: var(--accent); font-weight: 500;
+    cursor: pointer;
+  }
+  .comm-name.flag {
+    color: var(--err);
+  }
+  .comm-thread {
+    font-size: 9px; color: var(--dim); text-transform: uppercase; letter-spacing: 0.15em;
+    padding: 2px 6px; background: rgba(255,255,255,0.03); border-radius: 3px;
+  }
+  .comm-meta-line {
+    display: flex; gap: 10px; flex-wrap: wrap; align-items: center;
+    font-size: 10px; color: var(--dim); letter-spacing: 0.04em;
+    margin-bottom: 6px;
+  }
+  .comm-meta-line .pill {
+    background: rgba(255,255,255,0.03); padding: 2px 7px; border-radius: 3px; font-size: 10px;
+    cursor: pointer; color: var(--dim);
+  }
+  .comm-meta-line .pill:hover { color: var(--fg); background: rgba(255,255,255,0.06); }
+  .comm-meta-line .pill.ip { color: var(--info); }
+  .comm-meta-line .pill.country { color: var(--warn); }
+  .comm-meta-line .pill.asn { color: var(--priv); }
+  .comm-meta-line .pill.noip { color: var(--dimmer); font-style: italic; }
+  .comm-date { font-size: 10px; color: var(--dimmer); letter-spacing: 0.06em; }
+
+  .comm-msg {
+    font-size: 12px; color: var(--fg); white-space: pre-wrap; word-wrap: break-word;
+    line-height: 1.7;
+    padding: 8px 0;
+    border-top: 1px dashed var(--border);
+    margin-top: 4px;
+  }
+
+  .comm-details {
+    display: none;
+    margin-top: 12px; padding: 12px 14px;
+    background: rgba(0,0,0,0.25);
+    border: 1px solid var(--border); border-radius: 4px;
+    font-size: 11px; color: var(--dim);
+  }
+  .comment.open .comm-details { display: block; }
+  .comm-details .row {
+    display: grid; grid-template-columns: 110px 1fr;
+    gap: 14px; padding: 4px 0;
+    border-bottom: 1px dashed rgba(255,255,255,0.03);
+  }
+  .comm-details .row:last-child { border-bottom: 0; }
+  .comm-details .k { color: var(--dim); font-size: 10px; letter-spacing: 0.08em; text-transform: uppercase; }
+  .comm-details .v { color: var(--fg); font-size: 11px; word-wrap: break-word; overflow-wrap: anywhere; }
+  .comm-details .v.empty { color: var(--dimmer); font-style: italic; }
+  .comm-details .v.ip { color: var(--info); }
+  .comm-details .v.flag { color: var(--err); }
+  .comm-details .actions { margin-top: 10px; padding-top: 10px; border-top: 1px solid var(--border); display: flex; gap: 10px; flex-wrap: wrap; }
+  .comm-details .actions a, .comm-details .actions button {
+    background: transparent; border: 1px solid var(--border); color: var(--dim);
+    font-family: inherit; font-size: 10px; padding: 5px 10px; border-radius: 3px;
+    cursor: pointer; text-transform: lowercase; letter-spacing: 0.08em;
+  }
+  .comm-details .actions a:hover, .comm-details .actions button:hover { border-color: var(--dim); color: var(--fg); }
+  .comm-details .actions .del { color: var(--err); }
+  .comm-details .actions .del:hover { background: rgba(255,91,74,0.08); border-color: var(--err); color: var(--err); }
+
+  .empty {
+    padding: 60px 20px; text-align: center; color: var(--dim); font-size: 12px;
+  }
+  .loading { padding: 24px; color: var(--dim); font-size: 12px; letter-spacing: 0.08em; }
+
+  @media (max-width: 640px) {
+    #content { padding: 20px 14px 60px; }
+    .comm-meta-line { font-size: 9px; }
+    .comm-details .row { grid-template-columns: 90px 1fr; gap: 8px; }
+  }
+</style>
+</head>
+<body>
+
+<div id="content">
+
+<header class="bar">
+  <div class="brand">
+    <a href="/label">label</a><span class="sep">/</span>commentaires
+  </div>
+  <div class="toolbar">
+    <a href="/label">← retour</a>
+    <a href="#" onclick="loadAll(true);return false">↻ refresh</a>
+  </div>
+</header>
+
+<div id="stats" class="stats"></div>
+
+<div class="super-title">
+  <span>filtres</span>
+  <span class="right" id="filter-status">—</span>
+</div>
+<div class="filters">
+  <input class="filter-input" id="f-search" placeholder="rechercher (nom, message, IP, ville, ASN…)" autocomplete="off">
+  <select class="filter-select" id="f-thread">
+    <option value="">tous threads</option>
+  </select>
+  <select class="filter-select" id="f-deleted">
+    <option value="visible">visibles</option>
+    <option value="all">tous (+ supprimés)</option>
+    <option value="deleted">supprimés seuls</option>
+  </select>
+  <select class="filter-select" id="f-sort">
+    <option value="desc">+ récents en haut</option>
+    <option value="asc">+ anciens en haut</option>
+  </select>
+</div>
+
+<div class="super-title">
+  <span>commentaires</span>
+  <span class="right" id="count-status">—</span>
+</div>
+<div id="list"><div class="loading">chargement…</div></div>
+
+</div>
+
+<script>
+var ALL = [];
+
+async function loadAll(refresh){
+  document.getElementById('list').innerHTML = '<div class="loading">chargement…</div>';
+  try {
+    var res = await fetch('/api/v2/comments?thread=*&admin=1', { credentials: 'same-origin' });
+    if (res.status === 401) { location.href = '/label?from=/label/comments'; return; }
+    var d = await res.json();
+    ALL = d.comments || [];
+    // populate thread dropdown
+    var threads = Array.from(new Set(ALL.map(function(c){ return c.thread; }).filter(Boolean))).sort();
+    var sel = document.getElementById('f-thread');
+    sel.innerHTML = '<option value="">tous threads</option>' + threads.map(function(t){ return '<option value="'+esc(t)+'">'+esc(t)+'</option>'; }).join('');
+    renderStats();
+    render();
+  } catch(e){
+    document.getElementById('list').innerHTML = '<div class="empty">erreur de chargement</div>';
+  }
+}
+
+function esc(s){ return (s||'').replace(/[&<>"']/g, function(m){ return ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]); }); }
+
+function renderStats(){
+  var byThread = {}, byIp = {}, withMeta = 0, deleted = 0;
+  for (var i=0; i<ALL.length; i++){
+    var c = ALL[i];
+    byThread[c.thread] = (byThread[c.thread]||0)+1;
+    if (c._meta && c._meta.ip) { byIp[c._meta.ip] = (byIp[c._meta.ip]||0)+1; withMeta++; }
+    if (c.deleted) deleted++;
+  }
+  var uniqueIps = Object.keys(byIp).length;
+  var html = '';
+  html += '<div class="stat"><div class="lbl">commentaires</div><div class="val">'+ALL.length+'</div><div class="desc">'+deleted+' supprimés</div></div>';
+  html += '<div class="stat"><div class="lbl">avec meta</div><div class="val">'+withMeta+'</div><div class="desc">'+(ALL.length-withMeta)+' historiques sans</div></div>';
+  html += '<div class="stat"><div class="lbl">IPs uniques</div><div class="val">'+uniqueIps+'</div><div class="desc">sur le total trackable</div></div>';
+  html += '<div class="stat"><div class="lbl">threads</div><div class="val">'+Object.keys(byThread).length+'</div><div class="desc">'+Object.keys(byThread).join(', ')+'</div></div>';
+  document.getElementById('stats').innerHTML = html;
+}
+
+function fmtDate(iso){
+  if (!iso) return '—';
+  var d = new Date(iso);
+  return d.toLocaleString('fr-FR', { day:'2-digit', month:'short', year:'2-digit', hour:'2-digit', minute:'2-digit' });
+}
+
+function uaShort(ua){
+  if (!ua) return '';
+  // very rough browser identification
+  if (/Edg\//i.test(ua)) return 'Edge';
+  if (/OPR\//i.test(ua)) return 'Opera';
+  if (/Firefox\//i.test(ua)) return 'Firefox';
+  if (/Chrome\//i.test(ua) && /Mobile/i.test(ua)) return 'Chrome mobile';
+  if (/Chrome\//i.test(ua)) return 'Chrome';
+  if (/Safari\//i.test(ua) && /Mobile/i.test(ua)) return 'Safari mobile';
+  if (/Safari\//i.test(ua)) return 'Safari';
+  return ua.slice(0, 30);
+}
+
+function osShort(ua){
+  if (!ua) return '';
+  if (/iPhone/i.test(ua)) return 'iOS';
+  if (/iPad/i.test(ua)) return 'iPadOS';
+  if (/Android/i.test(ua)) return 'Android';
+  if (/Mac OS X/i.test(ua)) return 'macOS';
+  if (/Windows/i.test(ua)) return 'Windows';
+  if (/Linux/i.test(ua)) return 'Linux';
+  return '';
+}
+
+function commentCard(c, ipCount){
+  var m = c._meta || {};
+  var hasMeta = !!m.ip;
+  var classes = 'comment' + (c.reply_to ? ' reply' : '') + (c.deleted ? ' deleted' : '') + (m.ip && ipCount[m.ip] > 1 ? ' multi' : '');
+  var pills = '';
+  if (hasMeta){
+    pills += '<span class="pill ip" data-filter="'+esc(m.ip)+'" title="filter sur IP">'+esc(m.ip)+(ipCount[m.ip] > 1 ? ' ·×'+ipCount[m.ip] : '')+'</span>';
+    if (m.country) pills += '<span class="pill country" data-filter="'+esc(m.country)+'">'+esc(m.country)+(m.city ? ' · '+esc(m.city) : '')+'</span>';
+    if (m.as_org) pills += '<span class="pill asn" data-filter="'+esc(m.as_org)+'">'+esc(m.as_org)+'</span>';
+    var u = uaShort(m.ua); var o = osShort(m.ua);
+    if (u || o) pills += '<span class="pill">'+esc([u,o].filter(Boolean).join(' · '))+'</span>';
+  } else {
+    pills += '<span class="pill noip">pré-tracking · no meta</span>';
+  }
+  var nameClass = c.name === 'xoxo' ? 'comm-name flag' : 'comm-name';
+  return '<div class="'+classes+'" data-id="'+esc(c.id)+'">' +
+    '<div class="comm-head">' +
+      '<span class="'+nameClass+'" data-name="'+esc(c.name)+'">'+esc(c.name||'anonyme')+'</span>' +
+      '<span class="comm-thread">'+esc(c.thread||'?')+'</span>' +
+      '<span class="comm-date">'+fmtDate(c.date)+(c.deleted?' · supprimé':'')+'</span>' +
+    '</div>' +
+    '<div class="comm-meta-line">'+pills+'</div>' +
+    '<div class="comm-msg">'+esc(c.message||'')+'</div>' +
+    detailsHTML(c) +
+    '</div>';
+}
+
+function detailsHTML(c){
+  var m = c._meta || {};
+  if (!m.ip) {
+    return '<div class="comm-details">' +
+      '<div class="row"><span class="k">id</span><span class="v">'+esc(c.id)+'</span></div>' +
+      '<div class="row"><span class="k">thread</span><span class="v">'+esc(c.thread)+'</span></div>' +
+      '<div class="row"><span class="k">date</span><span class="v">'+esc(c.date)+'</span></div>' +
+      (c.reply_to ? '<div class="row"><span class="k">reply_to</span><span class="v">'+esc(c.reply_to)+'</span></div>' : '') +
+      '<div class="row"><span class="k">meta</span><span class="v empty">indisponible — commentaire pré-tracking</span></div>' +
+      adminActions(c) +
+      '</div>';
+  }
+  function row(k, v, cls){ return '<div class="row"><span class="k">'+k+'</span><span class="v '+(cls||'')+'">'+(v ? esc(v) : '<span class="empty">—</span>')+'</span></div>'; }
+  var geo = [m.city, m.region, m.postal, m.country].filter(Boolean).join(' · ');
+  var coord = m.lat && m.lng ? m.lat+', '+m.lng : '';
+  return '<div class="comm-details">' +
+    row('IP', m.ip, 'ip') +
+    row('country', m.country) +
+    row('geo', geo) +
+    row('coord', coord) +
+    row('timezone', m.tz) +
+    row('ASN', m.asn ? ('AS'+m.asn+' · '+(m.as_org||'')) : '') +
+    row('colo CF', m.colo) +
+    row('user-agent', m.ua) +
+    row('langue', m.lang) +
+    row('referer', m.ref) +
+    row('client hints', [m.sec_ua, m.sec_plat, m.sec_mob==='?1'?'mobile':null].filter(Boolean).join(' / ')) +
+    row('TLS / HTTP', [m.tls, m.http].filter(Boolean).join(' · ')) +
+    row('logged at', m.ts ? new Date(m.ts).toISOString() : '') +
+    row('id', c.id) +
+    (c.reply_to ? row('reply_to', c.reply_to) : '') +
+    adminActions(c) +
+    '</div>';
+}
+
+function adminActions(c){
+  var m = c._meta || {};
+  var actions = '';
+  if (m.ip) {
+    actions += '<a href="https://ipinfo.io/'+encodeURIComponent(m.ip)+'" target="_blank" rel="noopener">ipinfo ↗</a>';
+    actions += '<a href="https://www.shodan.io/host/'+encodeURIComponent(m.ip)+'" target="_blank" rel="noopener">shodan ↗</a>';
+  }
+  if (m.lat && m.lng) {
+    actions += '<a href="https://www.google.com/maps?q='+encodeURIComponent(m.lat+','+m.lng)+'" target="_blank" rel="noopener">maps ↗</a>';
+  }
+  if (!c.deleted) {
+    actions += '<button class="del" onclick="deleteComment(\''+c.id+'\')">supprimer</button>';
+  }
+  return actions ? '<div class="actions">'+actions+'</div>' : '';
+}
+
+async function deleteComment(id){
+  if (!confirm('supprimer ce commentaire ?')) return;
+  try {
+    var res = await fetch('/api/v2/comments/'+encodeURIComponent(id), { method: 'DELETE', credentials: 'same-origin' });
+    if (res.ok) await loadAll(true);
+    else alert('erreur : ' + res.status);
+  } catch(e){ alert('erreur : '+e.message); }
+}
+
+function render(){
+  var q = document.getElementById('f-search').value.toLowerCase().trim();
+  var thread = document.getElementById('f-thread').value;
+  var del = document.getElementById('f-deleted').value;
+  var sort = document.getElementById('f-sort').value;
+  var ipCount = {};
+  for (var i=0;i<ALL.length;i++){ var ip = (ALL[i]._meta||{}).ip; if (ip) ipCount[ip] = (ipCount[ip]||0)+1; }
+
+  var filtered = ALL.filter(function(c){
+    if (thread && c.thread !== thread) return false;
+    if (del === 'visible' && c.deleted) return false;
+    if (del === 'deleted' && !c.deleted) return false;
+    if (!q) return true;
+    var m = c._meta || {};
+    var blob = (c.name + ' ' + c.message + ' ' + (m.ip||'') + ' ' + (m.city||'') + ' ' + (m.country||'') + ' ' + (m.as_org||'') + ' ' + (m.ua||'') + ' ' + (m.lang||'') + ' ' + (m.ref||'')).toLowerCase();
+    return blob.indexOf(q) >= 0;
+  });
+  filtered.sort(function(a,b){ return sort === 'asc' ? (a.date||'').localeCompare(b.date||'') : (b.date||'').localeCompare(a.date||''); });
+
+  document.getElementById('count-status').textContent = filtered.length + ' / ' + ALL.length;
+  document.getElementById('filter-status').textContent = q || thread || del !== 'visible' ? 'actifs' : 'aucun';
+
+  if (!filtered.length) {
+    document.getElementById('list').innerHTML = '<div class="empty">aucun commentaire</div>';
+    return;
+  }
+  document.getElementById('list').innerHTML = filtered.map(function(c){ return commentCard(c, ipCount); }).join('');
+}
+
+document.addEventListener('click', function(ev){
+  var pill = ev.target.closest('.pill[data-filter]');
+  if (pill) {
+    document.getElementById('f-search').value = pill.getAttribute('data-filter');
+    render();
+    return;
+  }
+  var name = ev.target.closest('[data-name]');
+  if (name) {
+    document.getElementById('f-search').value = name.getAttribute('data-name');
+    render();
+    return;
+  }
+  var c = ev.target.closest('.comment');
+  if (c && !ev.target.closest('button, a, .pill, [data-name]')) {
+    c.classList.toggle('open');
+  }
+});
+
+['f-search','f-thread','f-deleted','f-sort'].forEach(function(id){
+  document.getElementById(id).addEventListener('input', render);
+  document.getElementById(id).addEventListener('change', render);
+});
+
+loadAll();
+</script>
+
+</body>
+</html>

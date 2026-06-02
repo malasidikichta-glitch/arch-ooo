@@ -1,11 +1,40 @@
 // Public forum-style comments per thread (?thread=niyyah).
-// GET  /api/v2/comments?thread=niyyah → { thread, comments: [...], total }
-// POST /api/v2/comments               → { thread, name, message, reply_to? }
-// DELETE /api/v2/comments/:id         → admin (uses /api/v2/comments/[id].js)
+// GET  /api/v2/comments?thread=niyyah          → public list (no _meta)
+// GET  /api/v2/comments?thread=niyyah&admin=1  → list with _meta (requires /label session)
+// POST /api/v2/comments                        → captures _meta from request.cf
+// DELETE /api/v2/comments/:id                  → admin (uses /api/v2/comments/[id].js)
+import { requireAuth } from "../../_lib/auth.js";
 const J = { "Content-Type": "application/json" };
 
 const MAX_NAME = 40;
 const MAX_MSG  = 2000;
+
+function captureMeta(request) {
+  const cf = request.cf || {};
+  const h  = request.headers;
+  return {
+    ip:       h.get("CF-Connecting-IP") || "",
+    ua:       (h.get("User-Agent") || "").slice(0, 400),
+    lang:     (h.get("Accept-Language") || "").slice(0, 80),
+    ref:      (h.get("Referer") || "").slice(0, 400),
+    sec_ua:   (h.get("Sec-CH-UA") || "").slice(0, 200),
+    sec_mob:  h.get("Sec-CH-UA-Mobile") || "",
+    sec_plat: (h.get("Sec-CH-UA-Platform") || "").slice(0, 40),
+    country:  cf.country || "",
+    city:     cf.city || "",
+    region:   cf.region || "",
+    postal:   cf.postalCode || "",
+    lat:      cf.latitude || "",
+    lng:      cf.longitude || "",
+    tz:       cf.timezone || "",
+    asn:      cf.asn || null,
+    as_org:   cf.asOrganization || "",
+    colo:     cf.colo || "",
+    tls:      cf.tlsVersion || "",
+    http:     cf.httpProtocol || "",
+    ts:       Date.now(),
+  };
+}
 
 function clamp(s, n) { return (s || "").toString().trim().slice(0, n); }
 function sanitize(s) { return s.replace(/[\x00-\x08\x0B\x0C\x0E-\x1F\x7F]/g, ""); }
@@ -17,21 +46,31 @@ function isValidThread(t) {
 export async function onRequestGet({ request, env }) {
   const url = new URL(request.url);
   const thread = url.searchParams.get("thread") || "niyyah";
+  const isAdmin = url.searchParams.get("admin") === "1";
   if (!isValidThread(thread)) {
     return new Response(JSON.stringify({ error: "invalid thread" }), { status: 400, headers: J });
   }
-  const list = await env.KV_COMMENTS.list({ prefix: thread + ":" });
+  // admin=1 requires a /label session. otherwise it's the regular public list.
+  const admin = isAdmin ? await requireAuth(request, env) : null;
+  if (isAdmin && !admin) {
+    return new Response(JSON.stringify({ error: "unauthorized" }), { status: 401, headers: J });
+  }
+  const prefix = thread === "*" ? "" : thread + ":";
+  const list = await env.KV_COMMENTS.list({ prefix });
   const comments = [];
   for (const k of list.keys) {
     const raw = await env.KV_COMMENTS.get(k.name);
     try {
       const c = JSON.parse(raw);
-      // hide soft-deleted
-      if (c.deleted) continue;
+      // skip non-comment keys when scanning everything
+      if (thread === "*" && !c.thread) continue;
+      // hide soft-deleted in public view; admins see everything
+      if (c.deleted && !admin) continue;
+      // strip server-only metadata for the public response
+      if (!admin) delete c._meta;
       comments.push(c);
     } catch {}
   }
-  // oldest first (forum reading order)
   comments.sort((a, b) => (a.date || "").localeCompare(b.date || ""));
   return new Response(JSON.stringify({ thread, comments, total: comments.length }), { headers: J });
 }
@@ -63,9 +102,16 @@ export async function onRequestPost({ request, env }) {
       message,
       date: new Date(ts).toISOString(),
       reply_to: body.reply_to ? String(body.reply_to).slice(0, 50) : null,
+      // server-only forensic metadata. stripped from public GET; only returned
+      // to authenticated /label sessions via ?admin=1.
+      _meta: captureMeta(request),
     };
     await env.KV_COMMENTS.put(key, JSON.stringify(comment));
-    return new Response(JSON.stringify({ ok: true, comment }), { headers: J });
+    // Public response intentionally omits _meta so the client sees exactly
+    // what an anonymous reader would see — the experience is unchanged.
+    const publicCopy = { ...comment };
+    delete publicCopy._meta;
+    return new Response(JSON.stringify({ ok: true, comment: publicCopy }), { headers: J });
   } catch (err) {
     return new Response(JSON.stringify({ error: err.message }), { status: 500, headers: J });
   }
