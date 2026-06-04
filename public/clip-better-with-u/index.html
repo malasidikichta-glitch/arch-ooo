@@ -134,85 +134,174 @@
     opacity:.7;
   }
 
-  /* ============= HERO ============= */
-  .hero{
-    max-width:740px;
-    margin:0 auto;
-    padding:calc(var(--bar-h) + 80px) 28px 60px;
-    text-align:center;
-  }
-  .cover{
-    width:100%;
-    max-width:440px;
-    margin:0 auto 50px;
-    aspect-ratio:1/1;
-    background:#000;
-    border-radius:2px;
-    overflow:hidden;
-    box-shadow:
-      0 1px 0 rgba(255,255,255,.04) inset,
-      0 30px 80px rgba(0,0,0,.5),
-      0 12px 32px rgba(0,0,0,.4);
+  /* ============= CINEMATIC HERO (full-screen, scroll-driven) ============= */
+  .cinema-hero{
     position:relative;
+    height:100vh;height:100svh;
+    width:100%;
+    overflow:hidden;
   }
-  .cover img{
-    width:100%;height:100%;object-fit:cover;display:block;
-    filter:saturate(1.04) contrast(1.02);
+  .cinema-hero-bg{
+    position:fixed;inset:0;z-index:0;
+    will-change:transform,opacity;
+    pointer-events:none;
   }
-  .ep-info{margin-bottom:48px}
-  .ep-info .ep-tag{
-    font-size:11px;color:var(--accent);letter-spacing:.32em;
-    text-transform:lowercase;margin-bottom:14px;
+  .cinema-hero-bg img{
+    width:100%;height:100%;
+    object-fit:cover;display:block;
+    filter:saturate(1.06) contrast(1.04);
+    animation:ken-burns 32s ease-in-out infinite alternate;
+    will-change:transform;
   }
-  .ep-info h2{
-    font-size:clamp(28px,5.5vw,40px);
-    font-weight:500;letter-spacing:-.025em;line-height:1.05;
-    margin-bottom:14px;
+  @keyframes ken-burns{
+    from{ transform:scale(1.04) translate(0,0); }
+    to  { transform:scale(1.14) translate(-2%,-3%); }
   }
-  .ep-info .ep-meta{
-    font-size:12.5px;color:var(--muted);letter-spacing:.04em;
-    margin-bottom:20px;
+  .cinema-hero-bg::after{
+    content:"";
+    position:absolute;inset:0;
+    background:
+      linear-gradient(180deg,
+        rgba(26,24,22,.35) 0%,
+        rgba(26,24,22,0) 22%,
+        rgba(26,24,22,0) 40%,
+        rgba(26,24,22,.35) 65%,
+        rgba(26,24,22,.85) 85%,
+        var(--bg) 100%);
+    pointer-events:none;
   }
-  .ep-info .ep-meta b{color:var(--ink-2);font-weight:500}
-  .ep-info .ep-listen{
-    display:inline-flex;align-items:center;gap:8px;
-    font-size:12px;color:var(--ink);
-    padding:9px 18px;border:1px solid var(--line);border-radius:99px;
-    letter-spacing:.06em;
-    transition:border-color .2s, background .2s, color .2s;
+  .cinema-hero-content{
+    position:relative;z-index:2;
+    height:100%;
+    max-width:980px;
+    margin:0 auto;
+    padding:0 32px 110px;
+    display:flex;flex-direction:column;justify-content:flex-end;
+    will-change:transform,opacity;
   }
-  .ep-info .ep-listen:hover{border-color:var(--accent);color:var(--accent)}
-  .ep-info .ep-listen .arrow{transition:transform .2s var(--ease)}
-  .ep-info .ep-listen:hover .arrow{transform:translate(2px,-2px)}
+  .cinema-eyebrow{
+    font-size:11px;color:var(--ink-2);
+    letter-spacing:.32em;text-transform:lowercase;
+    margin-bottom:26px;
+    opacity:0;
+    animation:fade-in 1.4s var(--ease) .25s forwards;
+  }
+  .cinema-title{
+    font-size:clamp(58px,12vw,140px);
+    font-weight:600;color:var(--ink);
+    line-height:.92;margin:0 0 28px;
+    opacity:0;
+    text-shadow:0 2px 24px rgba(0,0,0,.55);
+    animation:title-reveal 1.8s var(--ease) .55s forwards;
+  }
+  @keyframes title-reveal{
+    0%  { opacity:0; letter-spacing:.32em; transform:translateY(24px); }
+    100%{ opacity:1; letter-spacing:-.028em; transform:translateY(0); }
+  }
+  .cinema-sub{
+    font-size:13px;color:var(--muted);
+    letter-spacing:.18em;text-transform:lowercase;
+    opacity:0;
+    animation:fade-in 1.2s var(--ease) 1.6s forwards;
+  }
+  @keyframes fade-in{ to{ opacity:1; } }
 
-  .divider{
-    width:40px;height:1px;background:var(--faint);
-    margin:0 auto 48px;
+  .scroll-hint{
+    position:absolute;left:50%;bottom:34px;
+    transform:translateX(-50%);
+    z-index:3;
+    display:flex;flex-direction:column;align-items:center;
+    gap:14px;color:var(--ink-2);
+    font-size:9px;letter-spacing:.32em;text-transform:lowercase;
+    opacity:0;
+    animation:fade-in 1s var(--ease) 2.4s forwards;
+    pointer-events:none;
+    will-change:opacity;
+  }
+  .scroll-dot{
+    width:1px;height:52px;
+    background:linear-gradient(to bottom, rgba(240,235,224,.06), rgba(240,235,224,.5));
+    position:relative;overflow:hidden;
+  }
+  .scroll-dot::after{
+    content:"";position:absolute;left:0;right:0;top:-60%;
+    height:60%;
+    background:linear-gradient(to bottom, transparent, var(--accent));
+    animation:scroll-line 2s ease-in-out infinite;
+  }
+  @keyframes scroll-line{
+    0%  { transform:translateY(0); opacity:0; }
+    30% { opacity:1; }
+    100%{ transform:translateY(220%); opacity:0; }
   }
 
-  .pitch-meta{
+  @media(max-width:520px){
+    .cinema-hero-content{ padding:0 22px 88px; }
+    .scroll-hint{ bottom:24px; }
+  }
+
+  /* ============= HERO PITCH (emerges from the fade) ============= */
+  .hero-pitch{
+    position:relative;z-index:2;
+    background:var(--bg);
+    padding:120px 28px 90px;
+    max-width:780px;margin:0 auto;
+  }
+  .ep-card{
+    display:flex;align-items:center;gap:20px;
+    padding:18px 20px;
+    background:var(--bg-elev);
+    border:1px solid var(--line);
+    border-radius:3px;
+    margin-bottom:60px;
+    flex-wrap:wrap;
+    transition:border-color .25s var(--ease);
+  }
+  .ep-card:hover{ border-color:var(--faint); }
+  .ep-card .ep-thumb{
+    width:64px;height:64px;flex-shrink:0;
+    border-radius:2px;overflow:hidden;background:#000;
+  }
+  .ep-card .ep-thumb img{ width:100%;height:100%;object-fit:cover; }
+  .ep-card .ep-body{ flex:1;min-width:160px; }
+  .ep-card .ep-title{
+    font-size:14px;font-weight:500;color:var(--ink);
+    margin-bottom:5px;letter-spacing:-.005em;
+  }
+  .ep-card .ep-meta{
+    font-size:11.5px;color:var(--muted);letter-spacing:.04em;
+  }
+  .ep-card .ep-meta b{ color:var(--ink-2);font-weight:500; }
+  .ep-card .ep-listen{
+    display:inline-flex;align-items:center;gap:7px;
+    font-size:11px;color:var(--ink);
+    padding:8px 16px;border:1px solid var(--line);
+    border-radius:99px;letter-spacing:.06em;
+    transition:border-color .2s, color .2s;
+    flex-shrink:0;
+  }
+  .ep-card .ep-listen:hover{ border-color:var(--accent);color:var(--accent); }
+  .ep-card .ep-listen .arrow{ transition:transform .2s var(--ease); }
+  .ep-card .ep-listen:hover .arrow{ transform:translate(2px,-2px); }
+
+  .hero-pitch .pitch-meta{
     font-size:11px;color:var(--accent);letter-spacing:.32em;
     text-transform:lowercase;margin-bottom:18px;
   }
-  .pitch-title{
-    font-size:clamp(38px,7.4vw,68px);
-    font-weight:600;letter-spacing:-.028em;line-height:.98;
-    margin-bottom:18px;
-  }
-  .pitch-sub{
+  .hero-pitch .pitch-sub{
     font-size:12.5px;color:var(--muted);letter-spacing:.06em;
     margin-bottom:48px;
   }
-  .logline{
-    font-size:17px;line-height:1.75;color:var(--ink-2);
-    max-width:58ch;margin:0 auto;text-align:left;
-    font-weight:300;
+  .hero-pitch .logline{
+    font-size:18px;line-height:1.75;color:var(--ink-2);
+    max-width:58ch;font-weight:300;
   }
-  .logline b{color:var(--accent);font-weight:500}
-  .logline .c{color:var(--ink);font-weight:500;border-bottom:1px dotted var(--faint)}
+  .hero-pitch .logline b{ color:var(--accent);font-weight:500; }
+  .hero-pitch .logline .c{ color:var(--ink);font-weight:500;border-bottom:1px dotted var(--faint); }
+
   @media(max-width:520px){
-    .hero{padding:calc(var(--bar-h) + 50px) 22px 50px}
-    .cover{margin-bottom:38px}
+    .hero-pitch{ padding:90px 22px 70px; }
+    .hero-pitch .logline{ font-size:16px; }
   }
 
   /* ============= SECTION NAV ============= */
@@ -681,24 +770,35 @@
 
 <audio id="audio" src="better-with-u.mp3" preload="metadata"></audio>
 
-<!-- HERO -->
-<div class="hero">
-  <div class="cover">
+<!-- CINEMATIC HERO -->
+<section class="cinema-hero">
+  <div class="cinema-hero-bg" id="cinema-hero-bg">
     <img src="cover.jpg" alt="hate me, xoxo">
   </div>
+  <div class="cinema-hero-content" id="cinema-hero-content">
+    <div class="cinema-eyebrow">arch . xo . hate me, xoxo</div>
+    <h1 class="cinema-title">better with u</h1>
+    <div class="cinema-sub">traitement de réalisation . clip</div>
+  </div>
+  <div class="scroll-hint" id="scroll-hint">
+    <div class="scroll-dot"></div>
+    <span>défiler</span>
+  </div>
+</section>
 
-  <div class="ep-info">
-    <div class="ep-tag">ep . xo . 2026</div>
-    <h2>hate me, xoxo</h2>
-    <div class="ep-meta">5 titres . <b>better with u</b> en écoute</div>
+<!-- HERO PITCH (emerges as cover fades) -->
+<section class="hero-pitch">
+  <div class="ep-card">
+    <div class="ep-thumb"><img src="cover.jpg" alt=""></div>
+    <div class="ep-body">
+      <div class="ep-title">hate me, xoxo</div>
+      <div class="ep-meta">ep . xo . 2026 . 5 titres . <b>better with u</b> en écoute</div>
+    </div>
     <a class="ep-listen" href="https://os.arch.ooo/ecoute/ep/96d5a3e4b6" target="_blank" rel="noopener">écouter l'ep complet<span class="arrow">↗</span></a>
   </div>
 
-  <div class="divider"></div>
-
-  <div class="pitch-meta">traitement de réalisation . v1</div>
-  <h1 class="pitch-title">better with u</h1>
-  <div class="pitch-sub">clip . note de réalisation</div>
+  <div class="pitch-meta">note de réalisation . v1</div>
+  <div class="pitch-sub">document confidentiel . à l'attention du réalisateur</div>
 
   <p class="logline">
     le garçon et la fille. une histoire qui finit dans le feu.
@@ -708,7 +808,7 @@
     de réalité augmentée. les <span class="c">tokens expirent</span>. le garçon
     reste seul devant ce qu'il a fait.
   </p>
-</div>
+</section>
 
 <!-- SECTION NAV -->
 <nav class="secnav" id="secnav">
@@ -1149,6 +1249,37 @@
   }
   window.addEventListener('scroll', updateProgress, { passive: true });
   updateProgress();
+
+  // cinematic hero scroll-driven effects
+  const heroBg = document.getElementById('cinema-hero-bg');
+  const heroContent = document.getElementById('cinema-hero-content');
+  const scrollHint = document.getElementById('scroll-hint');
+  let heroTicking = false;
+  function applyHero(){
+    heroTicking = false;
+    const y = window.scrollY;
+    const vh = window.innerHeight;
+    const p = Math.max(0, Math.min(1, y / (vh * 0.88)));
+    if (heroBg){
+      heroBg.style.opacity = (1 - p * 0.94).toFixed(3);
+      heroBg.style.transform = 'scale(' + (1 + p * 0.07).toFixed(3) + ')';
+    }
+    if (heroContent){
+      heroContent.style.opacity = Math.max(0, 1 - p * 1.7).toFixed(3);
+      heroContent.style.transform = 'translateY(' + (-p * 36).toFixed(1) + 'px)';
+    }
+    if (scrollHint){
+      scrollHint.style.opacity = Math.max(0, 1 - p * 5).toFixed(3);
+    }
+  }
+  function onScrollHero(){
+    if (!heroTicking){
+      requestAnimationFrame(applyHero);
+      heroTicking = true;
+    }
+  }
+  window.addEventListener('scroll', onScrollHero, { passive: true });
+  applyHero();
 
   document.querySelectorAll('.seq-head').forEach(h => {
     h.addEventListener('click', () => {
