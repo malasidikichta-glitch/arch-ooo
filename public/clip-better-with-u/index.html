@@ -524,6 +524,52 @@
   .memo ul li:last-child{border-bottom:1px solid var(--line-soft)}
 
   /* refs */
+  .ref-main{
+    margin-top:18px;margin-bottom:42px;
+    background:var(--bg-elev);
+    border:1px solid var(--line);border-radius:3px;
+    overflow:hidden;
+    transition:border-color .25s var(--ease);
+  }
+  .ref-main:hover{border-color:var(--accent)}
+  .ref-main-link{
+    display:flex;align-items:baseline;justify-content:space-between;
+    flex-wrap:wrap;gap:14px;
+    padding:24px 26px 18px;
+    border-bottom:1px solid var(--line-soft);
+    text-decoration:none;
+    transition:background .2s;
+  }
+  .ref-main-link:hover{background:var(--bg-card)}
+  .ref-main-title{
+    font-size:22px;font-weight:500;color:var(--ink);
+    letter-spacing:-.015em;
+  }
+  .ref-main-title .pluko-name{color:var(--accent)}
+  .ref-main-meta{
+    font-size:11px;color:var(--muted);letter-spacing:.04em;
+    display:flex;align-items:center;gap:10px;
+  }
+  .ref-main-meta .yt{
+    display:inline-flex;align-items:center;gap:5px;
+    color:var(--ink);
+    padding:5px 10px;border:1px solid var(--line);
+    border-radius:99px;
+    transition:border-color .2s, color .2s;
+  }
+  .ref-main:hover .ref-main-meta .yt{border-color:var(--accent);color:var(--accent)}
+  .ref-main-body{
+    padding:20px 26px 24px;
+  }
+  .ref-main-body p{
+    font-size:14px;color:var(--ink-2);max-width:none;margin-bottom:14px;
+  }
+  .ref-main-body p:last-child{margin-bottom:0}
+  .ref-main-body ul{margin:0;max-width:none}
+  .ref-main-body ul li{
+    padding-left:22px;margin-bottom:11px;color:var(--muted);font-size:13.5px;
+  }
+  .ref-main-body ul li b{color:var(--ink);font-weight:500}
   .refs{margin-top:12px}
   .ref{
     display:grid;grid-template-columns:200px 1fr;gap:20px;
@@ -941,6 +987,8 @@
       <li><b>les reflets.</b> repérer en amont chaque surface réfléchissante exploitable (vitre voiture, miroir magasin, flaque parking, sol garage). décider lesquelles trahissent l'absence de la fille.</li>
       <li><b>continuité météo.</b> pluie et nuit de la séq 03 à la fin. à sécuriser (machine à pluie, planning).</li>
       <li><b>le son.</b> la voix et la présence sonore de la fille disparaissent au moment où elle s'efface. le vide sonore fait partie du reveal.</li>
+      <li><b>caméra à l'épaule.</b> ref principale : pluko . reaching4u. cadre nerveux, jamais stable, course, slowmo ponctuel. pas de gimbal lisse. la nervosité du cadre porte le clip.</li>
+      <li><b>lumière qui wash.</b> sources fortes sur le sujet, fond plongé dans le noir. tirée de la même ref pluko. à conjuguer avec les deux régimes (chaud subjectif, froid objectif).</li>
       <li><b>le conflit comme moteur.</b> la fille n'est jamais d'accord. son refus se lit comme amoureux au premier visionnage, comme conscience au second.</li>
       <li><b>cohérence du décor des personnages.</b> noir, beaux vêtements abîmés, négligé. matériaux nobles dans l'appartement avec cendriers, bouteilles, médicaments. richesse + abandon. à conserver dans chaque scène intérieure.</li>
     </ul>
@@ -950,9 +998,30 @@
   <section id="refs">
     <div class="sec-tag">références visuelles</div>
     <h2 class="sec-title">les points d'ancrage</h2>
-    <p class="muted">à donner au réal comme boussole. pas comme moodboard à copier. l'emprunt est précisé à chaque fois.</p>
+    <p class="muted">deux blocs. la première référence est la boussole de la mise en image. les autres sont des appuis de concept et de ton.</p>
+
+    <h3>caméra et photo . la référence centrale</h3>
+    <div class="ref-main">
+      <a class="ref-main-link" href="https://www.youtube.com/watch?v=TpPmvM0Kq3o" target="_blank" rel="noopener">
+        <div class="ref-main-title"><span class="pluko-name">pluko</span> . reaching4u</div>
+        <div class="ref-main-meta"><span>official video . hughie newman</span><span class="yt">voir sur youtube ↗</span></div>
+      </a>
+      <div class="ref-main-body">
+        <p>la boussole visuelle de ce clip. à regarder en amont du tournage. tout ce qui suit s'inspire directement de la mise en image, du cadre et de la lumière de cette vidéo.</p>
+        <p>ce qu'on emprunte, précisément :</p>
+        <ul>
+          <li><b>caméra à l'épaule, jamais stable.</b> respiration permanente du cadre. pas de slider, pas de gimbal lisse. la nervosité fait partie du sujet.</li>
+          <li><b>lumière concentrée sur le sujet, qui wash à fond.</b> sources fortes braquées sur les visages et les corps. le reste plonge dans le noir. presque pas de remplissage.</li>
+          <li><b>mouvement, course, énergie de fuite.</b> le sujet est en déplacement constant. le cadre court avec lui, perd l'équilibre, retombe.</li>
+          <li><b>shaky maîtrisé.</b> le tremblement n'est pas un défaut. il est dirigé, dosé, choisi.</li>
+          <li><b>slowmo ponctuel.</b> qui sort un geste du chaos et le suspend. à employer aux pics émotionnels (course du magasin, baiser, regard avant l'allumage).</li>
+        </ul>
+      </div>
+    </div>
+
+    <h3>concept et ton</h3>
     <div class="refs">
-      <div class="ref"><div class="t">blade runner 2049<span>villeneuve . joi</span></div><div class="d">référence centrale. joi, compagne hologramme augmentée sur le réel, présente pour lui seul. à regarder pour la mélancolie d'une présence projetée et les moments où elle se désynchronise du monde.</div></div>
+      <div class="ref"><div class="t">blade runner 2049<span>villeneuve . joi</span></div><div class="d">référence centrale du concept. joi, compagne hologramme augmentée sur le réel, présente pour lui seul. à regarder pour la mélancolie d'une présence projetée et les moments où elle se désynchronise du monde.</div></div>
       <div class="ref"><div class="t">her<span>spike jonze</span></div><div class="d">lien intime à une ia. solitude tendre. chaleur d'une voix. pour le ton émotionnel. on y croit complètement avant de comprendre.</div></div>
       <div class="ref"><div class="t">good time<span>safdie brothers</span></div><div class="d">pour le magasin et la course. nervosité, néons crus, énergie de fuite. ralenti qui devient lyrique au milieu du chaos.</div></div>
       <div class="ref"><div class="t">be right back<span>black mirror</span></div><div class="d">deuil d'une présence simulée. moment où le simulacre montre ses limites. pour la cruauté douce du reveal.</div></div>
@@ -1009,6 +1078,9 @@
       <div class="cell">
         <h4>image . régie</h4>
         <ul>
+          <li>caméra épaule / handheld . pas de gimbal lisse</li>
+          <li>setup pour slowmo (high frame rate)</li>
+          <li>sources fortes braquées sur le sujet (style pluko)</li>
           <li>machine à pluie + plan nuit</li>
           <li>deux setups lumière (chaud subjectif . froid objectif)</li>
           <li>sources ponctuelles pour le garage</li>
