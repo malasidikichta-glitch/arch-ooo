@@ -51,7 +51,7 @@
   a{color:inherit;text-decoration:none}
   button{font-family:inherit;cursor:pointer}
 
-  /* ============= TOP BAR (sticky, always visible) ============= */
+  /* ============= TOP BAR ============= */
   .topbar{
     position:fixed;top:0;left:0;right:0;
     height:var(--bar-h);
@@ -125,7 +125,7 @@
     .topbar .mini-player .mp-progress{max-width:none}
   }
 
-  /* ============= SCROLL PROGRESS (top edge of viewport) ============= */
+  /* ============= SCROLL PROGRESS ============= */
   #scroll-progress{
     position:fixed;top:0;left:0;height:1px;width:0%;
     background:var(--accent);z-index:101;
@@ -159,9 +159,7 @@
     width:100%;height:100%;object-fit:cover;display:block;
     filter:saturate(1.04) contrast(1.02);
   }
-  .ep-info{
-    margin-bottom:48px;
-  }
+  .ep-info{margin-bottom:48px}
   .ep-info .ep-tag{
     font-size:11px;color:var(--accent);letter-spacing:.32em;
     text-transform:lowercase;margin-bottom:14px;
@@ -217,7 +215,7 @@
     .cover{margin-bottom:38px}
   }
 
-  /* ============= SECTION NAV (sticky after hero) ============= */
+  /* ============= SECTION NAV ============= */
   .secnav{
     position:sticky;top:var(--bar-h);
     background:rgba(26,24,22,.88);
@@ -266,7 +264,7 @@
     .expand-toggle{display:none}
   }
 
-  /* ============= MAIN CONTENT ============= */
+  /* ============= MAIN ============= */
   .main{
     max-width:780px;
     margin:0 auto;
@@ -314,7 +312,32 @@
   }
   ul li b{color:var(--ink);font-weight:500}
 
-  /* tiers . minimal */
+  /* personnages cards */
+  .persons{
+    display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-top:16px;
+  }
+  @media(max-width:680px){.persons{grid-template-columns:1fr;gap:12px}}
+  .person{
+    padding:26px 26px;
+    background:var(--bg-elev);
+    border:1px solid var(--line);
+    border-radius:3px;
+  }
+  .person .p-tag{
+    font-size:10px;letter-spacing:.22em;color:var(--accent);
+    text-transform:lowercase;margin-bottom:14px;
+  }
+  .person h4{
+    font-size:18px;font-weight:500;letter-spacing:-.01em;
+    color:var(--ink);margin-bottom:14px;
+  }
+  .person p{
+    font-size:13.5px;color:var(--muted);margin-bottom:10px;max-width:none;
+  }
+  .person p:last-child{margin-bottom:0}
+  .person p b{color:var(--ink);font-weight:500}
+
+  /* tiers */
   .tiers{
     display:grid;grid-template-columns:repeat(3,1fr);gap:16px;
     margin-top:8px;
@@ -333,7 +356,7 @@
   .tier h4{margin:0 0 10px;font-size:14px;font-weight:500;color:var(--ink)}
   .tier p{margin:0;font-size:13.5px;color:var(--muted);max-width:none}
 
-  /* reveal stepper . horizontal interactive */
+  /* reveal stepper */
   .reveal-stepper{
     display:grid;grid-template-columns:repeat(3,1fr);gap:1px;
     background:var(--line);border:1px solid var(--line);
@@ -360,7 +383,7 @@
     font-size:13px;color:var(--muted);margin:0;max-width:none;
   }
 
-  /* ============= SEQUENCIER ============= */
+  /* SEQUENCIER */
   .seq-timeline{
     display:grid;
     grid-template-columns:repeat(8,1fr);
@@ -429,6 +452,13 @@
     font-size:11px;color:var(--muted);letter-spacing:.05em;
     text-align:right;
   }
+  .seq-head .seq-pill{
+    font-size:9px;color:var(--accent);
+    background:var(--accent-dim);
+    padding:3px 8px;border-radius:99px;
+    letter-spacing:.12em;text-transform:lowercase;
+    margin-right:4px;
+  }
   .seq-head .seq-chev{
     width:9px;height:9px;
     border-right:1px solid var(--muted);
@@ -449,7 +479,7 @@
     overflow:hidden;
     transition:max-height .35s var(--ease);
   }
-  .seq.open .seq-body{max-height:2000px}
+  .seq.open .seq-body{max-height:3000px}
   .seq-body-inner{
     padding:22px 24px 28px;
     background:var(--bg-card);
@@ -473,6 +503,12 @@
   .row .val.m{color:var(--muted)}
   .row .val .seed{color:var(--accent);font-weight:500}
   .row .val .care{color:var(--ink);font-weight:500}
+  .row .val .open{
+    display:inline-block;font-size:9px;color:var(--accent);
+    background:var(--accent-dim);padding:2px 7px;border-radius:99px;
+    letter-spacing:.1em;margin-right:6px;text-transform:lowercase;
+    vertical-align:middle;
+  }
   @media(max-width:580px){
     .row{grid-template-columns:1fr;gap:2px}
     .row .lab{padding-top:0}
@@ -577,10 +613,10 @@
 </head>
 <body>
 
-<!-- scroll progress bar -->
+<!-- scroll progress -->
 <div id="scroll-progress"></div>
 
-<!-- ============= TOP BAR ============= -->
+<!-- TOP BAR -->
 <div class="topbar">
   <div class="brand">arch . <b>xo</b></div>
   <div class="mini-player">
@@ -599,7 +635,7 @@
 
 <audio id="audio" src="better-with-u.mp3" preload="metadata"></audio>
 
-<!-- ============= HERO ============= -->
+<!-- HERO -->
 <div class="hero">
   <div class="cover">
     <img src="cover.jpg" alt="hate me, xoxo">
@@ -616,20 +652,23 @@
 
   <div class="pitch-meta">traitement de réalisation . v1</div>
   <h1 class="pitch-title">better with u</h1>
-  <div class="pitch-sub">clip . note à l'attention du réalisateur</div>
+  <div class="pitch-sub">clip . note de réalisation</div>
 
   <p class="logline">
-    un garçon. une fille. une histoire qui finit dans le feu.
-    à la toute fin, <b>elle n'a jamais existé</b>.
-    il a tout vécu pour de vrai, seul. une <span class="c">ia</span> surimposée au monde réel par un casque de réalité augmentée.
-    les <span class="c">tokens expirent</span>. il reste seul devant ce qu'il a fait.
+    le garçon et la fille. une histoire qui finit dans le feu.
+    elle n'a jamais voulu aller là. elle a essayé de le retenir dès le début.
+    elle l'a suivi par amour. à la toute fin, on comprend
+    <b>qu'elle n'existait pas</b>. une <span class="c">ia</span> projetée par un casque
+    de réalité augmentée. les <span class="c">tokens expirent</span>. le garçon
+    reste seul devant ce qu'il a fait.
   </p>
 </div>
 
-<!-- ============= SECTION NAV (sticky) ============= -->
+<!-- SECTION NAV -->
 <nav class="secnav" id="secnav">
   <div class="secnav-inner">
     <a href="#intention">intention</a>
+    <a href="#personnages">personnages</a>
     <a href="#grammaire">grammaire</a>
     <a href="#indices">indices</a>
     <a href="#reveal">reveal</a>
@@ -643,65 +682,85 @@
   </div>
 </nav>
 
-<!-- ============= MAIN ============= -->
 <div class="main">
 
   <!-- INTENTION -->
   <section id="intention">
     <div class="sec-tag">note d'intention</div>
     <h2 class="sec-title">tout est réel. sauf elle.</h2>
-    <p class="lede">l'ep repose sur une voix féminine. elle parle de la relation. ce clip lui donne un corps. une fille la personnifie à l'écran. xo joue le garçon. pendant presque tout le clip, tu crois voir un couple.</p>
-    <p>le twist : réalité <em>augmentée</em>, pas <em>virtuelle</em>. la nuance change tout. rien n'est rêvé. la voiture, la pluie, le vol, le garage, la bombe, la maison qui explose : réels. il a tout fait. la seule chose qui n'existe pas, c'est elle. le casque la pose sur le monde. elle rend l'acte vivable, partageable, romantique.</p>
-    <p>le clip dérange parce que les conséquences sont réelles. il a un casier. la maison est détruite. la complice est une projection. l'ia ne lui tient pas compagnie. elle l'accompagne dans l'irréversible. l'amour était réel pour lui, borné par du code froid. <span class="pin">il vient d'en toucher la limite.</span></p>
-    <p class="muted">ton : chaud, charnel, romantique quand on est dans son regard. froid et vide quand on recule. le clip vit dans cette tension.</p>
+    <p class="lede">l'ep repose sur une voix féminine. elle parle de la relation. le clip lui donne un corps. une fille incarne cette voix à l'écran. le garçon, c'est xo. pendant presque tout le clip, on croit voir un couple.</p>
+    <p>le twist : réalité <em>augmentée</em>, pas <em>virtuelle</em>. la nuance change tout. rien n'est rêvé. la voiture, la pluie, le vol, le garage, la bombe, la maison qui explose : réels. le garçon a tout fait. la seule chose qui n'existe pas, c'est elle. le casque la projette sur le monde. elle rend l'acte vivable, partageable, romantique.</p>
+    <p>le clip dérange parce que les conséquences sont réelles. le garçon a un casier. la maison est détruite. la complice est une projection. l'ia ne lui tient pas compagnie. elle l'accompagne dans l'irréversible.</p>
+    <p>autre couche essentielle : <strong>la fille n'est jamais d'accord</strong>. dès la première scène, elle essaie de le dissuader. elle revient à la charge, elle freine, elle plaide. elle finit par le suivre par amour et par dévotion. le drame intérieur, c'est que même la version d'elle qu'il a projetée tente de l'arrêter. il ignore sa propre conscience.</p>
+    <p class="muted">ton : chaud, charnel, romantique quand on est dans son regard à elle. froid et vide quand on bascule en réalité. le clip vit dans cette tension.</p>
+  </section>
+
+  <!-- PERSONNAGES -->
+  <section id="personnages">
+    <div class="sec-tag">les personnages</div>
+    <h2 class="sec-title">le garçon . la fille</h2>
+    <p class="lede">deux figures du même monde. pas en manque d'argent, négligés quand même. l'appartement et les corps racontent la même chose.</p>
+    <div class="persons">
+      <div class="person">
+        <div class="p-tag">le garçon</div>
+        <h4>xo</h4>
+        <p>il a les moyens. il s'en fout. il porte des fringues nobles, abîmées par l'usage. <b>tout noir, tout le temps</b>. déchirures pas calculées. élégance qui passe par-dessus la négligence.</p>
+        <p>il n'attend rien. il n'écoute pas. il décide. la fille est sa conscience extérieure, et il la traite comme un détail.</p>
+      </div>
+      <div class="person">
+        <div class="p-tag">la fille</div>
+        <h4>incarne la voix</h4>
+        <p>elle est lumineuse, calme, présente. elle a la même base vestimentaire que lui : noir, beaux tissus, déchirures, négligé. ils se ressemblent.</p>
+        <p>elle parle peu. elle regarde beaucoup. elle <b>essaie de l'arrêter</b> tout le long. elle n'est jamais convaincue. elle le suit parce qu'elle ne sait pas faire autrement.</p>
+      </div>
+    </div>
+    <h3>l'appartement</h3>
+    <p>même registre. matériaux nobles, finitions soignées, mais le sol et les surfaces disent autre chose. <strong>cendriers pleins, mégots écrasés, bouteilles vides, médicaments sur la table basse</strong>. propre et sale en même temps. la vie de quelqu'un qui a les moyens mais pas l'énergie d'entretenir.</p>
+    <p class="muted">objectif : ne pas faire un décor pauvre. faire un décor abandonné par ses occupants. la richesse rend la négligence plus parlante.</p>
   </section>
 
   <!-- GRAMMAIRE -->
   <section id="grammaire">
     <div class="sec-tag">grammaire visuelle</div>
-    <h2 class="sec-title">deux regards, un casque caché</h2>
-    <p>une seule règle porte tout le clip. tu alternes deux regards. son point de vue : elle est là, lumineuse, charnelle. regard objectif : elle absente, lui seul. le reveal est le dernier de ces basculements.</p>
+    <h2 class="sec-title">deux régimes, un casque jamais montré</h2>
+    <p>le clip n'a qu'une seule règle de mise en scène. <strong>alterner deux regards</strong>. le sien à lui (elle est là, présente, lumineuse) et un regard objectif (elle absente, lui seul). ces deux régimes s'entrelacent du début à la fin. le reveal final est le dernier basculement.</p>
 
-    <h3>le casque reste invisible jusqu'au bout</h3>
-    <p>décision actée : le casque apparaît seulement au reveal. tu le caches activement pendant tout le clip. contrainte de réal à tenir plan par plan. un mauvais cadrage le crame.</p>
-    <ul>
-      <li><b>cadrage.</b> évite les profils nets et les plans larges de face où une monture se lit. privilégie serrés, amorces, nuques, ombres portées, dos.</li>
-      <li><b>lumière.</b> clair-obscur sur le haut du visage. pluie, capuche, contre-jours, néons découpants. tu justifies naturellement que les yeux et le front restent hors lumière franche.</li>
-      <li><b>la frontalité.</b> la <em>première fois</em> qu'on voit le visage de xo entier, net, de face, en pleine lumière, c'est le reveal. et là le casque est là. tu prépares ce plan en ne le montrant jamais ainsi avant.</li>
-    </ul>
-    <p class="muted">bonus de la contrainte : une grammaire de plans dérobés et fragmentés sur toute la durée. puis un cadre qui s'ouvre au reveal. la forme raconte le fond.</p>
+    <h3>le garçon n'a pas de casque pendant tout le clip</h3>
+    <p>décision tournage : xo ne porte pas de casque physique pendant les scènes. on le voit clairement, à visage découvert, du début à la fin. le casque apparaît seulement dans un plan dédié au moment du reveal. c'est là, et seulement là, que le spectateur comprend rétrospectivement.</p>
+    <p>le tournage reste simple. pas de cache à dissimuler, pas de cadrage contraint pour éviter une monture. la dramaturgie repose sur ce qu'on apprend à la fin, pas sur ce qu'on cache pendant.</p>
 
-    <h3>un seul plan en vue subjective</h3>
-    <p>pas de pov ailleurs dans le clip. tu gardes le subjectif pour le tout dernier moment. le pov devient lui-même un signal de bascule. c'est là qu'apparaît le texte des tokens.</p>
+    <h3>l'unique pov, gardé pour la fin</h3>
+    <p>pas de subjectif ailleurs dans le clip. la caméra ne passe à l'intérieur des yeux du garçon qu'au moment du reveal. cette bascule en pov est elle-même un signal. c'est dans ce pov que la fille s'efface et que le texte des tokens apparaît.</p>
   </section>
 
   <!-- INDICES -->
   <section id="indices">
     <div class="sec-tag">le système d'indices</div>
-    <h2 class="sec-title">semer avant, pour ne pas sur-expliquer après</h2>
-    <p>un reveal tient sur ce que le spectateur relit après coup, pas sur son dernier plan. graines plantées, le trio fille qui disparaît + casque + tokens suffit. ne commente pas. le dosage compte plus que les indices. trop tôt, le public capte et le reveal tombe à plat.</p>
+    <h2 class="sec-title">semer avant. ne pas sur-expliquer après.</h2>
+    <p>un reveal tient sur ce que le spectateur relit après coup, pas sur son dernier plan. les graines plantées, le trio fille qui disparaît + pov + tokens suffit. ne pas commenter. le dosage compte plus que les indices. trop tôt, le public capte et le reveal tombe à plat.</p>
     <div class="tiers">
       <div class="tier">
         <div class="n">premier tiers</div>
         <h4>elle est totalement là</h4>
-        <p>quasi tout en son point de vue. elle est présente, charnelle, lumineuse. un seul micro flash de décrochage. vite oublié. on prend ça pour du style.</p>
+        <p>quasi tout en son regard à lui. elle est présente, charnelle, lumineuse. son désaccord est déjà là, mais on lit ça comme une dispute de couple. un seul micro flash de décrochage. on prend ça pour du style.</p>
       </div>
       <div class="tier">
         <div class="n">deuxième tiers</div>
         <h4>le doute, sans le nommer</h4>
-        <p>un reflet où elle manque. le vendeur te regarde toi, jamais elle. deux flashs. le malaise s'installe sans nom.</p>
+        <p>un reflet où elle manque. le vendeur regarde le garçon, jamais la fille. deux flashs. le malaise s'installe sans nom.</p>
       </div>
       <div class="tier">
         <div class="n">dernier tiers</div>
         <h4>les décrochages accélèrent</h4>
-        <p>garage, explosion, reveal. les glitchs deviennent fréquents. tracking qui lâche. le dernier plan objectif <em>est</em> le reveal.</p>
+        <p>garage, explosion. les glitchs deviennent fréquents. tracking qui lâche. la fille insiste pour qu'il arrête. il continue.</p>
       </div>
     </div>
     <h3>les graines, en clair</h3>
     <ul>
-      <li><b>le vendeur te capte toi, jamais elle.</b> il fixe ta main qui pousse dans le vide. il ne comprend pas. personne ne réagit à elle.</li>
-      <li><b>reflets sans elle.</b> vitre voiture, miroir magasin, flaque parking. tu la vois à côté de toi. le reflet montre un homme seul. une ou deux fois maximum. en passant. jamais souligné.</li>
-      <li><b>micro flashs.</b> elle disparaît une demi seconde puis revient. lag, décrochage. rares au début. fréquents avant que les tokens lâchent. une montée invisible. paye au reveal.</li>
+      <li><b>le vendeur regarde le garçon, jamais la fille.</b> il fixe la main qui pousse dans le vide. il ne comprend pas. personne ne réagit à elle.</li>
+      <li><b>reflets sans elle.</b> vitre voiture, miroir magasin, flaque parking. on la voit à côté de lui. le reflet montre un homme seul. une ou deux fois maximum. en passant. jamais souligné.</li>
+      <li><b>micro flashs.</b> elle disparaît une demi seconde puis revient. lag, décrochage. rares au début. fréquents avant que les tokens lâchent. une montée invisible qui paye au reveal.</li>
+      <li><b>son refus.</b> elle freine. elle plaide. elle revient à la charge. le spectateur lit ça comme un désaccord amoureux. le reveal change tout le sens : c'était sa propre conscience qui essayait de l'arrêter.</li>
     </ul>
   </section>
 
@@ -713,28 +772,28 @@
     <div class="reveal-stepper" id="reveal-stepper">
       <div class="reveal-step active" data-step="1">
         <div class="rs-num">01</div>
-        <h4>elle disparaît</h4>
-        <p>le coup émotionnel pur. il lui tient la main devant la maison qui brûle. elle s'efface. aucune explication.</p>
+        <h4>bascule en pov</h4>
+        <p>la maison explose. le garçon et la fille se tiennent la main et regardent ce que l'amour a fait. dans la foulée, la caméra passe à l'intérieur des yeux du garçon. premier pov du clip.</p>
       </div>
       <div class="reveal-step" data-step="2">
         <div class="rs-num">02</div>
-        <h4>recul sur lui, seul</h4>
-        <p>bascule sur le regard objectif. on le voit net, de face, en pleine lumière. casque sur le visage. la mécanique se révèle sans un mot.</p>
+        <h4>elle disparaît . tokens</h4>
+        <p>le pov regarde la maison qui brûle. puis le pov se tourne vers la fille. au moment où il pose le regard sur elle, <span class="pin">elle s'efface</span>. le texte d'interface s'affiche, froid, comme une ponctuation : tokens expirés. limite atteinte. contact perdu.</p>
       </div>
       <div class="reveal-step" data-step="3">
         <div class="rs-num">03</div>
-        <h4>les tokens, en dernier</h4>
-        <p>passage en vue subjective. l'unique du clip. <span class="pin">le texte d'interface s'affiche. froid. ponctuation.</span> limite atteinte. contact perdu. fin.</p>
+        <h4>recul objectif . le casque</h4>
+        <p>cut sur un plan objectif du garçon. seul devant la maison qui brûle. <strong>il porte le casque</strong>. la mécanique se révèle sans un mot. on comprend qu'on a regardé une réalité augmentée tout le long.</p>
       </div>
     </div>
-    <p class="muted" style="margin-top:30px">la signature du concept : les tokens. pas le casque. le casque dit que c'était augmenté. les tokens disent que la relation était réelle pour lui, bornée par un compte à rebours computationnel. il en touche le fond. tu protèges ça au montage.</p>
+    <p class="muted" style="margin-top:30px">la signature du concept, ce sont les tokens. pas le casque. le casque dit que c'était augmenté. les tokens disent que la relation était réelle pour lui, bornée par un compte à rebours computationnel. il en touche le fond. à protéger au montage.</p>
   </section>
 
   <!-- SEQUENCIER -->
   <section id="sequencier">
     <div class="sec-tag">séquencier</div>
     <h2 class="sec-title">découpage séquence par séquence</h2>
-    <p class="muted" style="margin-bottom:30px">8 séquences. clique une carte pour déplier le détail (image, intention, indices, réal). clique un repère ci-dessous pour sauter à la séquence.</p>
+    <p class="muted" style="margin-bottom:30px">8 séquences. cliquer une carte pour déplier le détail (image, intention, indices, réal). cliquer un repère ci-dessous pour sauter à la séquence.</p>
 
     <div class="seq-timeline" id="seq-timeline">
       <button class="seq-pin" data-target="seq-1"><div class="pin-no">01</div><div class="pin-name">canapé</div></button>
@@ -755,10 +814,10 @@
         <span class="seq-chev"></span>
       </button>
       <div class="seq-body"><div class="seq-body-inner">
-        <div class="row"><div class="lab">image</div><div class="val">vie de couple simple. elle a les jambes posées sur lui. la discussion démarre, tranquille, complice.</div></div>
-        <div class="row"><div class="lab">intention</div><div class="val m">tu poses la chaleur et la banalité du couple. on doit y croire sans réserve. c'est le socle que le reveal détruit.</div></div>
-        <div class="row"><div class="lab">indices</div><div class="val"><span class="seed">tier 1.</span> tout en son regard. elle est charnelle et présente. un seul micro flash bref. on l'oublie.</div></div>
-        <div class="row"><div class="lab">réal</div><div class="val care">casque caché. tu cadres serré sur les mains, les jambes, les regards. lumière douce. le haut du visage de xo reste hors face. amorces, hors champ.</div></div>
+        <div class="row"><div class="lab">image</div><div class="val">le garçon et la fille sur le canapé. elle a les jambes posées sur lui. décor négligé autour. cendriers pleins, bouteilles vides, médicaments sur la table basse. il commence à parler du projet. elle écoute, calme. elle n'est pas d'accord.</div></div>
+        <div class="row"><div class="lab">intention</div><div class="val m">poser la chaleur et la banalité du couple. installer la complicité physique. faire entendre, sans appuyer, que la fille pose déjà des réserves. socle émotionnel que le reveal vient défoncer.</div></div>
+        <div class="row"><div class="lab">indices</div><div class="val"><span class="seed">tier 1.</span> tout dans son regard à lui. elle est charnelle et présente. son désaccord est lu comme désaccord amoureux. un seul micro flash bref. oublié.</div></div>
+        <div class="row"><div class="lab">réal</div><div class="val care">cadrer la matière du décor (cendriers, bouteilles, médicaments) comme partie de l'intimité. lumière douce de fin de journée. le garçon visible à visage découvert. la fille incarnée, présente.</div></div>
       </div></div>
     </div>
 
@@ -770,10 +829,10 @@
         <span class="seq-chev"></span>
       </button>
       <div class="seq-body"><div class="seq-body-inner">
-        <div class="row"><div class="lab">image</div><div class="val">le ton monte. débat, voix fortes, grands gestes. des plans griffonnés sur du papier. elle n'est pas d'accord. conflit.</div></div>
-        <div class="row"><div class="lab">intention</div><div class="val m">premier basculement énergétique. tu plantes l'idée d'un projet commun sans le nommer. le papier griffonné prépare le garage et la bombe.</div></div>
-        <div class="row"><div class="lab">indices</div><div class="val"><span class="seed">tier 1.</span> encore son regard. ses gestes à lui deviennent trop amples pour la place qu'elle occupe.</div></div>
-        <div class="row"><div class="lab">réal</div><div class="val care">montage plus nerveux. tu gardes le papier lisible une frame ou deux. tu n'expliques pas. casque toujours dérobé dans le mouvement.</div></div>
+        <div class="row"><div class="lab">image</div><div class="val">le ton monte. le garçon dessine le plan sur un bout de papier. la fille proteste. elle plaide pour qu'il arrête. débat, voix fortes, gestes. elle ne signe pas. elle n'a pas envie.</div></div>
+        <div class="row"><div class="lab">intention</div><div class="val m">le premier vrai conflit. clairement lisible comme dispute de couple au premier visionnage. relu plus tard : c'était la conscience du garçon qui essayait de freiner. le papier griffonné prépare le garage et la bombe sans le nommer.</div></div>
+        <div class="row"><div class="lab">indices</div><div class="val"><span class="seed">tier 1.</span> encore son regard à lui. ses gestes commencent à être un peu trop amples pour la place qu'elle occupe. on le remarque seulement après coup.</div></div>
+        <div class="row"><div class="lab">réal</div><div class="val care">montage plus nerveux. garder le papier lisible une frame ou deux sans expliquer. le refus de la fille doit transparaître dans son corps, pas seulement dans les mots.</div></div>
       </div></div>
     </div>
 
@@ -785,10 +844,10 @@
         <span class="seq-chev"></span>
       </button>
       <div class="seq-body"><div class="seq-body-inner">
-        <div class="row"><div class="lab">image</div><div class="val">ils partent ensemble. il roule vite. pluie battante. le conflit ne retombe pas. lumières qui défilent sur les visages.</div></div>
-        <div class="row"><div class="lab">intention</div><div class="val m">bascule vers la nuit et l'irréversible. la voiture sert de sas entre la vie normale et l'acte.</div></div>
-        <div class="row"><div class="lab">indices</div><div class="val"><span class="seed">tier 2.</span> premier reflet traître. dans la vitre passager ou le rétro, elle est absente une fraction de seconde. le plan repart normal.</div></div>
-        <div class="row"><div class="lab">réal</div><div class="val care">pluie et nuit cachent le casque. néons, gouttes, contre-jours. tu films le siège passager pour qu'on doute sans rien affirmer.</div></div>
+        <div class="row"><div class="lab">image</div><div class="val">ils partent ensemble. le garçon roule vite. la fille est à côté, silencieuse, fermée. elle essaie une dernière fois de le convaincre de faire demi-tour. il ne répond pas. pluie battante. lumières qui défilent.</div></div>
+        <div class="row"><div class="lab">intention</div><div class="val m">la bascule vers la nuit et l'irréversible. la voiture sert de sas entre la vie normale et l'acte. la résistance de la fille reste audible mais commence à s'éteindre.</div></div>
+        <div class="row"><div class="lab">indices</div><div class="val"><span class="seed">tier 2.</span> premier reflet traître. dans la vitre côté passager ou le rétro, la fille est absente une fraction de seconde. le plan repart normal.</div></div>
+        <div class="row"><div class="lab">réal</div><div class="val care">pluie et nuit comme texture. néons, gouttes, contre-jours. filmer le siège passager de manière à ce qu'on doute sans rien affirmer. la fille reste visible à 99% du temps.</div></div>
       </div></div>
     </div>
 
@@ -800,10 +859,10 @@
         <span class="seq-chev"></span>
       </button>
       <div class="seq-body"><div class="seq-body-inner">
-        <div class="row"><div class="lab">image</div><div class="val">il se gare, sort. ils sont sous la pluie. moment suspendu. ils se regardent. la tension monte. elle ne se résout pas encore.</div></div>
-        <div class="row"><div class="lab">intention</div><div class="val m">le presque baiser. tu installes le désir. tu le diffères exprès. le vrai baiser tombe plus tard, au bord de l'irréversible.</div></div>
-        <div class="row"><div class="lab">indices</div><div class="val"><span class="seed">tier 2.</span> flaque au sol comme miroir possible. un plan où son reflet à elle manque. tu joues ça en passant.</div></div>
-        <div class="row"><div class="lab">réal</div><div class="val care">le baiser ne se fait PAS ici. tu le repositionnes en séq 07. tu gardes le geste en suspens, coupé au bon moment. trempés. serrés. haut du visage dans l'ombre de la pluie.</div></div>
+        <div class="row"><div class="lab">image</div><div class="val">il se gare. ils sortent sous la pluie. moment suspendu. la fille tente une dernière plaidoirie. elle lui prend les mains. elle veut qu'il renonce. il la regarde. il ne renonce pas.</div></div>
+        <div class="row"><div class="lab">intention</div><div class="val m">pic émotionnel du conflit avant l'acte. cette scène montre que la fille n'est pas seulement contre, elle est blessée. son amour passe quand même avant. elle continue à le suivre.</div></div>
+        <div class="row"><div class="lab">indices</div><div class="val"><span class="seed">tier 2.</span> flaque au sol comme miroir. un plan où son reflet à elle manque. à jouer en passant.</div></div>
+        <div class="row"><div class="lab">réal</div><div class="val care">trempés. serrés. lumière des néons du parking. la fille en action, pas en posture. plan rapproché sur ses mains qui tiennent les siennes. visage en sous-exposition pour la pluie.</div></div>
       </div></div>
     </div>
 
@@ -815,10 +874,10 @@
         <span class="seq-chev"></span>
       </button>
       <div class="seq-body"><div class="seq-body-inner">
-        <div class="row"><div class="lab">image</div><div class="val">entrée brutale. ils raflent dans les rayons, planqués sous les vestes. regards lourds avec le vendeur. ils se barrent au ralenti. ils poussent le vendeur qui tente de bloquer la sortie.</div></div>
-        <div class="row"><div class="lab">intention</div><div class="val m">le passage à l'acte. à deux dans sa tête. seul dans le réel. le ralenti sur la course donne une respiration romantique avant la bascule la plus dure.</div></div>
-        <div class="row"><div class="lab">indices</div><div class="val"><span class="seed">tier 2, le plus gros.</span> le vendeur le regarde lui, jamais elle. il fixe sa main qui pousse dans le vide. incrédule. miroir convexe antivol au plafond. on y voit un seul corps. personne ne réagit à elle.</div></div>
-        <div class="row"><div class="lab">réal</div><div class="val care">n'appuie pas le regard du vendeur. au premier visionnage, ça passe pour de l'hostilité banale. néons crus. cadrage du casque délicat. tu prévois le découpage.</div></div>
+        <div class="row"><div class="lab">image</div><div class="val">entrée brutale. le garçon rafle dans les rayons, planque sous la veste. la fille le suit, tendue, en retrait. elle ne pille pas avec lui. elle regarde. ils sortent en courant au ralenti. le garçon pousse le vendeur qui tente de bloquer la sortie.</div></div>
+        <div class="row"><div class="lab">intention</div><div class="val m">le passage à l'acte. la fille assiste, désapprouve, mais reste. son silence pèse plus que ses mots. le ralenti sur la course donne une respiration romantique avant la bascule la plus dure.</div></div>
+        <div class="row"><div class="lab">indices</div><div class="val"><span class="seed">tier 2, le plus gros.</span> le vendeur regarde le garçon, jamais la fille. il fixe sa main qui pousse dans le vide. incrédule. miroir convexe antivol au plafond. on y voit un seul corps. personne ne réagit à elle.</div></div>
+        <div class="row"><div class="lab">réal</div><div class="val care">ne pas appuyer le regard du vendeur. au premier visionnage, ça passe pour de l'hostilité banale. néons crus. cadrer la fille en témoin, à distance des gestes du garçon.</div></div>
       </div></div>
     </div>
 
@@ -830,10 +889,10 @@
         <span class="seq-chev"></span>
       </button>
       <div class="seq-body"><div class="seq-body-inner">
-        <div class="row"><div class="lab">image</div><div class="val">pièce sombre et humide. bricolage. soudure. assemblage du butin. on ne comprend pas encore ce qu'ils fabriquent.</div></div>
-        <div class="row"><div class="lab">intention</div><div class="val m">point de bascule technique. la lumière de soudure découpe les visages. alliée parfaite pour cacher le casque. belle plastiquement.</div></div>
-        <div class="row"><div class="lab">indices</div><div class="val"><span class="seed">tier 3 commence.</span> les flashs de décrochage s'intensifient. entre deux gerbes d'étincelles, elle vacille. signal qui faiblit.</div></div>
-        <div class="row"><div class="lab">réal</div><div class="val care">noir profond. sources ponctuelles : lampe de soudure, néon qui grésille. humidité, buée, reflets sur le sol mouillé pour les reflets traîtres. ne montre jamais clairement l'objet fabriqué.</div></div>
+        <div class="row"><div class="lab">image</div><div class="val">pièce sombre et humide. le garçon assemble. soudure, bricolage. la fille reste près de lui, assise un peu en retrait. elle ne fabrique pas avec lui. elle le regarde faire. son visage : présence sans approbation. on ne comprend pas encore l'objet.</div></div>
+        <div class="row"><div class="lab">intention</div><div class="val m">point de bascule technique. la lumière de soudure découpe les visages. la fille est là par dévotion, pas par accord. son silence devient lourd.</div></div>
+        <div class="row"><div class="lab">indices</div><div class="val"><span class="seed">tier 3 commence.</span> les flashs de décrochage s'intensifient. entre deux gerbes d'étincelles, la fille vacille. signal qui faiblit.</div></div>
+        <div class="row"><div class="lab">réal</div><div class="val care">noir profond. sources ponctuelles, lampe de soudure, néon qui grésille. humidité, buée, reflets sur le sol mouillé pour les reflets traîtres. ne jamais montrer clairement l'objet fabriqué.</div></div>
       </div></div>
     </div>
 
@@ -842,13 +901,15 @@
         <span class="seq-no">07</span>
         <span class="seq-title">le baiser</span>
         <span class="seq-loc">ext. nuit . avant l'acte sans retour</span>
+        <span class="seq-pill">conditionnel</span>
         <span class="seq-chev"></span>
       </button>
       <div class="seq-body"><div class="seq-body-inner">
-        <div class="row"><div class="lab">image</div><div class="val">avant d'allumer, ils se regardent. ils s'embrassent sous la pluie, calé sur la musique. le dernier moment humain avant le point de non retour.</div></div>
-        <div class="row"><div class="lab">intention</div><div class="val m">déplacé ici, le baiser prend tout son poids. dernier souffle avant l'irréversible. magnifique dans son casque. dévastateur de l'extérieur : il embrasse le vide, trempé, seul.</div></div>
-        <div class="row"><div class="lab">indices</div><div class="val"><span class="seed">tier 3.</span> tentation d'un bref insert objectif ici : lui seul en train d'embrasser personne. à doser. trop tôt et tu grilles le reveal. à trancher au montage.</div></div>
-        <div class="row"><div class="lab">réal</div><div class="val care">sommet émotionnel côté chaleur. lumière la plus tendre, la plus chaude. synchro précise musique et geste. casque toujours dérobé.</div></div>
+        <div class="row"><div class="lab">image</div><div class="val">avant d'allumer la bombe, ils se regarderaient longuement, puis s'embrasseraient sous la pluie, calé sur la musique. dernier moment humain avant le point de non retour. la fille consent à ce baiser comme à tout le reste : par amour, malgré son désaccord.</div></div>
+        <div class="row"><div class="lab">intention</div><div class="val m">cette scène donne au baiser tout son poids. dernier souffle avant l'irréversible. magnifique dans son casque. dévastateur de l'extérieur : le garçon embrasse le vide, trempé, seul.</div></div>
+        <div class="row"><div class="lab">indices</div><div class="val"><span class="seed">tier 3.</span> tentation d'un bref insert objectif ici (le garçon seul en train d'embrasser personne). à doser. trop tôt et le reveal tombe. à trancher au montage.</div></div>
+        <div class="row"><div class="lab">contrainte</div><div class="val"><span class="open">open</span>les acteurs ne sont pas des comédiens professionnels. demander un vrai baiser à l'écran n'est pas évident à porter pour eux. plusieurs pistes à explorer : suggérer le baiser par la mise en scène (visages proches, hors champ, coupe avant contact), filmer en gros plan partiel (lèvres, nuque, profil), ou tourner un baiser plus pudique calé sur la musique. la décision se prend avec les acteurs en repérage, pas en amont.</div></div>
+        <div class="row"><div class="lab">réal</div><div class="val care">si la scène a lieu : sommet émotionnel côté chaleur. lumière la plus tendre, la plus chaude. synchro précise musique et geste. si la scène est suggérée : viser un plan de pure tension contenue, qui dit l'émotion sans demander le geste.</div></div>
       </div></div>
     </div>
 
@@ -860,10 +921,10 @@
         <span class="seq-chev"></span>
       </button>
       <div class="seq-body"><div class="seq-body-inner">
-        <div class="row"><div class="lab">image</div><div class="val">la maison explose. ils se tiennent la main en la regardant brûler. puis : elle disparaît. recul sur lui seul, casque visible. passage subjectif, texte des tokens.</div></div>
-        <div class="row"><div class="lab">intention</div><div class="val m">le clip converge ici. reveal en trois temps (voir section dédiée). la maison qui brûle éclaire son visage. ce qui rend le casque visible : la lumière du désastre est la première lumière franche sur lui.</div></div>
+        <div class="row"><div class="lab">image</div><div class="val">la maison explose. le garçon et la fille se tiennent la main et regardent ce que l'amour a fait. plan large sur les deux, ensemble, devant le feu. puis bascule en pov, à l'intérieur des yeux du garçon. le pov regarde la maison qui brûle. le pov se tourne vers la fille. au moment où il pose le regard sur elle, elle s'efface. le texte d'interface apparaît : tokens expirés. cut sur un plan objectif. le garçon seul devant la maison, casque sur le visage.</div></div>
+        <div class="row"><div class="lab">intention</div><div class="val m">le clip converge ici. reveal en trois temps (voir section dédiée). l'ordre dramaturgique est non négociable : émotion partagée, puis pov, puis effacement et tokens, puis recul objectif et casque. la maison qui brûle éclaire enfin le visage du garçon dans le plan final.</div></div>
         <div class="row"><div class="lab">indices</div><div class="val"><span class="seed">paiement de tout.</span> le dernier plan objectif EST le reveal. plus rien à planter. on encaisse.</div></div>
-        <div class="row"><div class="lab">réal</div><div class="val care">ordre sacré. émotion (elle s'efface). puis mécanique (lui seul, net, de face, casque). puis froid (pov unique + tokens). première frontalité totale du clip à ce moment. le son se vide de sa présence à elle quand elle disparaît. à caler avec le mix.</div></div>
+        <div class="row"><div class="lab">réal</div><div class="val care">le casque n'apparaît que sur ce dernier plan objectif. plan tourné séparément si besoin, avec lumière du feu sur le visage. le son se vide de la présence de la fille au moment où elle s'efface (à caler avec le mix).</div></div>
       </div></div>
     </div>
   </section>
@@ -873,14 +934,15 @@
     <div class="sec-tag">contraintes transversales</div>
     <h2 class="sec-title">le mémo réal, en une liste</h2>
     <ul>
-      <li><b>casque jamais visible avant la séq 08.</b> pas de profil net. pas de large face en pleine lumière. serrés, amorces, contre-jours, capuche, ombres sur le haut du visage.</li>
-      <li><b>première frontalité au reveal.</b> tu gardes le visage de xo entier, net, de face, plein éclairé, pour ce seul moment.</li>
-      <li><b>deux régimes de lumière.</b> chaud quand on est dans son regard (elle est là). froid et objectif quand on recule (elle absente). la photo fait sentir la bascule.</li>
-      <li><b>un seul pov dans tout le clip.</b> au reveal. avec les tokens. nulle part ailleurs.</li>
-      <li><b>la grammaire du glitch.</b> tu définis une signature unique de décrochage (lag de tracking, dédoublement, frame manquante). tu l'emploies de façon croissante. 1 fois au tiers 1, quelques fois au tiers 2, fréquent au tiers 3.</li>
-      <li><b>les reflets.</b> tu repères en amont chaque surface réfléchissante exploitable (vitre voiture, miroir magasin, flaque parking, sol garage). tu décides lesquelles trahissent son absence.</li>
-      <li><b>continuité météo.</b> pluie et nuit de la séq 03 à la fin. tu sécurises ça (machine à pluie, planning).</li>
-      <li><b>le son.</b> sa voix et sa présence sonore disparaissent au moment où elle s'efface. le vide sonore fait partie du reveal.</li>
+      <li><b>le casque n'apparaît que sur un plan dédié au reveal.</b> tout le reste du clip montre le garçon à visage découvert, sans monture, sans cache. tournage simple.</li>
+      <li><b>deux régimes de lumière.</b> chaud quand on est dans son regard à lui (la fille est là). froid et objectif quand on bascule au reveal (la fille absente). la photo fait sentir la bascule.</li>
+      <li><b>un seul pov dans tout le clip.</b> au reveal. avant le texte des tokens. nulle part ailleurs.</li>
+      <li><b>la grammaire du glitch.</b> définir une signature unique de décrochage (lag de tracking, dédoublement, frame manquante). l'employer de manière croissante. 1 fois au tiers 1, quelques fois au tiers 2, fréquent au tiers 3.</li>
+      <li><b>les reflets.</b> repérer en amont chaque surface réfléchissante exploitable (vitre voiture, miroir magasin, flaque parking, sol garage). décider lesquelles trahissent l'absence de la fille.</li>
+      <li><b>continuité météo.</b> pluie et nuit de la séq 03 à la fin. à sécuriser (machine à pluie, planning).</li>
+      <li><b>le son.</b> la voix et la présence sonore de la fille disparaissent au moment où elle s'efface. le vide sonore fait partie du reveal.</li>
+      <li><b>le conflit comme moteur.</b> la fille n'est jamais d'accord. son refus se lit comme amoureux au premier visionnage, comme conscience au second.</li>
+      <li><b>cohérence du décor des personnages.</b> noir, beaux vêtements abîmés, négligé. matériaux nobles dans l'appartement avec cendriers, bouteilles, médicaments. richesse + abandon. à conserver dans chaque scène intérieure.</li>
     </ul>
   </section>
 
@@ -888,7 +950,7 @@
   <section id="refs">
     <div class="sec-tag">références visuelles</div>
     <h2 class="sec-title">les points d'ancrage</h2>
-    <p class="muted">tu donnes ces refs au réal comme boussole. pas comme moodboard à copier. l'emprunt est précisé à chaque fois.</p>
+    <p class="muted">à donner au réal comme boussole. pas comme moodboard à copier. l'emprunt est précisé à chaque fois.</p>
     <div class="refs">
       <div class="ref"><div class="t">blade runner 2049<span>villeneuve . joi</span></div><div class="d">référence centrale. joi, compagne hologramme augmentée sur le réel, présente pour lui seul. à regarder pour la mélancolie d'une présence projetée et les moments où elle se désynchronise du monde.</div></div>
       <div class="ref"><div class="t">her<span>spike jonze</span></div><div class="d">lien intime à une ia. solitude tendre. chaleur d'une voix. pour le ton émotionnel. on y croit complètement avant de comprendre.</div></div>
@@ -902,11 +964,12 @@
   <section id="trancher">
     <div class="sec-tag">à trancher</div>
     <h2 class="sec-title">les décisions ouvertes</h2>
+    <div class="q"><b>le baiser de la séq 07</b><span>les acteurs ne sont pas des comédiens. demander un vrai baiser à la caméra ne va pas de soi. trois pistes à arbitrer en repérage avec eux : baiser réel filmé en gros plan partiel (lèvres, profil, nuque), baiser suggéré coupé avant le contact, ou geste plus pudique calé sur la musique. la réponse dépend du confort des deux interprètes.</span></div>
     <div class="q"><b>la grammaire exacte du glitch</b><span>quelle forme prend le décrochage (lag, dédoublement, frame noire, dématricage) ? à figer avec le réal et le monteur. c'est la signature visuelle du concept.</span></div>
-    <div class="q"><b>le texte des tokens</b><span>formulation exacte, langue (fr ou en), typo, durée à l'écran. tu gardes froid et bref. ponctuation, pas explication.</span></div>
-    <div class="q"><b>l'insert objectif de la séq 07</b><span>montres-tu un bref plan de lui embrassant le vide avant le reveal, ou tu gardes tout pour la fin ? à arbitrer au montage selon le rythme.</span></div>
+    <div class="q"><b>le texte des tokens</b><span>formulation exacte, langue (fr ou en), typo, durée à l'écran. doit rester froid et bref. ponctuation, pas explication.</span></div>
+    <div class="q"><b>l'insert objectif de la séq 07</b><span>insérer un bref plan du garçon embrassant le vide avant le reveal, ou garder tout pour la fin ? à arbitrer au montage selon le rythme.</span></div>
     <div class="q"><b>la maison qui explose</b><span>pyro réelle, vfx, ou plan d'archive intégré ? impact budget et autorisations. à cadrer tôt avec la prod.</span></div>
-    <div class="q"><b>le design du casque ra</b><span>objet à créer. cohérent avec l'univers arch. on le voit seulement à la fin. il reste crédible et beau sur ce seul plan.</span></div>
+    <div class="q"><b>le design du casque ra</b><span>objet à créer pour le plan final. cohérent avec l'univers arch. visible seulement à la fin. doit rester crédible et beau sur ce seul plan.</span></div>
   </section>
 
   <!-- PROD -->
@@ -917,7 +980,7 @@
       <div class="cell">
         <h4>lieux</h4>
         <ul>
-          <li>appartement (canapé, lumière jour)</li>
+          <li>appartement (canapé, jour, décor négligé)</li>
           <li>route de nuit (pluie, défilé de lumières)</li>
           <li>parking extérieur nocturne</li>
           <li>supérette . petit commerce (autorisation tournage)</li>
@@ -928,8 +991,8 @@
       <div class="cell">
         <h4>casting</h4>
         <ul>
-          <li>elle . présence lumineuse, fort jeu de regard. elle incarne une voix.</li>
-          <li>xo . le garçon (visage protégé tout le clip, révélé au reveal)</li>
+          <li>la fille . présence lumineuse, jeu de regard, capacité à incarner une voix. doit porter le refus sans le théâtraliser.</li>
+          <li>le garçon . xo. visage à découvert pendant tout le clip. casque seulement sur le plan final.</li>
           <li>le vendeur . un seul moment clé. le regard qui trahit.</li>
         </ul>
       </div>
@@ -938,8 +1001,8 @@
         <ul>
           <li>bout de papier griffonné (le plan)</li>
           <li>marchandise volée crédible</li>
-          <li>matériel de bricolage . soudure</li>
-          <li>le casque ra (design à produire)</li>
+          <li>matériel de bricolage et de soudure</li>
+          <li>le casque ra (design à produire, vu seulement à la fin)</li>
           <li>surfaces réfléchissantes repérées à l'avance</li>
         </ul>
       </div>
@@ -949,7 +1012,7 @@
           <li>machine à pluie + plan nuit</li>
           <li>deux setups lumière (chaud subjectif . froid objectif)</li>
           <li>sources ponctuelles pour le garage</li>
-          <li>repérage des cadrages anti casque par séquence</li>
+          <li>repérage des surfaces qui trahissent l'absence par séquence</li>
         </ul>
       </div>
     </div>
@@ -962,14 +1025,12 @@
   <span>traitement . v1 . juin 2026</span>
 </footer>
 
-<!-- keyboard hint -->
 <div class="kbd-hint" id="kbd-hint">
   <kbd>space</kbd> play / pause . <kbd>e</kbd> tout déplier
 </div>
 
 <script>
 (function(){
-  // ============= AUDIO =============
   const audio = document.getElementById('audio');
   const mpBtn = document.getElementById('mp-btn');
   const mpFill = document.getElementById('mp-fill');
@@ -1007,7 +1068,6 @@
   }
   mpBar.addEventListener('click', seek);
 
-  // ============= SCROLL PROGRESS =============
   const sp = document.getElementById('scroll-progress');
   function updateProgress(){
     const h = document.documentElement;
@@ -1018,7 +1078,6 @@
   window.addEventListener('scroll', updateProgress, { passive: true });
   updateProgress();
 
-  // ============= EXPANDABLE SEQUENCES =============
   document.querySelectorAll('.seq-head').forEach(h => {
     h.addEventListener('click', () => {
       const seq = h.closest('.seq');
@@ -1026,7 +1085,6 @@
     });
   });
 
-  // pin scroll + open
   document.querySelectorAll('.seq-pin').forEach(pin => {
     pin.addEventListener('click', () => {
       const id = pin.dataset.target;
@@ -1040,7 +1098,6 @@
     });
   });
 
-  // ============= EXPAND / COLLAPSE ALL =============
   const expandBtn = document.getElementById('expand-all');
   let allOpen = false;
   expandBtn.addEventListener('click', () => {
@@ -1049,7 +1106,6 @@
     expandBtn.textContent = allOpen ? 'tout replier' : 'tout déplier';
   });
 
-  // ============= REVEAL STEPPER =============
   document.querySelectorAll('.reveal-step').forEach(step => {
     step.addEventListener('click', () => {
       document.querySelectorAll('.reveal-step').forEach(s => s.classList.remove('active'));
@@ -1057,7 +1113,6 @@
     });
   });
 
-  // ============= ACTIVE SECTION HIGHLIGHT IN NAV =============
   const sections = document.querySelectorAll('section[id]');
   const navLinks = document.querySelectorAll('.secnav-inner a');
   const navById = new Map();
@@ -1074,14 +1129,12 @@
   }, { rootMargin: '-40% 0px -55% 0px', threshold: 0 });
   sections.forEach(s => io.observe(s));
 
-  // ============= KEYBOARD =============
   let hintShown = false;
   document.addEventListener('keydown', (e) => {
     if (e.target.matches('input, textarea')) return;
     if (e.code === 'Space') { e.preventDefault(); mpBtn.click(); }
     else if (e.key === 'e' || e.key === 'E') { e.preventDefault(); expandBtn.click(); }
   });
-  let scrollTimer;
   function showHint(){
     if (hintShown) return;
     hintShown = true;
