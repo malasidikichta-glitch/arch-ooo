@@ -55,14 +55,32 @@
   .topbar{
     position:fixed;top:0;left:0;right:0;
     height:var(--bar-h);
-    background:rgba(26,24,22,.86);
-    backdrop-filter:blur(14px);
-    -webkit-backdrop-filter:blur(14px);
-    border-bottom:1px solid var(--line-soft);
+    background:transparent;
+    border-bottom:1px solid transparent;
+    transition:background .45s var(--ease), backdrop-filter .45s var(--ease), border-color .45s var(--ease);
     z-index:100;
     display:flex;align-items:center;
     padding:0 24px;
     gap:18px;
+  }
+  body.tb-solid .topbar{
+    background:rgba(26,24,22,.86);
+    backdrop-filter:blur(14px);
+    -webkit-backdrop-filter:blur(14px);
+    border-bottom-color:var(--line-soft);
+  }
+  .topbar .brand,
+  .topbar .mp-track,
+  .topbar .mp-time,
+  .topbar .right-ep{
+    text-shadow:0 1px 4px rgba(0,0,0,.55);
+    transition:text-shadow .45s var(--ease);
+  }
+  body.tb-solid .topbar .brand,
+  body.tb-solid .topbar .mp-track,
+  body.tb-solid .topbar .mp-time,
+  body.tb-solid .topbar .right-ep{
+    text-shadow:none;
   }
   .topbar .brand{
     font-size:11px;letter-spacing:.22em;color:var(--muted);
@@ -188,7 +206,7 @@
     animation:fade-in 1.4s var(--ease) .25s forwards;
   }
   .cinema-title{
-    font-size:clamp(40px,12vw,140px);
+    font-size:clamp(36px,10.5vw,100px);
     font-weight:600;color:var(--ink);
     line-height:.95;margin:0 0 28px;
     white-space:nowrap;
@@ -796,7 +814,6 @@
   </div>
   <div class="scroll-hint" id="scroll-hint">
     <div class="scroll-dot"></div>
-    <span>défiler</span>
   </div>
 </section>
 
@@ -1285,6 +1302,8 @@
     if (scrollHint){
       scrollHint.style.opacity = Math.max(0, 1 - p * 5).toFixed(3);
     }
+    // topbar : transparent over the hero, solid once we have left it
+    document.body.classList.toggle('tb-solid', y > vh * 0.55);
   }
   function onScrollHero(){
     if (!heroTicking){
