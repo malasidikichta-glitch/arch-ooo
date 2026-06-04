@@ -5,368 +5,618 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="robots" content="noindex, nofollow, noarchive, nosnippet">
 <meta name="googlebot" content="noindex, nofollow">
-<title>better with u — traitement de réalisation · arch · xo</title>
+<title>better with u — traitement · arch · xo</title>
 <meta property="og:title" content="better with u — traitement de réalisation">
-<meta property="og:description" content="hate me, xoxo · ep de xo · note de réalisation complète pour le clip">
+<meta property="og:description" content="hate me, xoxo · ep de xo · note de réalisation pour le clip">
 <meta property="og:image" content="/clip-better-with-u/cover.jpg">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Geist+Mono:wght@300;400;500;600&display=swap" rel="stylesheet">
 <style>
   :root{
-    --bg:#2e2c2a;
-    --bg2:#27251f;
-    --ink:#e9e4da;
-    --muted:#8f897d;
-    --faint:#5c574e;
-    --line:#403c36;
-    --cold:#7fb3bd;
-    --warm:#d8a07a;
-    --mono:"Geist Mono", ui-monospace, monospace;
+    --bg:#1a1816;
+    --bg-elev:#221f1c;
+    --bg-card:#252220;
+    --ink:#f0ebe0;
+    --ink-2:#cfc7b8;
+    --muted:#807a6e;
+    --faint:#56514a;
+    --line:#2f2b27;
+    --line-soft:#26221e;
+    --accent:#d8a07a;
+    --accent-dim:rgba(216,160,122,.16);
+    --mono:"Geist Mono", ui-monospace, "SF Mono", monospace;
+    --ease:cubic-bezier(.22,.61,.36,1);
+    --bar-h:54px;
   }
-  *{box-sizing:border-box}
+  *{box-sizing:border-box;margin:0;padding:0}
   html{scroll-behavior:smooth}
   body{
-    margin:0;
     background:var(--bg);
     color:var(--ink);
     font-family:var(--mono);
     font-weight:300;
-    font-size:15px;
+    font-size:14.5px;
     line-height:1.7;
-    letter-spacing:.01em;
+    letter-spacing:.005em;
     -webkit-font-smoothing:antialiased;
+    -moz-osx-font-smoothing:grayscale;
   }
-  /* grain */
   body::before{
     content:"";
     position:fixed;inset:0;z-index:9999;pointer-events:none;
-    opacity:.05;mix-blend-mode:overlay;
-    background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+    opacity:.035;mix-blend-mode:overlay;
+    background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='2'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
   }
-  .wrap{max-width:860px;margin:0 auto;padding:90px 28px 160px}
-  a{color:inherit}
+  a{color:inherit;text-decoration:none}
+  button{font-family:inherit;cursor:pointer}
 
-  /* ============= HERO (cover + audio + ep) ============= */
-  .hero{
-    position:relative;
-    width:100%;
-    margin:0;
-    padding:0;
+  /* ============= TOP BAR (sticky, always visible) ============= */
+  .topbar{
+    position:fixed;top:0;left:0;right:0;
+    height:var(--bar-h);
+    background:rgba(26,24,22,.86);
+    backdrop-filter:blur(14px);
+    -webkit-backdrop-filter:blur(14px);
+    border-bottom:1px solid var(--line-soft);
+    z-index:100;
+    display:flex;align-items:center;
+    padding:0 24px;
+    gap:18px;
   }
-  .cover-frame{
-    position:relative;
-    width:100%;
-    aspect-ratio:1/1;
-    max-height:88vh;
-    background:#000;
-    overflow:hidden;
+  .topbar .brand{
+    font-size:11px;letter-spacing:.22em;color:var(--muted);
+    text-transform:lowercase;flex-shrink:0;
   }
-  .cover-frame img{
-    width:100%;height:100%;
-    object-fit:cover;
-    display:block;
-    filter:saturate(1.05) contrast(1.02);
-  }
-  .cover-frame::after{
-    content:"";
-    position:absolute;inset:0;
-    background:linear-gradient(180deg,
-      rgba(46,44,42,.0) 0%,
-      rgba(46,44,42,.0) 55%,
-      rgba(46,44,42,.55) 85%,
-      var(--bg) 100%);
-    pointer-events:none;
-  }
-  .cover-overlay{
-    position:absolute;
-    left:0;right:0;bottom:0;
-    padding:36px 40px 30px;
-    z-index:2;
-  }
-  .cover-overlay .ep-tag{
-    font-size:11px;letter-spacing:.28em;color:var(--warm);
-    text-transform:lowercase;margin-bottom:10px;
-  }
-  .cover-overlay .ep-name{
-    font-size:clamp(28px,5.5vw,46px);
-    font-weight:600;letter-spacing:-.02em;
-    line-height:1;
-    margin:0 0 6px;
-  }
-  .cover-overlay .ep-meta{
-    font-size:12px;color:var(--muted);letter-spacing:.06em;
-  }
-  .cover-overlay .ep-meta b{color:var(--ink);font-weight:500}
-
-  @media(max-width:620px){
-    .cover-overlay{padding:24px 22px 22px}
-  }
-
-  /* ============= PLAYER ============= */
-  .player-wrap{
-    max-width:860px;
+  .topbar .brand b{color:var(--ink);font-weight:500}
+  .topbar .mini-player{
+    display:flex;align-items:center;gap:12px;
+    flex:1;justify-content:center;
+    max-width:520px;
     margin:0 auto;
-    padding:46px 28px 0;
   }
-  .player{
-    background:linear-gradient(180deg, var(--bg2) 0%, rgba(39,37,31,.5) 100%);
-    border:1px solid var(--line);
-    border-radius:4px;
-    padding:24px 26px;
-  }
-  .player-head{
-    display:flex;justify-content:space-between;align-items:baseline;gap:14px;
-    margin-bottom:18px;flex-wrap:wrap;
-  }
-  .player-head .lbl{
-    font-size:11px;letter-spacing:.22em;color:var(--cold);
-    text-transform:lowercase;
-  }
-  .player-head .lbl::before{
-    content:"";display:inline-block;width:20px;height:1px;
-    background:var(--cold);opacity:.6;
-    vertical-align:middle;margin-right:12px;
-  }
-  .player-head .tlist{
-    font-size:11px;color:var(--faint);
-    letter-spacing:.06em;
-  }
-  .player-track{
-    font-size:clamp(20px,3.4vw,28px);
-    font-weight:500;letter-spacing:-.01em;
-    margin:0 0 18px;
-  }
-  .player-controls{
-    display:flex;align-items:center;gap:18px;
-  }
-  .play-btn{
-    width:54px;height:54px;flex-shrink:0;
-    border:1px solid var(--ink);
-    background:transparent;color:var(--ink);
-    border-radius:50%;cursor:pointer;
+  .topbar .mini-player .mp-btn{
+    width:28px;height:28px;flex-shrink:0;
+    background:var(--ink);color:var(--bg);
+    border:none;border-radius:50%;
     display:flex;align-items:center;justify-content:center;
-    transition:all .2s ease;
-    font-family:inherit;
-    padding:0;
+    transition:transform .2s var(--ease), background .2s;
   }
-  .play-btn:hover{background:var(--ink);color:var(--bg2)}
-  .play-btn svg{width:18px;height:18px;display:block}
-  .play-btn[data-state="play"] .pause-icon{display:none}
-  .play-btn[data-state="pause"] .play-icon{display:none}
-  .progress-area{flex:1;display:flex;flex-direction:column;gap:8px;min-width:0}
-  .progress{
+  .topbar .mini-player .mp-btn:hover{transform:scale(1.05);background:var(--accent)}
+  .topbar .mini-player .mp-btn svg{width:11px;height:11px}
+  .topbar .mini-player .mp-btn[data-state="play"] .pause-i{display:none}
+  .topbar .mini-player .mp-btn[data-state="pause"] .play-i{display:none}
+  .topbar .mini-player .mp-track{
+    font-size:12px;color:var(--ink-2);
+    white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
+    flex-shrink:0;
+    max-width:140px;
+  }
+  .topbar .mini-player .mp-progress{
     position:relative;
-    height:4px;background:var(--line);border-radius:2px;
+    flex:1;min-width:80px;max-width:200px;
+    height:2px;background:var(--line);border-radius:1px;
     cursor:pointer;
-    transition:height .15s;
   }
-  .progress:hover{height:6px}
-  .progress-fill{
+  .topbar .mini-player .mp-progress::before{
+    content:"";position:absolute;top:-7px;bottom:-7px;left:0;right:0;
+  }
+  .topbar .mini-player .mp-fill{
     position:absolute;left:0;top:0;height:100%;
-    background:var(--warm);
-    border-radius:2px;width:0%;
+    width:0%;background:var(--accent);border-radius:1px;
     transition:width .08s linear;
   }
-  .progress-buf{
-    position:absolute;left:0;top:0;height:100%;
-    background:var(--faint);
-    border-radius:2px;width:0%;
-    opacity:.5;
-  }
-  .progress-thumb{
-    position:absolute;top:50%;
-    width:10px;height:10px;
-    background:var(--warm);
-    border-radius:50%;
-    transform:translate(-50%,-50%);
-    left:0%;
-    opacity:0;transition:opacity .15s;
-  }
-  .progress:hover .progress-thumb{opacity:1}
-  .times{
-    display:flex;justify-content:space-between;
-    font-size:11px;color:var(--muted);
+  .topbar .mini-player .mp-time{
+    font-size:10px;color:var(--muted);
     font-variant-numeric:tabular-nums;letter-spacing:.04em;
+    flex-shrink:0;min-width:62px;text-align:right;
   }
-  .player-foot{
-    margin-top:18px;
-    padding-top:16px;
-    border-top:1px solid var(--line);
-    display:flex;justify-content:space-between;align-items:center;
-    flex-wrap:wrap;gap:12px;
-    font-size:12px;color:var(--muted);
+  .topbar .right-ep{
+    font-size:11px;color:var(--muted);letter-spacing:.06em;
+    flex-shrink:0;
+    transition:color .2s;
   }
-  .player-foot a{
-    color:var(--ink);
-    text-decoration:none;
-    border-bottom:1px solid var(--faint);
-    padding-bottom:1px;
-    transition:border-color .2s;
+  .topbar .right-ep:hover{color:var(--ink)}
+  .topbar .right-ep .arrow{color:var(--accent);margin-left:6px}
+  @media(max-width:680px){
+    .topbar{padding:0 16px;gap:10px}
+    .topbar .brand,.topbar .right-ep,.topbar .mini-player .mp-track{display:none}
+    .topbar .mini-player{justify-content:flex-start}
+    .topbar .mini-player .mp-progress{max-width:none}
   }
-  .player-foot a:hover{border-color:var(--warm)}
-  .player-foot .arrow{color:var(--warm)}
 
-  /* ============= HEADER (treatment) ============= */
-  .top{display:flex;justify-content:space-between;align-items:baseline;border-bottom:1px solid var(--line);padding-bottom:16px;margin-bottom:64px}
-  .top .l{font-size:13px;color:var(--muted)}
-  .top .r{font-size:13px;color:var(--faint);text-align:right}
-  .mast{margin:0 0 8px;font-size:clamp(40px,9vw,84px);font-weight:600;letter-spacing:-.02em;line-height:.95}
-  .mast .sub{display:block;font-size:14px;font-weight:300;color:var(--muted);letter-spacing:.04em;margin-top:18px}
-  .logline{margin:40px 0 0;font-size:17px;line-height:1.85;color:var(--ink);max-width:62ch}
-  .logline b{font-weight:500;color:var(--warm)}
-  .logline .c{color:var(--cold);font-weight:500}
+  /* ============= SCROLL PROGRESS (top edge of viewport) ============= */
+  #scroll-progress{
+    position:fixed;top:0;left:0;height:1px;width:0%;
+    background:var(--accent);z-index:101;
+    transition:width .08s linear;
+    box-shadow:0 0 8px var(--accent);
+    opacity:.7;
+  }
 
-  /* sections */
-  section{margin-top:90px;scroll-margin-top:54px}
-  .kicker{font-size:12px;letter-spacing:.22em;color:var(--cold);text-transform:lowercase;margin-bottom:22px;display:flex;align-items:center;gap:14px}
-  .kicker::before{content:"";width:26px;height:1px;background:var(--cold);opacity:.6}
-  h2{font-size:clamp(24px,4.4vw,34px);font-weight:500;letter-spacing:-.01em;margin:0 0 26px;line-height:1.15}
-  h3{font-size:16px;font-weight:500;color:var(--ink);margin:34px 0 10px}
-  p{margin:0 0 18px;max-width:68ch}
-  .muted{color:var(--muted)}
+  /* ============= HERO ============= */
+  .hero{
+    max-width:740px;
+    margin:0 auto;
+    padding:calc(var(--bar-h) + 80px) 28px 60px;
+    text-align:center;
+  }
+  .cover{
+    width:100%;
+    max-width:440px;
+    margin:0 auto 50px;
+    aspect-ratio:1/1;
+    background:#000;
+    border-radius:2px;
+    overflow:hidden;
+    box-shadow:
+      0 1px 0 rgba(255,255,255,.04) inset,
+      0 30px 80px rgba(0,0,0,.5),
+      0 12px 32px rgba(0,0,0,.4);
+    position:relative;
+  }
+  .cover img{
+    width:100%;height:100%;object-fit:cover;display:block;
+    filter:saturate(1.04) contrast(1.02);
+  }
+  .ep-info{
+    margin-bottom:48px;
+  }
+  .ep-info .ep-tag{
+    font-size:11px;color:var(--accent);letter-spacing:.32em;
+    text-transform:lowercase;margin-bottom:14px;
+  }
+  .ep-info h2{
+    font-size:clamp(28px,5.5vw,40px);
+    font-weight:500;letter-spacing:-.025em;line-height:1.05;
+    margin-bottom:14px;
+  }
+  .ep-info .ep-meta{
+    font-size:12.5px;color:var(--muted);letter-spacing:.04em;
+    margin-bottom:20px;
+  }
+  .ep-info .ep-meta b{color:var(--ink-2);font-weight:500}
+  .ep-info .ep-listen{
+    display:inline-flex;align-items:center;gap:8px;
+    font-size:12px;color:var(--ink);
+    padding:9px 18px;border:1px solid var(--line);border-radius:99px;
+    letter-spacing:.06em;
+    transition:border-color .2s, background .2s, color .2s;
+  }
+  .ep-info .ep-listen:hover{border-color:var(--accent);color:var(--accent)}
+  .ep-info .ep-listen .arrow{transition:transform .2s var(--ease)}
+  .ep-info .ep-listen:hover .arrow{transform:translate(2px,-2px)}
+
+  .divider{
+    width:40px;height:1px;background:var(--faint);
+    margin:0 auto 48px;
+  }
+
+  .pitch-meta{
+    font-size:11px;color:var(--accent);letter-spacing:.32em;
+    text-transform:lowercase;margin-bottom:18px;
+  }
+  .pitch-title{
+    font-size:clamp(38px,7.4vw,68px);
+    font-weight:600;letter-spacing:-.028em;line-height:.98;
+    margin-bottom:18px;
+  }
+  .pitch-sub{
+    font-size:12.5px;color:var(--muted);letter-spacing:.06em;
+    margin-bottom:48px;
+  }
+  .logline{
+    font-size:17px;line-height:1.75;color:var(--ink-2);
+    max-width:58ch;margin:0 auto;text-align:left;
+    font-weight:300;
+  }
+  .logline b{color:var(--accent);font-weight:500}
+  .logline .c{color:var(--ink);font-weight:500;border-bottom:1px dotted var(--faint)}
+  @media(max-width:520px){
+    .hero{padding:calc(var(--bar-h) + 50px) 22px 50px}
+    .cover{margin-bottom:38px}
+  }
+
+  /* ============= SECTION NAV (sticky after hero) ============= */
+  .secnav{
+    position:sticky;top:var(--bar-h);
+    background:rgba(26,24,22,.88);
+    backdrop-filter:blur(12px);
+    -webkit-backdrop-filter:blur(12px);
+    border-bottom:1px solid var(--line-soft);
+    border-top:1px solid var(--line-soft);
+    z-index:50;
+  }
+  .secnav-inner{
+    max-width:980px;margin:0 auto;
+    padding:13px 28px;
+    display:flex;align-items:center;gap:24px;
+    overflow-x:auto;
+    scrollbar-width:none;
+  }
+  .secnav-inner::-webkit-scrollbar{display:none}
+  .secnav-inner a{
+    font-size:11px;color:var(--muted);
+    letter-spacing:.06em;
+    white-space:nowrap;
+    padding:4px 0;
+    transition:color .2s;
+    position:relative;
+  }
+  .secnav-inner a::after{
+    content:"";position:absolute;left:0;right:0;bottom:-13px;
+    height:1px;background:var(--accent);
+    transform:scaleX(0);transform-origin:center;
+    transition:transform .25s var(--ease);
+  }
+  .secnav-inner a:hover{color:var(--ink)}
+  .secnav-inner a.active{color:var(--ink)}
+  .secnav-inner a.active::after{transform:scaleX(1)}
+  .secnav-inner .spacer{flex:1;min-width:8px}
+  .expand-toggle{
+    background:transparent;border:1px solid var(--line);color:var(--muted);
+    font-family:inherit;font-size:10px;letter-spacing:.12em;
+    padding:6px 12px;border-radius:99px;
+    transition:all .2s;text-transform:lowercase;
+    flex-shrink:0;
+  }
+  .expand-toggle:hover{border-color:var(--accent);color:var(--accent)}
+  @media(max-width:680px){
+    .secnav-inner{padding:11px 20px;gap:18px}
+    .expand-toggle{display:none}
+  }
+
+  /* ============= MAIN CONTENT ============= */
+  .main{
+    max-width:780px;
+    margin:0 auto;
+    padding:0 28px;
+  }
+  section{
+    padding:90px 0;
+    border-bottom:1px solid var(--line-soft);
+    scroll-margin-top:calc(var(--bar-h) + 60px);
+  }
+  section:last-of-type{border-bottom:none}
+  .sec-tag{
+    font-size:10px;letter-spacing:.32em;color:var(--accent);
+    text-transform:lowercase;margin-bottom:24px;
+    display:flex;align-items:center;gap:14px;
+  }
+  .sec-tag::before{
+    content:"";width:18px;height:1px;background:var(--accent);opacity:.55;
+  }
+  h2.sec-title{
+    font-size:clamp(26px,4.4vw,34px);
+    font-weight:500;letter-spacing:-.018em;
+    line-height:1.18;margin-bottom:32px;
+    max-width:24ch;
+  }
+  h3{
+    font-size:15px;font-weight:500;color:var(--ink);
+    margin:42px 0 12px;letter-spacing:-.005em;
+  }
+  p{margin:0 0 18px;color:var(--ink-2);max-width:62ch;font-weight:300}
+  p.muted{color:var(--muted)}
+  p.lede{font-size:15.5px;color:var(--ink);margin-bottom:24px}
   strong{font-weight:500;color:var(--ink)}
-  em{font-style:normal;color:var(--warm)}
-  .cold{color:var(--cold)}
+  em{font-style:normal;color:var(--accent)}
+  .pin{color:var(--accent);font-weight:500}
 
-  ul{list-style:none;margin:0 0 18px;padding:0;max-width:68ch}
-  ul li{position:relative;padding-left:22px;margin-bottom:11px;color:var(--muted)}
-  ul li::before{content:"";position:absolute;left:0;top:11px;width:7px;height:1px;background:var(--faint)}
+  ul{list-style:none;margin:0 0 18px;padding:0;max-width:62ch}
+  ul li{
+    position:relative;padding-left:22px;margin-bottom:13px;
+    color:var(--muted);font-weight:300;
+  }
+  ul li::before{
+    content:"";position:absolute;left:0;top:11px;
+    width:7px;height:1px;background:var(--faint);
+  }
   ul li b{color:var(--ink);font-weight:500}
 
-  /* tiers */
-  .tiers{display:grid;gap:1px;background:var(--line);border:1px solid var(--line);margin-top:8px}
-  .tier{background:var(--bg);padding:24px 26px}
-  .tier .n{font-size:12px;letter-spacing:.16em;color:var(--cold);margin-bottom:10px}
-  .tier h4{margin:0 0 10px;font-size:15px;font-weight:500}
-  .tier p{margin:0;font-size:14px;color:var(--muted)}
+  /* tiers — minimal */
+  .tiers{
+    display:grid;grid-template-columns:repeat(3,1fr);gap:16px;
+    margin-top:8px;
+  }
+  @media(max-width:680px){.tiers{grid-template-columns:1fr;gap:10px}}
+  .tier{
+    padding:24px 22px;
+    background:var(--bg-elev);
+    border:1px solid var(--line);
+    border-radius:3px;
+  }
+  .tier .n{
+    font-size:10px;letter-spacing:.22em;color:var(--accent);
+    text-transform:lowercase;margin-bottom:12px;
+  }
+  .tier h4{margin:0 0 10px;font-size:14px;font-weight:500;color:var(--ink)}
+  .tier p{margin:0;font-size:13.5px;color:var(--muted);max-width:none}
 
-  /* reveal steps */
-  .steps{counter-reset:s;margin-top:8px}
-  .step{display:flex;gap:22px;padding:22px 0;border-top:1px solid var(--line)}
-  .step:last-child{border-bottom:1px solid var(--line)}
-  .step .num{counter-increment:s;font-size:13px;color:var(--cold);min-width:30px;padding-top:2px}
-  .step .num::before{content:counter(s,decimal-leading-zero)}
-  .step .bd h4{margin:0 0 6px;font-size:15px;font-weight:500}
-  .step .bd p{margin:0;font-size:14px;color:var(--muted)}
+  /* reveal stepper — horizontal interactive */
+  .reveal-stepper{
+    display:grid;grid-template-columns:repeat(3,1fr);gap:1px;
+    background:var(--line);border:1px solid var(--line);
+    border-radius:3px;overflow:hidden;
+    margin-top:16px;
+  }
+  @media(max-width:680px){.reveal-stepper{grid-template-columns:1fr}}
+  .reveal-step{
+    background:var(--bg-elev);
+    padding:26px 24px;
+    cursor:pointer;
+    transition:background .2s;
+    position:relative;
+  }
+  .reveal-step:hover{background:var(--bg-card)}
+  .reveal-step.active{background:var(--bg-card);box-shadow:inset 0 1px 0 var(--accent)}
+  .reveal-step .rs-num{
+    font-size:10px;color:var(--accent);letter-spacing:.18em;margin-bottom:14px;
+  }
+  .reveal-step h4{
+    font-size:14.5px;font-weight:500;color:var(--ink);margin-bottom:10px;
+  }
+  .reveal-step p{
+    font-size:13px;color:var(--muted);margin:0;max-width:none;
+  }
 
-  /* sequences */
-  .seq{border-top:1px solid var(--line);padding:46px 0}
-  .seq:last-of-type{border-bottom:1px solid var(--line)}
-  .seq-head{display:flex;align-items:baseline;gap:18px;margin-bottom:24px;flex-wrap:wrap}
-  .seq-no{font-size:13px;color:var(--cold);letter-spacing:.1em}
-  .seq-title{font-size:22px;font-weight:500;letter-spacing:-.01em}
-  .seq-loc{font-size:12px;color:var(--faint);margin-left:auto;letter-spacing:.06em}
-  .row{display:grid;grid-template-columns:120px 1fr;gap:8px 24px;margin-bottom:16px}
-  .row .lab{font-size:11px;letter-spacing:.16em;color:var(--faint);padding-top:4px;text-transform:lowercase}
-  .row .val{font-size:14.5px;color:var(--ink);line-height:1.7}
+  /* ============= SEQUENCIER ============= */
+  .seq-timeline{
+    display:grid;
+    grid-template-columns:repeat(8,1fr);
+    gap:6px;
+    margin-bottom:38px;
+    padding:18px;
+    background:var(--bg-elev);
+    border:1px solid var(--line);
+    border-radius:3px;
+  }
+  @media(max-width:680px){.seq-timeline{grid-template-columns:repeat(4,1fr);gap:8px}}
+  @media(max-width:380px){.seq-timeline{grid-template-columns:repeat(2,1fr)}}
+  .seq-pin{
+    background:transparent;border:1px solid var(--line);
+    padding:10px 4px;
+    text-align:center;
+    border-radius:2px;
+    transition:all .2s;
+    cursor:pointer;
+  }
+  .seq-pin:hover{border-color:var(--accent);background:var(--accent-dim)}
+  .seq-pin .pin-no{
+    font-size:11px;color:var(--accent);font-weight:500;
+    letter-spacing:.04em;margin-bottom:4px;
+    font-variant-numeric:tabular-nums;
+  }
+  .seq-pin .pin-name{
+    font-size:10.5px;color:var(--muted);
+    letter-spacing:.04em;
+    overflow:hidden;text-overflow:ellipsis;white-space:nowrap;
+  }
+  .seq-pin:hover .pin-name{color:var(--ink)}
+  .seq-pin.active{border-color:var(--accent);background:var(--accent-dim)}
+  .seq-pin.active .pin-name{color:var(--ink)}
+
+  .seq{
+    border:1px solid var(--line);
+    border-radius:3px;
+    margin-bottom:8px;
+    overflow:hidden;
+    transition:border-color .2s;
+  }
+  .seq:hover{border-color:var(--faint)}
+  .seq.open{border-color:var(--accent)}
+  .seq-head{
+    width:100%;
+    display:flex;align-items:center;gap:16px;
+    padding:20px 24px;
+    background:var(--bg-elev);
+    border:none;
+    text-align:left;
+    transition:background .2s;
+  }
+  .seq-head:hover{background:var(--bg-card)}
+  .seq-head .seq-no{
+    font-size:11px;color:var(--accent);
+    letter-spacing:.08em;
+    font-variant-numeric:tabular-nums;
+    min-width:24px;
+  }
+  .seq-head .seq-title{
+    font-size:15px;font-weight:500;color:var(--ink);
+    flex:1;letter-spacing:-.005em;
+  }
+  .seq-head .seq-loc{
+    font-size:11px;color:var(--muted);letter-spacing:.05em;
+    text-align:right;
+  }
+  .seq-head .seq-chev{
+    width:9px;height:9px;
+    border-right:1px solid var(--muted);
+    border-bottom:1px solid var(--muted);
+    transform:rotate(45deg);
+    transition:transform .25s var(--ease);
+    margin-left:6px;
+    flex-shrink:0;
+  }
+  .seq.open .seq-chev{transform:rotate(-135deg);border-color:var(--accent)}
+  @media(max-width:580px){
+    .seq-head{flex-wrap:wrap;gap:8px}
+    .seq-head .seq-loc{width:100%;text-align:left}
+  }
+
+  .seq-body{
+    max-height:0;
+    overflow:hidden;
+    transition:max-height .35s var(--ease);
+  }
+  .seq.open .seq-body{max-height:2000px}
+  .seq-body-inner{
+    padding:22px 24px 28px;
+    background:var(--bg-card);
+    border-top:1px solid var(--line-soft);
+  }
+  .row{
+    display:grid;
+    grid-template-columns:90px 1fr;
+    gap:6px 24px;
+    margin-bottom:16px;
+  }
+  .row:last-child{margin-bottom:0}
+  .row .lab{
+    font-size:10px;letter-spacing:.18em;
+    color:var(--muted);
+    text-transform:lowercase;padding-top:5px;
+  }
+  .row .val{
+    font-size:14px;color:var(--ink-2);line-height:1.7;
+  }
   .row .val.m{color:var(--muted)}
-  .row .val .seed{color:var(--cold)}
-  .row .val .care{color:var(--warm)}
-  @media(max-width:620px){.row{grid-template-columns:1fr;gap:2px}.row .lab{padding-top:0}}
+  .row .val .seed{color:var(--accent);font-weight:500}
+  .row .val .care{color:var(--ink);font-weight:500}
+  @media(max-width:580px){
+    .row{grid-template-columns:1fr;gap:2px}
+    .row .lab{padding-top:0}
+  }
+
+  /* memo list */
+  .memo ul li{
+    padding:14px 0;
+    border-top:1px solid var(--line-soft);
+    padding-left:0;
+  }
+  .memo ul li::before{display:none}
+  .memo ul li:last-child{border-bottom:1px solid var(--line-soft)}
 
   /* refs */
-  .ref{display:grid;grid-template-columns:200px 1fr;gap:6px 24px;padding:18px 0;border-top:1px solid var(--line)}
-  .ref:last-child{border-bottom:1px solid var(--line)}
-  .ref .t{font-size:15px;color:var(--ink);font-weight:500}
-  .ref .t span{display:block;font-size:12px;color:var(--faint);font-weight:300;margin-top:3px}
-  .ref .d{font-size:14px;color:var(--muted)}
-  @media(max-width:620px){.ref{grid-template-columns:1fr;gap:6px}}
+  .refs{margin-top:12px}
+  .ref{
+    display:grid;grid-template-columns:200px 1fr;gap:20px;
+    padding:22px 0;
+    border-top:1px solid var(--line-soft);
+    transition:padding-left .25s var(--ease);
+  }
+  .ref:last-child{border-bottom:1px solid var(--line-soft)}
+  .ref:hover{padding-left:8px}
+  .ref .t{
+    font-size:14.5px;color:var(--ink);font-weight:500;
+    letter-spacing:-.005em;
+  }
+  .ref .t span{
+    display:block;font-size:11px;color:var(--muted);
+    font-weight:300;margin-top:3px;letter-spacing:.04em;
+  }
+  .ref .d{font-size:13.5px;color:var(--muted);line-height:1.7}
+  @media(max-width:580px){.ref{grid-template-columns:1fr;gap:6px}.ref:hover{padding-left:0}}
 
   /* open questions */
-  .q{border-left:1px solid var(--cold);padding:4px 0 4px 20px;margin-bottom:18px}
-  .q b{display:block;font-weight:500;color:var(--ink);margin-bottom:4px}
-  .q span{font-size:14px;color:var(--muted)}
+  .q{
+    padding:18px 0 18px 22px;
+    border-left:1px solid var(--line);
+    margin-bottom:10px;
+    transition:border-color .2s;
+  }
+  .q:hover{border-color:var(--accent)}
+  .q b{
+    display:block;font-weight:500;color:var(--ink);
+    margin-bottom:6px;font-size:14px;
+  }
+  .q span{font-size:13.5px;color:var(--muted);line-height:1.7}
 
   /* prod grid */
-  .prod{display:grid;grid-template-columns:1fr 1fr;gap:1px;background:var(--line);border:1px solid var(--line)}
-  .prod .cell{background:var(--bg);padding:22px 24px}
-  .prod .cell h4{margin:0 0 12px;font-size:13px;letter-spacing:.14em;color:var(--cold)}
+  .prod{
+    display:grid;grid-template-columns:1fr 1fr;
+    gap:1px;background:var(--line);
+    border:1px solid var(--line);border-radius:3px;
+    overflow:hidden;
+  }
+  @media(max-width:680px){.prod{grid-template-columns:1fr}}
+  .prod .cell{background:var(--bg-elev);padding:24px 26px}
+  .prod .cell h4{
+    margin:0 0 14px;font-size:11px;
+    letter-spacing:.18em;color:var(--accent);
+    text-transform:lowercase;
+  }
   .prod .cell ul{margin:0}
-  .prod .cell ul li{font-size:13.5px;margin-bottom:8px}
-  @media(max-width:620px){.prod{grid-template-columns:1fr}}
+  .prod .cell ul li{font-size:13.5px;margin-bottom:10px;color:var(--muted)}
+  .prod .cell ul li:last-child{margin-bottom:0}
 
-  footer{margin-top:120px;padding-top:24px;border-top:1px solid var(--line);font-size:12px;color:var(--faint);display:flex;justify-content:space-between;flex-wrap:wrap;gap:10px}
+  /* footer */
+  footer{
+    padding:60px 28px 80px;
+    max-width:780px;margin:0 auto;
+    border-top:1px solid var(--line-soft);
+    font-size:11px;color:var(--faint);
+    letter-spacing:.06em;
+    display:flex;justify-content:space-between;
+    flex-wrap:wrap;gap:14px;
+  }
 
-  /* nav (treatment sections) */
-  .nav{position:sticky;top:0;background:rgba(46,44,42,.88);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);border-bottom:1px solid var(--line);z-index:50;font-size:11px;letter-spacing:.1em}
-  .nav .ni{max-width:860px;margin:0 auto;padding:13px 28px;display:flex;gap:22px;color:var(--faint);overflow-x:auto;scrollbar-width:none}
-  .nav .ni::-webkit-scrollbar{display:none}
-  .nav a{text-decoration:none;color:var(--faint);white-space:nowrap;transition:color .2s}
-  .nav a:hover{color:var(--ink)}
-  @media(max-width:620px){.nav .ni{gap:18px;padding:12px 22px;font-size:10px}}
+  /* keyboard hint */
+  .kbd-hint{
+    position:fixed;bottom:22px;right:22px;
+    background:var(--bg-elev);
+    border:1px solid var(--line);
+    border-radius:3px;
+    padding:8px 12px;
+    font-size:10px;color:var(--muted);
+    letter-spacing:.08em;
+    opacity:0;transform:translateY(8px);
+    transition:opacity .3s, transform .3s;
+    pointer-events:none;
+  }
+  .kbd-hint.show{opacity:1;transform:translateY(0)}
+  .kbd-hint kbd{
+    background:var(--bg-card);
+    border:1px solid var(--line);
+    padding:1px 6px;border-radius:2px;
+    color:var(--ink);font-family:inherit;
+    margin:0 4px;font-size:10px;
+  }
+  @media(max-width:680px){.kbd-hint{display:none}}
 </style>
 </head>
 <body>
 
+<!-- scroll progress bar -->
+<div id="scroll-progress"></div>
+
+<!-- ============= TOP BAR ============= -->
+<div class="topbar">
+  <div class="brand">arch · <b>xo</b></div>
+  <div class="mini-player">
+    <button class="mp-btn" id="mp-btn" data-state="play" aria-label="lecture">
+      <svg class="play-i" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>
+      <svg class="pause-i" viewBox="0 0 24 24" fill="currentColor"><path d="M6 5h4v14H6V5zm8 0h4v14h-4V5z"/></svg>
+    </button>
+    <span class="mp-track">better with u</span>
+    <div class="mp-progress" id="mp-progress">
+      <div class="mp-fill" id="mp-fill"></div>
+    </div>
+    <span class="mp-time" id="mp-time">0:00</span>
+  </div>
+  <a class="right-ep" href="https://os.arch.ooo/ecoute/ep/96d5a3e4b6" target="_blank" rel="noopener">ep complet<span class="arrow">↗</span></a>
+</div>
+
+<audio id="audio" src="better-with-u.mp3" preload="metadata"></audio>
+
 <!-- ============= HERO ============= -->
 <div class="hero">
-  <div class="cover-frame">
-    <img src="cover.jpg" alt="hate me, xoxo — cover">
-    <div class="cover-overlay">
-      <div class="ep-tag">— ep · xo · 2026</div>
-      <div class="ep-name">hate me, xoxo</div>
-      <div class="ep-meta">6 titres · sortie à venir · <b>better with u</b> · single de pré-lancement</div>
-    </div>
-  </div>
-</div>
-
-<!-- ============= PLAYER ============= -->
-<div class="player-wrap">
-  <div class="player">
-    <div class="player-head">
-      <span class="lbl">single · v.06</span>
-      <span class="tlist">3 / 6 · hate me, xoxo</span>
-    </div>
-    <div class="player-track">better with u</div>
-    <div class="player-controls">
-      <button class="play-btn" id="play-btn" data-state="play" aria-label="lecture">
-        <svg class="play-icon" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>
-        <svg class="pause-icon" viewBox="0 0 24 24" fill="currentColor"><path d="M6 5h4v14H6V5zm8 0h4v14h-4V5z"/></svg>
-      </button>
-      <div class="progress-area">
-        <div class="progress" id="progress">
-          <div class="progress-buf" id="progress-buf"></div>
-          <div class="progress-fill" id="progress-fill"></div>
-          <div class="progress-thumb" id="progress-thumb"></div>
-        </div>
-        <div class="times">
-          <span id="time-cur">0:00</span>
-          <span id="time-tot">—:—</span>
-        </div>
-      </div>
-    </div>
-    <audio id="audio" src="better-with-u.mp3" preload="metadata"></audio>
-    <div class="player-foot">
-      <span>aperçu privé · ne pas diffuser</span>
-      <a href="https://os.arch.ooo/ecoute/ep/96d5a3e4b6" target="_blank" rel="noopener">écouter l'ep complet <span class="arrow">↗</span></a>
-    </div>
-  </div>
-</div>
-
-<!-- ============= NAV (treatment) ============= -->
-<nav class="nav" style="margin-top:46px"><div class="ni">
-  <a href="#intention">intention</a>
-  <a href="#grammaire">grammaire</a>
-  <a href="#indices">indices</a>
-  <a href="#reveal">reveal</a>
-  <a href="#sequencier">séquencier</a>
-  <a href="#technique">technique</a>
-  <a href="#refs">références</a>
-  <a href="#trancher">à trancher</a>
-  <a href="#prod">production</a>
-</div></nav>
-
-<div class="wrap" style="padding-top:54px">
-
-  <div class="top">
-    <div class="l">arch · xo</div>
-    <div class="r">traitement de réalisation<br>v1 · confidentiel</div>
+  <div class="cover">
+    <img src="cover.jpg" alt="hate me, xoxo">
   </div>
 
-  <h1 class="mast">better with u
-    <span class="sub">clip · note de réalisation complète</span>
-  </h1>
+  <div class="ep-info">
+    <div class="ep-tag">ep · xo · 2026</div>
+    <h2>hate me, xoxo</h2>
+    <div class="ep-meta">5 titres · <b>better with u</b> en cours d'écoute</div>
+    <a class="ep-listen" href="https://os.arch.ooo/ecoute/ep/96d5a3e4b6" target="_blank" rel="noopener">écouter l'ep complet<span class="arrow">↗</span></a>
+  </div>
+
+  <div class="divider"></div>
+
+  <div class="pitch-meta">traitement de réalisation · v1</div>
+  <h1 class="pitch-title">better with u</h1>
+  <div class="pitch-sub">clip · note complète à l'attention du réalisateur</div>
 
   <p class="logline">
     un garçon, une fille, une histoire qui finit dans le feu.
@@ -374,29 +624,50 @@
     il a tout vécu pour de vrai, mais seul. une <span class="c">ia</span> surimposée sur le monde réel par un casque de réalité augmentée.
     quand <span class="c">les tokens expirent</span>, il reste seul devant ce qu'il a vraiment fait.
   </p>
+</div>
+
+<!-- ============= SECTION NAV (sticky) ============= -->
+<nav class="secnav" id="secnav">
+  <div class="secnav-inner">
+    <a href="#intention">intention</a>
+    <a href="#grammaire">grammaire</a>
+    <a href="#indices">indices</a>
+    <a href="#reveal">reveal</a>
+    <a href="#sequencier">séquencier</a>
+    <a href="#technique">technique</a>
+    <a href="#refs">références</a>
+    <a href="#trancher">à trancher</a>
+    <a href="#prod">production</a>
+    <div class="spacer"></div>
+    <button class="expand-toggle" id="expand-all">tout déplier</button>
+  </div>
+</nav>
+
+<!-- ============= MAIN ============= -->
+<div class="main">
 
   <!-- INTENTION -->
   <section id="intention">
-    <div class="kicker">note d'intention</div>
-    <h2>tout est réel. sauf elle.</h2>
-    <p>tout le projet repose sur une voix féminine qui parle de la relation. ce clip lui donne un corps. une fille la personnifie à l'écran, xo joue le garçon, et pendant presque toute la durée on croit regarder une histoire de couple.</p>
+    <div class="sec-tag">note d'intention</div>
+    <h2 class="sec-title">tout est réel. sauf elle.</h2>
+    <p class="lede">tout le projet repose sur une voix féminine qui parle de la relation. ce clip lui donne un corps. une fille la personnifie à l'écran, xo joue le garçon, et pendant presque toute la durée on croit regarder une histoire de couple.</p>
     <p>le twist n'est pas une réalité <em>virtuelle</em>, c'est une réalité <em>augmentée</em>. la nuance change tout. rien n'est rêvé. la voiture, la pluie, le vol, le garage, la bombe, la maison qui explose : réels. il a vraiment fait tout ça. la seule chose qui n'existait pas, c'est elle. le casque la surimpose sur le monde. elle est la couche qui rendait tout ça vivable, partagé, romantique.</p>
-    <p>c'est ce qui rend le clip dérangeant plutôt que joli : <strong>les conséquences sont réelles</strong>. il a un vrai casier, une vraie maison détruite, et la seule complice, la seule raison de tout ça, était une projection. l'ia ne lui tient pas juste compagnie, elle l'accompagne dans l'irréversible. l'amour était réel pour lui, mais borné par quelque chose de froid et computationnel. <span class="cold">il vient d'en atteindre la limite.</span></p>
+    <p>c'est ce qui rend le clip dérangeant plutôt que joli : <strong>les conséquences sont réelles</strong>. il a un vrai casier, une vraie maison détruite, et la seule complice, la seule raison de tout ça, était une projection. l'ia ne lui tient pas juste compagnie, elle l'accompagne dans l'irréversible. l'amour était réel pour lui, mais borné par quelque chose de froid et computationnel. <span class="pin">il vient d'en atteindre la limite.</span></p>
     <p class="muted">ton : chaud, charnel, romantique tant qu'on est dans son regard. vide, froid, computationnel dès qu'on recule. tout le clip vit dans la tension entre ces deux régimes.</p>
   </section>
 
   <!-- GRAMMAIRE -->
   <section id="grammaire">
-    <div class="kicker">grammaire visuelle</div>
-    <h2>deux regards, un casque caché</h2>
+    <div class="sec-tag">grammaire visuelle</div>
+    <h2 class="sec-title">deux regards, un casque caché</h2>
     <p>le clip n'a qu'une seule règle de mise en scène, et elle porte tout le reste : on filme alternativement <strong>son point de vue</strong> (elle présente, lumineuse, charnelle) et un <strong>regard objectif</strong> (elle absente, lui seul). le reveal final n'est que le dernier de ces basculements.</p>
 
     <h3>le casque est invisible jusqu'au bout</h3>
     <p>décision actée : on ne voit le casque qu'au reveal. ça veut dire qu'on le cache <em>activement</em> pendant tout le clip. c'est une contrainte de réal à tenir plan par plan, sinon un cadrage le crame sans faire exprès.</p>
     <ul>
-      <li><b>cadrage</b> : éviter les profils nets et les plans larges de face où une monture se lirait. privilégier plans serrés, amorces, nuques, ombres portées, dos.</li>
-      <li><b>lumière</b> : clair-obscur sur le haut du visage. pluie, capuche, contre-jours, néons de magasin qui découpent. tout ce qui justifie naturellement que les yeux et le front ne soient pas en pleine lumière franche.</li>
-      <li><b>la frontalité</b> : la <em>première fois</em> qu'on voit le visage de xo entier, net, de face, en pleine lumière, c'est le reveal. et là le casque est là. tout le clip prépare ce plan en ne le montrant jamais comme ça avant.</li>
+      <li><b>cadrage</b> · éviter les profils nets et les plans larges de face où une monture se lirait. privilégier plans serrés, amorces, nuques, ombres portées, dos.</li>
+      <li><b>lumière</b> · clair-obscur sur le haut du visage. pluie, capuche, contre-jours, néons de magasin qui découpent. tout ce qui justifie naturellement que les yeux et le front ne soient pas en pleine lumière franche.</li>
+      <li><b>la frontalité</b> · la <em>première fois</em> qu'on voit le visage de xo entier, net, de face, en pleine lumière, c'est le reveal. et là le casque est là. tout le clip prépare ce plan en ne le montrant jamais comme ça avant.</li>
     </ul>
     <p class="muted">bonus offert par la contrainte : une grammaire de plans dérobés et fragmentés sur toute la durée, puis un cadre qui s'ouvre enfin au reveal. la forme raconte le fond.</p>
 
@@ -406,8 +677,8 @@
 
   <!-- INDICES -->
   <section id="indices">
-    <div class="kicker">le système d'indices</div>
-    <h2>semer avant, pour ne pas sur-expliquer après</h2>
+    <div class="sec-tag">le système d'indices</div>
+    <h2 class="sec-title">semer avant, pour ne pas sur-expliquer après</h2>
     <p>un reveal ne tient pas sur son dernier plan, il tient sur ce que le spectateur peut relire après coup. si les graines sont plantées, alors fille qui disparaît + casque + tokens suffisent largement, et c'est plus fort de ne pas commenter. le dosage compte plus que les indices eux-mêmes : trop tôt, le public capte tout de suite et le reveal tombe à plat.</p>
     <div class="tiers">
       <div class="tier">
@@ -436,100 +707,171 @@
 
   <!-- REVEAL -->
   <section id="reveal">
-    <div class="kicker">le reveal</div>
-    <h2>en trois temps. émotion d'abord, explication après.</h2>
+    <div class="sec-tag">le reveal</div>
+    <h2 class="sec-title">en trois temps. émotion d'abord, explication après.</h2>
     <p>tout d'un coup, ça fait gotcha et ça sent le gimmick. étalé en trois battements, ça frappe puis ça recontextualise. l'ordre est non négociable : jamais l'explication avant l'émotion.</p>
-    <div class="steps">
-      <div class="step"><div class="num"></div><div class="bd">
+    <div class="reveal-stepper" id="reveal-stepper">
+      <div class="reveal-step active" data-step="1">
+        <div class="rs-num">01</div>
         <h4>elle disparaît</h4>
         <p>le coup émotionnel pur. il lui tient la main devant la maison qui brûle, et elle s'efface. aucune explication encore.</p>
-      </div></div>
-      <div class="step"><div class="num"></div><div class="bd">
+      </div>
+      <div class="reveal-step" data-step="2">
+        <div class="rs-num">02</div>
         <h4>recul sur lui, seul</h4>
         <p>on bascule sur le regard objectif. on le voit enfin net, de face, en pleine lumière, le casque sur le visage. la mécanique se révèle sans un mot.</p>
-      </div></div>
-      <div class="step"><div class="num"></div><div class="bd">
+      </div>
+      <div class="reveal-step" data-step="3">
+        <div class="rs-num">03</div>
         <h4>les tokens, en dernier</h4>
-        <p>passage en vue subjective, l'unique du clip. <span class="cold">le texte d'interface s'affiche, froid, comme une ponctuation</span>. limite atteinte, contact perdu. fin.</p>
-      </div></div>
+        <p>passage en vue subjective, l'unique du clip. <span class="pin">le texte d'interface s'affiche, froid, comme une ponctuation.</span> limite atteinte, contact perdu. fin.</p>
+      </div>
     </div>
-    <p class="muted" style="margin-top:24px">la signature du concept, c'est les tokens, pas le casque. le casque dit seulement que c'était augmenté. les tokens disent que la relation était réelle pour lui mais bornée par un compte à rebours computationnel, et qu'il vient d'en toucher le fond. c'est ça qu'il faut protéger au montage.</p>
+    <p class="muted" style="margin-top:30px">la signature du concept, c'est les tokens, pas le casque. le casque dit seulement que c'était augmenté. les tokens disent que la relation était réelle pour lui mais bornée par un compte à rebours computationnel, et qu'il vient d'en toucher le fond. c'est ça qu'il faut protéger au montage.</p>
   </section>
 
   <!-- SEQUENCIER -->
   <section id="sequencier">
-    <div class="kicker">séquencier</div>
-    <h2>découpage séquence par séquence</h2>
+    <div class="sec-tag">séquencier</div>
+    <h2 class="sec-title">découpage séquence par séquence</h2>
+    <p class="muted" style="margin-bottom:30px">8 séquences. cliquer pour déplier le détail (image, intention, indices, instructions réal). cliquer un repère ci-dessous pour y aller directement.</p>
 
-    <div class="seq">
-      <div class="seq-head"><span class="seq-no">01</span><span class="seq-title">le canapé</span><span class="seq-loc">int. appartement · jour</span></div>
-      <div class="row"><div class="lab">image</div><div class="val">vie de couple simple. elle a les jambes posées sur lui sur le canapé. une discussion démarre, tranquille, complice.</div></div>
-      <div class="row"><div class="lab">intention</div><div class="val m">poser la chaleur et la banalité du couple pour qu'on y croie sans réserve. c'est le socle émotionnel que le reveal viendra défoncer.</div></div>
-      <div class="row"><div class="lab">indices</div><div class="val"><span class="seed">tier 1.</span> tout dans son regard, elle est charnelle et présente. un seul micro flash très bref, qu'on oublie aussitôt.</div></div>
-      <div class="row"><div class="lab">réal</div><div class="val care">casque caché : serrés sur les mains, les jambes, les regards. lumière douce mais le haut du visage de xo jamais en pleine face. amorces, hors champ.</div></div>
+    <div class="seq-timeline" id="seq-timeline">
+      <button class="seq-pin" data-target="seq-1"><div class="pin-no">01</div><div class="pin-name">canapé</div></button>
+      <button class="seq-pin" data-target="seq-2"><div class="pin-no">02</div><div class="pin-name">escalade</div></button>
+      <button class="seq-pin" data-target="seq-3"><div class="pin-no">03</div><div class="pin-name">voiture</div></button>
+      <button class="seq-pin" data-target="seq-4"><div class="pin-no">04</div><div class="pin-name">parking</div></button>
+      <button class="seq-pin" data-target="seq-5"><div class="pin-no">05</div><div class="pin-name">magasin</div></button>
+      <button class="seq-pin" data-target="seq-6"><div class="pin-no">06</div><div class="pin-name">garage</div></button>
+      <button class="seq-pin" data-target="seq-7"><div class="pin-no">07</div><div class="pin-name">baiser</div></button>
+      <button class="seq-pin" data-target="seq-8"><div class="pin-no">08</div><div class="pin-name">reveal</div></button>
     </div>
 
-    <div class="seq">
-      <div class="seq-head"><span class="seq-no">02</span><span class="seq-title">l'escalade</span><span class="seq-loc">int. appartement · jour</span></div>
-      <div class="row"><div class="lab">image</div><div class="val">le ton monte. débat, voix fortes, grands gestes. des plans griffonnés sur un bout de papier. elle n'est pas d'accord. conflit.</div></div>
-      <div class="row"><div class="lab">intention</div><div class="val m">premier basculement énergétique. on plante l'idée d'un projet commun sans le nommer (le papier griffonné prépare le garage et la bombe).</div></div>
-      <div class="row"><div class="lab">indices</div><div class="val"><span class="seed">tier 1.</span> encore tout dans son regard, mais ses gestes à lui commencent à être un peu trop amples pour la place qu'elle occupe vraiment.</div></div>
-      <div class="row"><div class="lab">réal</div><div class="val care">montage plus nerveux. garder le papier lisible une frame ou deux sans expliquer. casque toujours dérobé dans le mouvement.</div></div>
+    <div class="seq" id="seq-1">
+      <button class="seq-head" type="button">
+        <span class="seq-no">01</span>
+        <span class="seq-title">le canapé</span>
+        <span class="seq-loc">int. appartement · jour</span>
+        <span class="seq-chev"></span>
+      </button>
+      <div class="seq-body"><div class="seq-body-inner">
+        <div class="row"><div class="lab">image</div><div class="val">vie de couple simple. elle a les jambes posées sur lui sur le canapé. une discussion démarre, tranquille, complice.</div></div>
+        <div class="row"><div class="lab">intention</div><div class="val m">poser la chaleur et la banalité du couple pour qu'on y croie sans réserve. c'est le socle émotionnel que le reveal viendra défoncer.</div></div>
+        <div class="row"><div class="lab">indices</div><div class="val"><span class="seed">tier 1.</span> tout dans son regard, elle est charnelle et présente. un seul micro flash très bref, qu'on oublie aussitôt.</div></div>
+        <div class="row"><div class="lab">réal</div><div class="val care">casque caché : serrés sur les mains, les jambes, les regards. lumière douce mais le haut du visage de xo jamais en pleine face. amorces, hors champ.</div></div>
+      </div></div>
     </div>
 
-    <div class="seq">
-      <div class="seq-head"><span class="seq-no">03</span><span class="seq-title">la voiture</span><span class="seq-loc">ext. route · nuit · pluie</span></div>
-      <div class="row"><div class="lab">image</div><div class="val">ils partent ensemble. il roule vite, pluie battante, la nervosité du conflit qui ne retombe pas. lumières qui défilent sur les visages.</div></div>
-      <div class="row"><div class="lab">intention</div><div class="val m">la bascule vers la nuit et l'irréversible. la voiture comme sas entre la vie normale et l'acte.</div></div>
-      <div class="row"><div class="lab">indices</div><div class="val"><span class="seed">tier 2.</span> premier reflet traître : dans la vitre côté passager ou le rétro, on l'aperçoit absente une fraction de seconde, puis le plan repart normal.</div></div>
-      <div class="row"><div class="lab">réal</div><div class="val care">pluie + nuit = alliés naturels pour cacher le casque. néons, gouttes, contre-jours. le siège passager filmé pour qu'on doute sans rien affirmer.</div></div>
+    <div class="seq" id="seq-2">
+      <button class="seq-head" type="button">
+        <span class="seq-no">02</span>
+        <span class="seq-title">l'escalade</span>
+        <span class="seq-loc">int. appartement · jour</span>
+        <span class="seq-chev"></span>
+      </button>
+      <div class="seq-body"><div class="seq-body-inner">
+        <div class="row"><div class="lab">image</div><div class="val">le ton monte. débat, voix fortes, grands gestes. des plans griffonnés sur un bout de papier. elle n'est pas d'accord. conflit.</div></div>
+        <div class="row"><div class="lab">intention</div><div class="val m">premier basculement énergétique. on plante l'idée d'un projet commun sans le nommer (le papier griffonné prépare le garage et la bombe).</div></div>
+        <div class="row"><div class="lab">indices</div><div class="val"><span class="seed">tier 1.</span> encore tout dans son regard, mais ses gestes à lui commencent à être un peu trop amples pour la place qu'elle occupe vraiment.</div></div>
+        <div class="row"><div class="lab">réal</div><div class="val care">montage plus nerveux. garder le papier lisible une frame ou deux sans expliquer. casque toujours dérobé dans le mouvement.</div></div>
+      </div></div>
     </div>
 
-    <div class="seq">
-      <div class="seq-head"><span class="seq-no">04</span><span class="seq-title">le parking</span><span class="seq-loc">ext. parking · nuit · pluie</span></div>
-      <div class="row"><div class="lab">image</div><div class="val">il se gare, sort. ils sont sous la pluie. un moment suspendu, ils se regardent. la tension monte mais ne se résout pas encore.</div></div>
-      <div class="row"><div class="lab">intention</div><div class="val m">le presque baiser. on installe le désir et on le diffère exprès, pour que le vrai baiser tombe plus tard, au bord de l'irréversible.</div></div>
-      <div class="row"><div class="lab">indices</div><div class="val"><span class="seed">tier 2.</span> flaque au sol comme miroir possible : un plan où son reflet à elle manque. à jouer en passant.</div></div>
-      <div class="row"><div class="lab">réal</div><div class="val care">le baiser ne se fait PAS ici (repositionné en séq 07). garder le geste en suspens, coupé au bon moment. trempés, serrés, haut du visage dans l'ombre de la pluie.</div></div>
+    <div class="seq" id="seq-3">
+      <button class="seq-head" type="button">
+        <span class="seq-no">03</span>
+        <span class="seq-title">la voiture</span>
+        <span class="seq-loc">ext. route · nuit · pluie</span>
+        <span class="seq-chev"></span>
+      </button>
+      <div class="seq-body"><div class="seq-body-inner">
+        <div class="row"><div class="lab">image</div><div class="val">ils partent ensemble. il roule vite, pluie battante, la nervosité du conflit qui ne retombe pas. lumières qui défilent sur les visages.</div></div>
+        <div class="row"><div class="lab">intention</div><div class="val m">la bascule vers la nuit et l'irréversible. la voiture comme sas entre la vie normale et l'acte.</div></div>
+        <div class="row"><div class="lab">indices</div><div class="val"><span class="seed">tier 2.</span> premier reflet traître : dans la vitre côté passager ou le rétro, on l'aperçoit absente une fraction de seconde, puis le plan repart normal.</div></div>
+        <div class="row"><div class="lab">réal</div><div class="val care">pluie + nuit = alliés naturels pour cacher le casque. néons, gouttes, contre-jours. le siège passager filmé pour qu'on doute sans rien affirmer.</div></div>
+      </div></div>
     </div>
 
-    <div class="seq">
-      <div class="seq-head"><span class="seq-no">05</span><span class="seq-title">le magasin</span><span class="seq-loc">int. supérette · nuit</span></div>
-      <div class="row"><div class="lab">image</div><div class="val">entrée un peu brutale. ils raflent des trucs dans les rayons, planqués sous les vestes. regards lourds avec le vendeur. ils se barrent en courant au ralenti et poussent le vendeur qui tente de bloquer la sortie.</div></div>
-      <div class="row"><div class="lab">intention</div><div class="val m">le passage à l'acte, à deux dans sa tête, seul dans le réel. le ralenti sur la course = respiration romantique avant la bascule la plus dure.</div></div>
-      <div class="row"><div class="lab">indices</div><div class="val"><span class="seed">tier 2, le plus gros.</span> le vendeur le regarde lui, jamais elle. il fixe sa main qui pousse dans le vide, incrédule. miroir convexe anti vol au plafond : on n'y voit qu'un seul corps. les gens ne réagissent qu'à xo.</div></div>
-      <div class="row"><div class="lab">réal</div><div class="val care">attention à ne pas trop appuyer le regard du vendeur, ça doit passer comme de l'hostilité banale au premier visionnage. néons crus = cadrage du casque délicat, prévoir le découpage.</div></div>
+    <div class="seq" id="seq-4">
+      <button class="seq-head" type="button">
+        <span class="seq-no">04</span>
+        <span class="seq-title">le parking</span>
+        <span class="seq-loc">ext. parking · nuit · pluie</span>
+        <span class="seq-chev"></span>
+      </button>
+      <div class="seq-body"><div class="seq-body-inner">
+        <div class="row"><div class="lab">image</div><div class="val">il se gare, sort. ils sont sous la pluie. un moment suspendu, ils se regardent. la tension monte mais ne se résout pas encore.</div></div>
+        <div class="row"><div class="lab">intention</div><div class="val m">le presque baiser. on installe le désir et on le diffère exprès, pour que le vrai baiser tombe plus tard, au bord de l'irréversible.</div></div>
+        <div class="row"><div class="lab">indices</div><div class="val"><span class="seed">tier 2.</span> flaque au sol comme miroir possible : un plan où son reflet à elle manque. à jouer en passant.</div></div>
+        <div class="row"><div class="lab">réal</div><div class="val care">le baiser ne se fait PAS ici (repositionné en séq 07). garder le geste en suspens, coupé au bon moment. trempés, serrés, haut du visage dans l'ombre de la pluie.</div></div>
+      </div></div>
     </div>
 
-    <div class="seq">
-      <div class="seq-head"><span class="seq-no">06</span><span class="seq-title">le garage</span><span class="seq-loc">int. garage / grange · nuit · humide</span></div>
-      <div class="row"><div class="lab">image</div><div class="val">pièce très sombre et humide. bricolage. soudure, assemblage de ce qu'ils ont volé. on ne comprend pas encore ce qu'ils fabriquent.</div></div>
-      <div class="row"><div class="lab">intention</div><div class="val m">le point de bascule technique. la lumière de soudure découpe les visages : alliée parfaite pour cacher le casque, et belle plastiquement.</div></div>
-      <div class="row"><div class="lab">indices</div><div class="val"><span class="seed">tier 3 commence.</span> les flashs de décrochage s'intensifient. entre deux gerbes d'étincelles, elle vacille, comme un signal qui faiblit.</div></div>
-      <div class="row"><div class="lab">réal</div><div class="val care">noir profond + sources ponctuelles (lampe de soudure, néon qui grésille). humidité, buée, reflets sur le sol mouillé pour les reflets traîtres. ne jamais montrer clairement l'objet fabriqué.</div></div>
+    <div class="seq" id="seq-5">
+      <button class="seq-head" type="button">
+        <span class="seq-no">05</span>
+        <span class="seq-title">le magasin</span>
+        <span class="seq-loc">int. supérette · nuit</span>
+        <span class="seq-chev"></span>
+      </button>
+      <div class="seq-body"><div class="seq-body-inner">
+        <div class="row"><div class="lab">image</div><div class="val">entrée un peu brutale. ils raflent des trucs dans les rayons, planqués sous les vestes. regards lourds avec le vendeur. ils se barrent en courant au ralenti et poussent le vendeur qui tente de bloquer la sortie.</div></div>
+        <div class="row"><div class="lab">intention</div><div class="val m">le passage à l'acte, à deux dans sa tête, seul dans le réel. le ralenti sur la course = respiration romantique avant la bascule la plus dure.</div></div>
+        <div class="row"><div class="lab">indices</div><div class="val"><span class="seed">tier 2, le plus gros.</span> le vendeur le regarde lui, jamais elle. il fixe sa main qui pousse dans le vide, incrédule. miroir convexe anti vol au plafond : on n'y voit qu'un seul corps. les gens ne réagissent qu'à xo.</div></div>
+        <div class="row"><div class="lab">réal</div><div class="val care">attention à ne pas trop appuyer le regard du vendeur, ça doit passer comme de l'hostilité banale au premier visionnage. néons crus = cadrage du casque délicat, prévoir le découpage.</div></div>
+      </div></div>
     </div>
 
-    <div class="seq">
-      <div class="seq-head"><span class="seq-no">07</span><span class="seq-title">le baiser</span><span class="seq-loc">ext. nuit · avant l'acte sans retour</span></div>
-      <div class="row"><div class="lab">image</div><div class="val">juste avant d'allumer, ils se regardent et s'embrassent sous la pluie, calé sur la musique. le dernier moment humain avant le point de non retour.</div></div>
-      <div class="row"><div class="lab">intention</div><div class="val m">le baiser déplacé ici prend tout son poids : c'est le dernier souffle avant l'irréversible. magnifique dans son casque, dévastateur vu de l'extérieur (il embrasse le vide, trempé, seul).</div></div>
-      <div class="row"><div class="lab">indices</div><div class="val"><span class="seed">tier 3.</span> tentation d'un très bref insert objectif ici (lui seul en train d'embrasser personne), mais à doser : trop tôt = on grille le reveal. à trancher au montage.</div></div>
-      <div class="row"><div class="lab">réal</div><div class="val care">sommet émotionnel du clip côté chaleur. lumière la plus tendre, la plus chaude. synchro précise musique / geste. encore et toujours le casque dérobé.</div></div>
+    <div class="seq" id="seq-6">
+      <button class="seq-head" type="button">
+        <span class="seq-no">06</span>
+        <span class="seq-title">le garage</span>
+        <span class="seq-loc">int. garage / grange · nuit · humide</span>
+        <span class="seq-chev"></span>
+      </button>
+      <div class="seq-body"><div class="seq-body-inner">
+        <div class="row"><div class="lab">image</div><div class="val">pièce très sombre et humide. bricolage. soudure, assemblage de ce qu'ils ont volé. on ne comprend pas encore ce qu'ils fabriquent.</div></div>
+        <div class="row"><div class="lab">intention</div><div class="val m">le point de bascule technique. la lumière de soudure découpe les visages : alliée parfaite pour cacher le casque, et belle plastiquement.</div></div>
+        <div class="row"><div class="lab">indices</div><div class="val"><span class="seed">tier 3 commence.</span> les flashs de décrochage s'intensifient. entre deux gerbes d'étincelles, elle vacille, comme un signal qui faiblit.</div></div>
+        <div class="row"><div class="lab">réal</div><div class="val care">noir profond + sources ponctuelles (lampe de soudure, néon qui grésille). humidité, buée, reflets sur le sol mouillé pour les reflets traîtres. ne jamais montrer clairement l'objet fabriqué.</div></div>
+      </div></div>
     </div>
 
-    <div class="seq">
-      <div class="seq-head"><span class="seq-no">08</span><span class="seq-title">l'explosion + le reveal</span><span class="seq-loc">ext. nuit · face à la maison</span></div>
-      <div class="row"><div class="lab">image</div><div class="val">la maison explose. ils se tiennent la main en la regardant brûler. puis : elle disparaît · recul sur lui seul, casque visible · passage subjectif, le texte des tokens.</div></div>
-      <div class="row"><div class="lab">intention</div><div class="val m">le clip entier converge ici. le reveal en trois temps (voir section dédiée). la maison qui brûle éclaire enfin son visage, et c'est ce qui rend le casque visible : la lumière du désastre est la première vraie lumière sur lui.</div></div>
-      <div class="row"><div class="lab">indices</div><div class="val"><span class="seed">paiement de tout.</span> le dernier plan objectif EST le reveal. plus aucun indice à planter, on encaisse.</div></div>
-      <div class="row"><div class="lab">réal</div><div class="val care">ordre sacré : émotion (elle s'efface) puis mécanique (lui seul, net, de face, casque) puis froid (pov unique + tokens). première frontalité totale du clip = ce moment précis. le son devrait se vider de sa présence à elle quand elle disparaît (à caler avec le mix).</div></div>
+    <div class="seq" id="seq-7">
+      <button class="seq-head" type="button">
+        <span class="seq-no">07</span>
+        <span class="seq-title">le baiser</span>
+        <span class="seq-loc">ext. nuit · avant l'acte sans retour</span>
+        <span class="seq-chev"></span>
+      </button>
+      <div class="seq-body"><div class="seq-body-inner">
+        <div class="row"><div class="lab">image</div><div class="val">juste avant d'allumer, ils se regardent et s'embrassent sous la pluie, calé sur la musique. le dernier moment humain avant le point de non retour.</div></div>
+        <div class="row"><div class="lab">intention</div><div class="val m">le baiser déplacé ici prend tout son poids : c'est le dernier souffle avant l'irréversible. magnifique dans son casque, dévastateur vu de l'extérieur (il embrasse le vide, trempé, seul).</div></div>
+        <div class="row"><div class="lab">indices</div><div class="val"><span class="seed">tier 3.</span> tentation d'un très bref insert objectif ici (lui seul en train d'embrasser personne), mais à doser : trop tôt = on grille le reveal. à trancher au montage.</div></div>
+        <div class="row"><div class="lab">réal</div><div class="val care">sommet émotionnel du clip côté chaleur. lumière la plus tendre, la plus chaude. synchro précise musique / geste. encore et toujours le casque dérobé.</div></div>
+      </div></div>
+    </div>
+
+    <div class="seq" id="seq-8">
+      <button class="seq-head" type="button">
+        <span class="seq-no">08</span>
+        <span class="seq-title">l'explosion + le reveal</span>
+        <span class="seq-loc">ext. nuit · face à la maison</span>
+        <span class="seq-chev"></span>
+      </button>
+      <div class="seq-body"><div class="seq-body-inner">
+        <div class="row"><div class="lab">image</div><div class="val">la maison explose. ils se tiennent la main en la regardant brûler. puis : elle disparaît · recul sur lui seul, casque visible · passage subjectif, le texte des tokens.</div></div>
+        <div class="row"><div class="lab">intention</div><div class="val m">le clip entier converge ici. le reveal en trois temps (voir section dédiée). la maison qui brûle éclaire enfin son visage, et c'est ce qui rend le casque visible : la lumière du désastre est la première vraie lumière sur lui.</div></div>
+        <div class="row"><div class="lab">indices</div><div class="val"><span class="seed">paiement de tout.</span> le dernier plan objectif EST le reveal. plus aucun indice à planter, on encaisse.</div></div>
+        <div class="row"><div class="lab">réal</div><div class="val care">ordre sacré : émotion (elle s'efface) puis mécanique (lui seul, net, de face, casque) puis froid (pov unique + tokens). première frontalité totale du clip = ce moment précis. le son devrait se vider de sa présence à elle quand elle disparaît (à caler avec le mix).</div></div>
+      </div></div>
     </div>
   </section>
 
   <!-- TECHNIQUE -->
-  <section id="technique">
-    <div class="kicker">contraintes transversales</div>
-    <h2>le mémo réal, en une liste</h2>
+  <section id="technique" class="memo">
+    <div class="sec-tag">contraintes transversales</div>
+    <h2 class="sec-title">le mémo réal, en une liste</h2>
     <ul>
       <li><b>casque jamais visible avant la séq 08.</b> pas de profil net, pas de large face en pleine lumière. serrés, amorces, contre-jours, capuche, ombres sur le haut du visage.</li>
       <li><b>première frontalité = le reveal.</b> on garde le visage de xo entier, net, de face, plein éclairé, pour ce seul moment.</li>
@@ -544,20 +886,22 @@
 
   <!-- REFS -->
   <section id="refs">
-    <div class="kicker">références visuelles</div>
-    <h2>les points d'ancrage</h2>
-    <p class="muted" style="margin-bottom:30px">à donner au réal comme boussole, pas comme moodboard à copier. ce qu'on emprunte à chaque fois est précisé.</p>
-    <div class="ref"><div class="t">blade runner 2049<span>villeneuve / joi</span></div><div class="d">la référence centrale. joi, la compagne hologramme augmentée sur le réel, présente pour lui seul. à regarder pour la mélancolie d'une présence projetée et les moments où elle se désynchronise du monde.</div></div>
-    <div class="ref"><div class="t">her<span>spike jonze</span></div><div class="d">le lien intime à une ia, la solitude tendre, la chaleur d'une voix. pour le ton émotionnel, le fait qu'on y croie complètement avant de comprendre.</div></div>
-    <div class="ref"><div class="t">good time<span>safdie brothers</span></div><div class="d">pour le magasin et la course : nervosité, néons crus, énergie de fuite, ralenti qui devient lyrique au milieu du chaos.</div></div>
-    <div class="ref"><div class="t">be right back<span>black mirror</span></div><div class="d">le deuil d'une présence simulée, le moment où le simulacre montre ses limites. pour la cruauté douce du reveal.</div></div>
-    <div class="ref"><div class="t">enter the void / climax<span>gaspar noé</span></div><div class="d">pluie, néons, nuit, subjectif. pour la texture des séquences voiture et parking et l'idée d'un pov qui bascule.</div></div>
+    <div class="sec-tag">références visuelles</div>
+    <h2 class="sec-title">les points d'ancrage</h2>
+    <p class="muted">à donner au réal comme boussole, pas comme moodboard à copier. ce qu'on emprunte à chaque fois est précisé.</p>
+    <div class="refs">
+      <div class="ref"><div class="t">blade runner 2049<span>villeneuve · joi</span></div><div class="d">la référence centrale. joi, la compagne hologramme augmentée sur le réel, présente pour lui seul. à regarder pour la mélancolie d'une présence projetée et les moments où elle se désynchronise du monde.</div></div>
+      <div class="ref"><div class="t">her<span>spike jonze</span></div><div class="d">le lien intime à une ia, la solitude tendre, la chaleur d'une voix. pour le ton émotionnel, le fait qu'on y croie complètement avant de comprendre.</div></div>
+      <div class="ref"><div class="t">good time<span>safdie brothers</span></div><div class="d">pour le magasin et la course : nervosité, néons crus, énergie de fuite, ralenti qui devient lyrique au milieu du chaos.</div></div>
+      <div class="ref"><div class="t">be right back<span>black mirror</span></div><div class="d">le deuil d'une présence simulée, le moment où le simulacre montre ses limites. pour la cruauté douce du reveal.</div></div>
+      <div class="ref"><div class="t">enter the void · climax<span>gaspar noé</span></div><div class="d">pluie, néons, nuit, subjectif. pour la texture des séquences voiture et parking et l'idée d'un pov qui bascule.</div></div>
+    </div>
   </section>
 
   <!-- A TRANCHER -->
   <section id="trancher">
-    <div class="kicker">à trancher</div>
-    <h2>les décisions ouvertes</h2>
+    <div class="sec-tag">à trancher</div>
+    <h2 class="sec-title">les décisions ouvertes</h2>
     <div class="q"><b>la grammaire exacte du glitch</b><span>quelle forme prend le décrochage (lag, dédoublement, frame noire, dématricage) ? à figer avec le réal et le monteur, c'est la signature visuelle du concept.</span></div>
     <div class="q"><b>le texte des tokens</b><span>formulation exacte, langue (fr ou en), typo, durée à l'écran. doit rester froid et bref, une ponctuation, pas une explication.</span></div>
     <div class="q"><b>l'insert objectif de la séq 07</b><span>montre-t-on un très bref plan de lui embrassant le vide avant le reveal, ou on garde tout pour la fin ? à arbitrer au montage selon le rythme.</span></div>
@@ -567,8 +911,8 @@
 
   <!-- PROD -->
   <section id="prod">
-    <div class="kicker">besoins production</div>
-    <h2>repérage rapide</h2>
+    <div class="sec-tag">besoins production</div>
+    <h2 class="sec-title">repérage rapide</h2>
     <div class="prod">
       <div class="cell">
         <h4>lieux</h4>
@@ -576,7 +920,7 @@
           <li>appartement (canapé, lumière jour)</li>
           <li>route de nuit (pluie, défilé de lumières)</li>
           <li>parking extérieur nocturne</li>
-          <li>supérette / petit commerce (autorisation tournage)</li>
+          <li>supérette · petit commerce (autorisation tournage)</li>
           <li>garage ou grange sombre et humide</li>
           <li>maison à faire exploser (vfx probable)</li>
         </ul>
@@ -584,9 +928,9 @@
       <div class="cell">
         <h4>casting</h4>
         <ul>
-          <li>elle : présence lumineuse, fort jeu de regard, doit incarner une voix</li>
-          <li>xo : le garçon (visage protégé tout le clip, révélé au reveal)</li>
-          <li>le vendeur : un seul moment clé, le regard qui trahit</li>
+          <li>elle · présence lumineuse, fort jeu de regard, doit incarner une voix</li>
+          <li>xo · le garçon (visage protégé tout le clip, révélé au reveal)</li>
+          <li>le vendeur · un seul moment clé, le regard qui trahit</li>
         </ul>
       </div>
       <div class="cell">
@@ -594,16 +938,16 @@
         <ul>
           <li>bout de papier griffonné (le plan)</li>
           <li>marchandise volée crédible</li>
-          <li>matériel de bricolage / soudure</li>
+          <li>matériel de bricolage · soudure</li>
           <li>le casque ra (design à produire)</li>
           <li>surfaces réfléchissantes repérées à l'avance</li>
         </ul>
       </div>
       <div class="cell">
-        <h4>image / régie</h4>
+        <h4>image · régie</h4>
         <ul>
           <li>machine à pluie + plan nuit</li>
-          <li>deux setups lumière (chaud subjectif / froid objectif)</li>
+          <li>deux setups lumière (chaud subjectif · froid objectif)</li>
           <li>sources ponctuelles pour le garage</li>
           <li>repérage des cadrages anti casque par séquence</li>
         </ul>
@@ -611,24 +955,26 @@
     </div>
   </section>
 
-  <footer>
-    <span>arch · xo · better with u</span>
-    <span>hate me, xoxo · traitement v1 · juin 2026</span>
-  </footer>
+</div>
 
+<footer>
+  <span>arch · xo · hate me, xoxo</span>
+  <span>traitement · v1 · juin 2026</span>
+</footer>
+
+<!-- keyboard hint -->
+<div class="kbd-hint" id="kbd-hint">
+  <kbd>space</kbd> play / pause · <kbd>e</kbd> tout déplier
 </div>
 
 <script>
-// audio player
 (function(){
+  // ============= AUDIO =============
   const audio = document.getElementById('audio');
-  const btn = document.getElementById('play-btn');
-  const fill = document.getElementById('progress-fill');
-  const buf = document.getElementById('progress-buf');
-  const thumb = document.getElementById('progress-thumb');
-  const bar = document.getElementById('progress');
-  const cur = document.getElementById('time-cur');
-  const tot = document.getElementById('time-tot');
+  const mpBtn = document.getElementById('mp-btn');
+  const mpFill = document.getElementById('mp-fill');
+  const mpBar = document.getElementById('mp-progress');
+  const mpTime = document.getElementById('mp-time');
 
   function fmt(s){
     if (!isFinite(s) || s < 0) return '0:00';
@@ -637,40 +983,117 @@
     return m + ':' + r;
   }
 
-  btn.addEventListener('click', () => {
+  mpBtn.addEventListener('click', () => {
     if (audio.paused) audio.play(); else audio.pause();
   });
-  audio.addEventListener('play', () => { btn.dataset.state = 'pause'; btn.setAttribute('aria-label','pause'); });
-  audio.addEventListener('pause', () => { btn.dataset.state = 'play'; btn.setAttribute('aria-label','lecture'); });
-  audio.addEventListener('loadedmetadata', () => { tot.textContent = fmt(audio.duration); });
+  audio.addEventListener('play', () => { mpBtn.dataset.state = 'pause'; });
+  audio.addEventListener('pause', () => { mpBtn.dataset.state = 'play'; });
+  audio.addEventListener('loadedmetadata', () => {
+    mpTime.textContent = fmt(0) + ' · ' + fmt(audio.duration);
+  });
   audio.addEventListener('timeupdate', () => {
     if (!audio.duration) return;
     const r = audio.currentTime / audio.duration;
-    fill.style.width = (r*100) + '%';
-    thumb.style.left = (r*100) + '%';
-    cur.textContent = fmt(audio.currentTime);
+    mpFill.style.width = (r*100) + '%';
+    mpTime.textContent = fmt(audio.currentTime) + ' · ' + fmt(audio.duration);
   });
-  audio.addEventListener('progress', () => {
-    if (audio.buffered.length && audio.duration) {
-      const end = audio.buffered.end(audio.buffered.length - 1);
-      buf.style.width = ((end/audio.duration)*100) + '%';
-    }
-  });
-  audio.addEventListener('ended', () => { btn.dataset.state = 'play'; });
+  audio.addEventListener('ended', () => { mpBtn.dataset.state = 'play'; });
 
   function seek(e){
-    const rect = bar.getBoundingClientRect();
+    const rect = mpBar.getBoundingClientRect();
     const x = (e.touches ? e.touches[0].clientX : e.clientX) - rect.left;
     const r = Math.max(0, Math.min(1, x / rect.width));
     if (audio.duration) audio.currentTime = r * audio.duration;
   }
-  bar.addEventListener('click', seek);
+  mpBar.addEventListener('click', seek);
 
-  // keyboard: space to play/pause
-  document.addEventListener('keydown', e => {
-    if (e.target.matches('input,textarea')) return;
-    if (e.code === 'Space') { e.preventDefault(); btn.click(); }
+  // ============= SCROLL PROGRESS =============
+  const sp = document.getElementById('scroll-progress');
+  function updateProgress(){
+    const h = document.documentElement;
+    const max = h.scrollHeight - h.clientHeight;
+    const r = max > 0 ? h.scrollTop / max : 0;
+    sp.style.width = (r * 100) + '%';
+  }
+  window.addEventListener('scroll', updateProgress, { passive: true });
+  updateProgress();
+
+  // ============= EXPANDABLE SEQUENCES =============
+  document.querySelectorAll('.seq-head').forEach(h => {
+    h.addEventListener('click', () => {
+      const seq = h.closest('.seq');
+      seq.classList.toggle('open');
+    });
   });
+
+  // pin → scroll + open
+  document.querySelectorAll('.seq-pin').forEach(pin => {
+    pin.addEventListener('click', () => {
+      const id = pin.dataset.target;
+      const target = document.getElementById(id);
+      if (!target) return;
+      target.classList.add('open');
+      // activate the pin briefly
+      document.querySelectorAll('.seq-pin').forEach(p => p.classList.remove('active'));
+      pin.classList.add('active');
+      target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      setTimeout(() => pin.classList.remove('active'), 1200);
+    });
+  });
+
+  // ============= EXPAND / COLLAPSE ALL =============
+  const expandBtn = document.getElementById('expand-all');
+  let allOpen = false;
+  expandBtn.addEventListener('click', () => {
+    allOpen = !allOpen;
+    document.querySelectorAll('.seq').forEach(s => s.classList.toggle('open', allOpen));
+    expandBtn.textContent = allOpen ? 'tout replier' : 'tout déplier';
+  });
+
+  // ============= REVEAL STEPPER =============
+  document.querySelectorAll('.reveal-step').forEach(step => {
+    step.addEventListener('click', () => {
+      document.querySelectorAll('.reveal-step').forEach(s => s.classList.remove('active'));
+      step.classList.add('active');
+    });
+  });
+
+  // ============= ACTIVE SECTION HIGHLIGHT IN NAV =============
+  const sections = document.querySelectorAll('section[id]');
+  const navLinks = document.querySelectorAll('.secnav-inner a');
+  const navById = new Map();
+  navLinks.forEach(a => navById.set(a.getAttribute('href').slice(1), a));
+
+  const io = new IntersectionObserver((entries) => {
+    entries.forEach(e => {
+      if (e.isIntersecting) {
+        navLinks.forEach(a => a.classList.remove('active'));
+        const link = navById.get(e.target.id);
+        if (link) link.classList.add('active');
+      }
+    });
+  }, { rootMargin: '-40% 0px -55% 0px', threshold: 0 });
+  sections.forEach(s => io.observe(s));
+
+  // ============= KEYBOARD =============
+  let hintShown = false;
+  document.addEventListener('keydown', (e) => {
+    if (e.target.matches('input, textarea')) return;
+    if (e.code === 'Space') { e.preventDefault(); mpBtn.click(); }
+    else if (e.key === 'e' || e.key === 'E') { e.preventDefault(); expandBtn.click(); }
+  });
+  // show hint briefly on first scroll
+  let scrollTimer;
+  function showHint(){
+    if (hintShown) return;
+    hintShown = true;
+    const hint = document.getElementById('kbd-hint');
+    hint.classList.add('show');
+    setTimeout(() => hint.classList.remove('show'), 4500);
+  }
+  window.addEventListener('scroll', () => {
+    if (window.scrollY > 200 && !hintShown) showHint();
+  }, { passive: true, once: false });
 })();
 </script>
 
